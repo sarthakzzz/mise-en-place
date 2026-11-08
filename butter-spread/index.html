@@ -108,9 +108,12 @@ async function joinList(email){
   return out;
 }
 
+const cleanEmail = v => (v || '').replace(/^mailto:/i, '').replace(/[\s<>"'()]/g, '').replace(/^[.,;:]+|[.,;:]+$/g, '');
+$('email').addEventListener('change', () => { $('email').value = cleanEmail($('email').value); });
 $('getForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const email = $('email').value.trim(), btn = $('getForm').querySelector('button');
+  $('email').value = cleanEmail($('email').value);
+  const email = $('email').value, btn = $('getForm').querySelector('button');
   if (!email || !$('email').checkValidity()) { msg.textContent = 'That email looks half-baked. Check it and try again.'; return; }
   btn.disabled = true; msg.textContent = 'Spreading the butter...';
   try {

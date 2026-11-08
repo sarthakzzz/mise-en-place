@@ -70,7 +70,8 @@ if (token) {
 } else $('byEmail').hidden = false;
 $('byEmail').onsubmit = async e => {
   e.preventDefault();
-  const email = $('email').value.trim();
+  $('email').value = $('email').value.replace(/^mailto:/i, '').replace(/[\s<>"'()]/g, '').replace(/^[.,;:]+|[.,;:]+$/g, '');
+  const email = $('email').value;
   if (!email || !$('email').checkValidity()) { $('status').textContent = 'That email looks half-baked. Check it and try again.'; return; }
   if (!CONFIG.signupEndpoint) { location.href = 'mailto:' + CONFIG.supportEmail + '?subject=Unsubscribe&body=' + encodeURIComponent('Please unsubscribe ' + email); return; }
   $('status').textContent = 'One moment...';

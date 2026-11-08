@@ -1181,6 +1181,11 @@ document.getElementById('news').addEventListener('submit', e => { e.preventDefau
 
 /* ---------- live store: Moonbase, waitlist mode and the launch countdown ---------- */
 function mb(intent, args){ if (!window.Moonbase || !mbReady) return false; Moonbase[intent](args); return true; }
+// Forgiving email boxes (8 Nov): trim spaces, stray quotes/brackets and trailing dots or commas before any check runs; + addresses are fine.
+const cleanEmail = v => (v || '').replace(/^mailto:/i, '').replace(/[\s<>"'()]/g, '').replace(/^[.,;:]+|[.,;:]+$/g, '');
+document.addEventListener('submit', e => { e.target.querySelectorAll?.('input[type=email]').forEach(i => { i.value = cleanEmail(i.value); i.style.borderColor = ''; }); }, true);
+document.addEventListener('change', e => { if (e.target.matches?.('input[type=email]')) e.target.value = cleanEmail(e.target.value); }, true);
+document.addEventListener('input', e => { if (e.target.matches?.('input[type=email]')) e.target.style.borderColor = ''; }, true);
 // Newsletter: our own form. It posts to our list (CONFIG.signupEndpoint) and shows our own thank-you.
 const pageT = Date.now();
 async function joinList(email, source){
