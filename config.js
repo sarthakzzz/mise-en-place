@@ -48,5 +48,13 @@ window.CONFIG = {
   // If Moonbase can't load, the Butter Spread button falls back to the open-source release page
   butterSpreadFallback: 'https://github.com/sarthakzzz/butter-spread/releases/latest',
   // The Butter Spread page (/butter-spread/) downloads this file directly when the store can't load
-  butterSpreadInstaller: 'https://github.com/sarthakzzz/butter-spread/releases/download/v1.0.0/Butter-Spread-1.0.0-mac.pkg'
+  butterSpreadInstaller: 'https://github.com/sarthakzzz/butter-spread/releases/download/v1.0.0/Butter-Spread-1.0.0-mac.zip',
+  // Tag the Chef: post a video with any plugin, tag us, pick one plugin free (India time). Shown on the pricing scene in this window.
+  tagTheChef: { from: '2026-11-15T00:00:00+05:30', until: '2027-02-01T00:00:00+05:30' },
+  // Free Butter Spread downloads: each zip holds the installer plus a READ ME FIRST for the security warning
+  butterSpread: {
+    mac: 'https://github.com/sarthakzzz/butter-spread/releases/download/v1.0.0/Butter-Spread-1.0.0-mac.zip',
+    win: 'https://github.com/sarthakzzz/butter-spread/releases/download/v1.0.0/Butter-Spread-1.0.0-windows.zip',
+    readme: '/butter-spread/read-me-first/'
+  }
 };

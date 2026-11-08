@@ -29,13 +29,14 @@ form.e input{flex:1 1 240px;font:inherit;font-size:17px;padding:14px 16px;border
   <h1 id="title">One moment...</h1>
   <p class="lead" id="text">Checking your link.</p>
   <div class="row" id="next" hidden>
-    <a class="btn" id="bsDl" href="https://github.com/sarthakzzz/butter-spread/releases/latest" download>Download Butter Spread</a>
+    <span id="bsDl"></span>
     <a class="btn ghost" href="/">See all our plugins</a>
   </div>
 </section>
 </main>
 <footer>© 2026 Plugins for Breakfast by Escae Studios · <a href="/privacy.html">Privacy</a> · <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a></footer>
 <script src="/config.js"></script>
+<script src="/assets/bs-download.js"></script>
 <script>
 // Talks to our list (CONFIG.signupEndpoint, a Google Apps Script web app) with JSONP, so it works from any browser without CORS.
 function ask(params){
@@ -54,7 +55,7 @@ const $ = id => document.getElementById(id), token = new URLSearchParams(locatio
 const show = (title, text) => { $('title').textContent = title; $('text').textContent = text; };
 </script>
 <script>
-if (CONFIG.butterSpreadInstaller) $('bsDl').href = CONFIG.butterSpreadInstaller;
+$('bsDl').replaceWith(PFB_BS.buttons('btn', {left: true}));
 (async () => {
   if (!token) { show('Link missing', 'This confirmation link looks incomplete. Open it again from the email, or write to ' + CONFIG.supportEmail + '.'); return; }
   try {

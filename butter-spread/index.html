@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Butter Spread, free · Plugins for Breakfast</title>
-<meta name="description" content="Butter Spread is our free stereo widener for Mac (AU and VST3). Join our email list and download it.">
+<meta name="description" content="Butter Spread is our free stereo widener for Mac (AU, VST3) and Windows (VST3). Join our email list and download it.">
 <meta property="og:title" content="Butter Spread, free stereo widener">
 <meta property="og:description" content="Join our email list and download Butter Spread free. We make delicious plugins.">
 <meta property="og:image" content="https://pluginsforbreakfast.com/videos/butter-spread-sweep.jpg">
@@ -31,6 +31,7 @@ form.get input:focus{outline:none;border-color:var(--accent)}
 .note{color:var(--soft);font-size:14px;margin:10px 0 0}
 .msg{font-weight:800;min-height:1.6em;margin:8px 0 0}
 .locked{opacity:.55}
+.locked .bsdl{pointer-events:none}
 .dl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
 ol.install{margin:10px 0 0;padding-left:20px}
 @media (max-width:720px){.hero{grid-template-columns:1fr}}
@@ -45,7 +46,7 @@ ol.install{margin:10px 0 0;padding-left:20px}
     <span class="free">Free</span>
     <h1>Butter Spread</h1>
     <p class="lead">Our stereo widener. Spread a mix wide and smooth, keep the bass solid in the middle, and it still sounds right in mono.</p>
-    <ul class="facts"><li>Mac, Apple Silicon and Intel</li><li>AU and VST3</li><li>Open source (AGPLv3)</li></ul>
+    <ul class="facts"><li>Mac, Apple Silicon and Intel</li><li>Windows 10 and 11</li><li>AU and VST3</li><li>Open source (AGPLv3)</li></ul>
   </div>
   <div class="shot"><img src="../videos/butter-spread-sweep.jpg" alt="The Butter Spread plugin window" width="1200" height="840"></div>
 </div>
@@ -65,16 +66,15 @@ ol.install{margin:10px 0 0;padding-left:20px}
 <section class="step locked" id="step2" aria-disabled="true">
   <h2><span class="num">2.</span> Download</h2>
   <p id="dlLead">Join the list above and the download button appears here.</p>
-  <div class="dl">
-    <button class="btn" type="button" id="download" disabled>Download for Mac</button>
-    <span class="note" id="dlNote"></span>
-  </div>
+  <div class="dl" id="dlBox"></div>
   <h2 style="font-size:20px;margin-top:24px">Installing</h2>
   <ol class="install">
-    <li>Open the downloaded <b>.pkg</b> file and follow the steps. If macOS says it can't check the file, right-click it and choose <b>Open</b>.</li>
-    <li>Restart your DAW and rescan plugins. Butter Spread shows up as an AU and a VST3 effect.</li>
+    <li>Unzip the download. Open the <b>READ ME FIRST</b> file inside: it shows how to get past the one-time security warning on Mac and Windows.</li>
+    <li><b>Mac:</b> open the <b>.pkg</b>. If macOS says it can't check it, go to System Settings &gt; Privacy &amp; Security and click <b>Open Anyway</b>.</li>
+    <li><b>Windows:</b> run the setup. If you see "Windows protected your PC", click <b>More info</b>, then <b>Run anyway</b>.</li>
+    <li>Restart your DAW and rescan plugins. Butter Spread shows up under Plugins for Breakfast.</li>
   </ol>
-  <p class="note">The source code is on <a href="https://github.com/sarthakzzz/butter-spread" rel="noopener">GitHub</a> under the AGPLv3 licence.</p>
+  <p class="note"><a href="read-me-first/">Read Me First, step by step</a>. The source code is on <a href="https://github.com/sarthakzzz/butter-spread" rel="noopener">GitHub</a> under the AGPLv3 licence.</p>
 </section>
 
 <p>Problems? Write to <a id="mail" href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a>.</p>
@@ -82,6 +82,7 @@ ol.install{margin:10px 0 0;padding-left:20px}
 </main>
 <footer>© 2026 Plugins for Breakfast by Escae Studios · <a href="../privacy.html">Privacy</a></footer>
 <script src="../config.js"></script>
+<script src="../assets/bs-download.js"></script>
 <script>
 // Butter Spread download page: email first (our own list: CONFIG.signupEndpoint saves it to our Sheet and emails a confirmation), then the download.
 const SOURCE = new URLSearchParams(location.search).get('src') || 'butter-spread-page';
@@ -91,7 +92,6 @@ $('mail').href = 'mailto:' + CONFIG.supportEmail; $('mail').textContent = CONFIG
 
 function unlock(again, text){
   const s2 = $('step2'); s2.classList.remove('locked'); s2.removeAttribute('aria-disabled');
-  $('download').disabled = false;
   $('dlLead').textContent = text || (again ? 'Welcome back. Your download is ready.' : 'You are on the list. Enjoy Butter Spread!');
   try { localStorage.setItem(KEY, '1'); } catch(e) {}
   if (!again) s2.scrollIntoView({behavior: 'smooth', block: 'start'});
@@ -124,11 +124,8 @@ $('getForm').addEventListener('submit', async e => {
   finally { btn.disabled = false; }
 });
 
-// Delivery: straight from the installer (the store panel only showed product details, 8 Nov).
-$('download').addEventListener('click', () => {
-  location.href = CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback;
-  $('dlNote').innerHTML = `Downloading. If nothing happens, <a href="${CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback}">tap here</a>.`;
-});
+// Delivery: Mac and Windows zips, each with a Read Me First (assets/bs-download.js)
+$('dlBox').appendChild(PFB_BS.buttons('btn', {left: true}));
 
 try { if (localStorage.getItem(KEY) === '1') unlock(true); } catch(e) {}
 </script>
