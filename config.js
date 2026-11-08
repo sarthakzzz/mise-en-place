@@ -30,6 +30,8 @@ window.CONFIG = {
     hp: 'hot-o-pan', gg: 'gummy-gate', mc: 'milkshake-chorus', bt: 'burnt-toast', nf: 'noodle-filter',
     mg: 'muesli-granular'
   },
+  // Optional Moonbase variation id per item (e.g. oc: 'regular'); sent with each checkout item when set
+  variations: {},
   bundle: 'full-fridge',          // Full Fridge Bundle, $90 one time
   // Price steps (US$): prices rise after every 100 licences sold, until they reach the full $29 / $90.
   // The checkout applies the Moonbase coupon for the current step (STEP19..STEP27, FRIDGE49..FRIDGE85).

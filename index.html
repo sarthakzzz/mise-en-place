@@ -956,7 +956,7 @@ document.getElementById('checkout').addEventListener('click', async () => {
   if (!window.Moonbase || !mbReady) { fine.textContent = 'The checkout is still loading. Give it a second and try again.'; return; }
   btn.disabled = true; fine.textContent = 'Opening the secure checkout...';
   try {
-    const items = cart.map(id => id === 'fridge' ? {bundle_id: CONFIG.bundle} : id === 'club' ? {bundle_id: CONFIG.bundle, variation_id: CONFIG.clubVariation} : {product_id: PRODUCTS[id].mb});
+    const V = CONFIG.variations || {}, items = cart.map(id => id === 'fridge' ? {bundle_id: CONFIG.bundle, ...(V.fridge ? {variation_id: V.fridge} : {})} : id === 'club' ? {bundle_id: CONFIG.bundle, variation_id: CONFIG.clubVariation} : {product_id: PRODUCTS[id].mb, ...(V[id] ? {variation_id: V[id]} : {})});
     if (cart.includes('club') && !CONFIG.clubVariation) throw new Error('club');
     // price steps: each item carries the coupon for today's step, e.g. STEP19 or FRIDGE49 (none once the full price is reached)
     const S = CONFIG.priceSteps || {}, coupon = id => id === 'club' ? '' : id === 'fridge' ? (PRICE.bundle < S.bundle?.max ? S.bundle.coupon + PRICE.bundle : '') : (PRICE.plugin < S.plugin?.max ? S.plugin.coupon + PRICE.plugin : '');
@@ -1201,7 +1201,9 @@ document.getElementById('news').addEventListener('submit', e => { e.preventDefau
 
 
 /* ---------- live store: Moonbase, waitlist mode and the launch countdown ---------- */
-function mb(intent, args){ if (!window.Moonbase || !mbReady) return false; Moonbase[intent](args); return true; }
+let storeUsed = false;
+document.addEventListener('click', e => { if (e.target.closest?.('[data-add],[data-trial],#checkout,[data-account]')) storeUsed = true; }, true);
+function mb(intent, args){ storeUsed = true; if (!window.Moonbase || !mbReady) return false; Moonbase[intent](args); return true; }
 // Forgiving email boxes (8 Nov): trim spaces, stray quotes/brackets and trailing dots or commas before any check runs; + addresses are fine.
 const cleanEmail = v => (v || '').replace(/^mailto:/i, '').replace(/[\s<>"'()]/g, '').replace(/^[.,;:]+|[.,;:]+$/g, '');
 document.addEventListener('submit', e => { e.target.querySelectorAll?.('input[type=email]').forEach(i => { i.value = cleanEmail(i.value); i.style.borderColor = ''; }); }, true);
@@ -1315,12 +1317,12 @@ function onScroll(){
       lastStep = on;
     }
   }
-  if (!shown && scrollY > document.body.scrollHeight * .5 && back.hidden && cartEl.hidden) openPop();
+  if (!shown && scrollY > document.body.scrollHeight * .5 && back.hidden && cartEl.hidden && !storeUsed && !cart.length) openPop();
 }
 addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, {passive:true});
 addEventListener('resize', onScroll);
 onScroll();
-if (!shown) setTimeout(() => { if (!shown && back.hidden && cartEl.hidden) openPop(); }, 15000);
+if (!shown) setTimeout(() => { if (!shown && back.hidden && cartEl.hidden && !storeUsed && !cart.length) openPop(); }, 15000);
 
 /* headings bounce as they arrive */
 const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('hopping'); setTimeout(() => en.target.classList.remove('hopping'), 1400); io.unobserve(en.target); } }), {threshold:.6});
