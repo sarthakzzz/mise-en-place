@@ -1211,7 +1211,9 @@ document.addEventListener('change', e => { if (e.target.matches?.('input[type=em
 document.addEventListener('input', e => { if (e.target.matches?.('input[type=email]')) e.target.style.borderColor = ''; }, true);
 // Newsletter: our own form. It posts to our list (CONFIG.signupEndpoint) and shows our own thank-you.
 const pageT = Date.now();
-async function joinList(email, source){
+// Apps Script now and then fails a request; one quiet retry hides that (QA 8 Nov).
+async function joinList(email, source){ try { return await joinOnce(email, source); } catch (e) { await new Promise(r => setTimeout(r, 1200)); return joinOnce(email, source); } }
+async function joinOnce(email, source){
   if (!CONFIG.signupEndpoint) throw new Error('Sign-ups open very soon.');
   const body = JSON.stringify({email, name: '', source, consent: true, website: '', t: pageT});
   let res;

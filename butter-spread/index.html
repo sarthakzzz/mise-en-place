@@ -97,7 +97,9 @@ function unlock(again, text){
   if (!again) s2.scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 
-async function joinList(email){
+// Apps Script now and then fails a request; one quiet retry hides that (QA 8 Nov).
+async function joinList(email){ try { return await joinOnce(email); } catch (e) { await new Promise(r => setTimeout(r, 1200)); return joinOnce(email); } }
+async function joinOnce(email){
   if (!CONFIG.signupEndpoint) throw new Error('Sign-ups open very soon. Please check back shortly.');
   const body = JSON.stringify({email, name: '', source: SOURCE, consent: true, website: $('hp').value, t: pageT});
   let res;
