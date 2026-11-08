@@ -49,6 +49,8 @@ window.CONFIG = {
   butterSpreadFallback: 'https://github.com/sarthakzzz/butter-spread/releases/latest',
   // The Butter Spread page (/butter-spread/) downloads this file directly when the store can't load
   butterSpreadInstaller: 'https://github.com/sarthakzzz/butter-spread/releases/download/v1.0.0/Butter-Spread-1.0.0-mac.zip',
+  // Visitor counter: GoatCounter (free, no cookies). Put the site code here once the account exists, e.g. 'pluginsforbreakfast'.
+  goatcounter: '',
   // Tag the Chef: post a video with any plugin, tag us, pick one plugin free (India time). Shown on the pricing scene in this window.
   tagTheChef: { from: '2026-11-15T00:00:00+05:30', until: '2027-02-01T00:00:00+05:30' },
   // Free Butter Spread downloads: each zip holds the installer plus a READ ME FIRST for the security warning
@@ -58,3 +60,8 @@ window.CONFIG = {
     readme: '/butter-spread/read-me-first/'
   }
 };
+
+// Visitor counter (no cookies): loads only when CONFIG.goatcounter is set, and never on local test pages.
+(() => { const c = window.CONFIG.goatcounter; if (!c || !/pluginsforbreakfast\.com$/.test(location.hostname)) return;
+  const s = document.createElement('script'); s.async = true; s.src = 'https://gc.zgo.at/count.js'; s.dataset.goatcounter = `https://${c}.goatcounter.com/count`;
+  (document.head || document.documentElement).appendChild(s); })();
