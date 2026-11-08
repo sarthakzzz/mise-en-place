@@ -28,14 +28,12 @@ form.get input:focus{outline:none;border-color:var(--accent)}
 .btn:hover{transform:translateY(-1px)}
 .btn:active{transform:translateY(3px);box-shadow:0 2px 0 #8f3a20}
 .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
-.zf{margin-top:14px}
-.zf iframe{width:100%;height:560px;border:0;border-radius:14px;background:#fff}
 .note{color:var(--soft);font-size:14px;margin:10px 0 0}
 .msg{font-weight:800;min-height:1.6em;margin:8px 0 0}
 .locked{opacity:.55}
 .dl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
 ol.install{margin:10px 0 0;padding-left:20px}
-@media (max-width:720px){.hero{grid-template-columns:1fr}.zf iframe{height:620px}}
+@media (max-width:720px){.hero{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -57,10 +55,11 @@ ol.install{margin:10px 0 0;padding-left:20px}
   <p>Butter Spread is free for everyone on our list. We send news about new plugins and updates, not spam, and you can unsubscribe at any time.</p>
   <form class="get" id="getForm" novalidate>
     <input id="email" aria-label="Your email" name="email" type="email" placeholder="you@studio.com" autocomplete="email" required>
-    <button class="btn" type="submit">Continue</button>
+    <input id="hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <button class="btn" type="submit">Join and download</button>
   </form>
   <p class="msg" id="msg" role="status" aria-live="polite"></p>
-  <div class="zf" id="zf" hidden></div>
+  <p class="note">By joining you agree to get our emails. Unsubscribe any time.</p>
 </section>
 
 <section class="step locked" id="step2" aria-disabled="true">
@@ -85,31 +84,42 @@ ol.install{margin:10px 0 0;padding-left:20px}
 <script src="../config.js"></script>
 <script src="https://assets.moonbase.sh/storefront/moonbase.js"></script>
 <script>
-// Butter Spread download page: email first (our Zoho Form, with its own consent box and captcha), then the download.
-// The Zoho thank-you page also carries the download link, so nobody who joined is ever stuck.
+// Butter Spread download page: email first (our own list: CONFIG.signupEndpoint saves it to our Sheet and emails a confirmation), then the download.
 const SOURCE = new URLSearchParams(location.search).get('src') || 'butter-spread-page';
 const $ = id => document.getElementById(id), msg = $('msg');
-const KEY = 'pfb-bs-joined';
+const KEY = 'pfb-bs-joined', pageT = Date.now();
 $('mail').href = 'mailto:' + CONFIG.supportEmail; $('mail').textContent = CONFIG.supportEmail;
 
-function unlock(again){
+function unlock(again, text){
   const s2 = $('step2'); s2.classList.remove('locked'); s2.removeAttribute('aria-disabled');
   $('download').disabled = false;
-  $('dlLead').textContent = again ? 'Welcome back. Your download is ready.' : 'You are on the list. Enjoy Butter Spread!';
+  $('dlLead').textContent = text || (again ? 'Welcome back. Your download is ready.' : 'You are on the list. Enjoy Butter Spread!');
   try { localStorage.setItem(KEY, '1'); } catch(e) {}
   if (!again) s2.scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 
-$('getForm').addEventListener('submit', e => {
+async function joinList(email){
+  if (!CONFIG.signupEndpoint) throw new Error('Sign-ups open very soon. Please check back shortly.');
+  const body = JSON.stringify({email, name: '', source: SOURCE, consent: true, website: $('hp').value, t: pageT});
+  let res;
+  try { res = await fetch(CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); }
+  catch (e) { await fetch(CONFIG.signupEndpoint, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); return {ok: true}; }
+  let out = {ok: res.ok}; try { out = await res.json(); } catch (e) {}
+  if (!out.ok) throw new Error(out.error || 'Something went wrong. Please try again.');
+  return out;
+}
+
+$('getForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const email = $('email').value.trim();
+  const email = $('email').value.trim(), btn = $('getForm').querySelector('button');
   if (!email || !$('email').checkValidity()) { msg.textContent = 'That email looks half-baked. Check it and try again.'; return; }
-  msg.textContent = 'Nearly there! Tick the box and press Submit below.';
-  const url = CONFIG.signupForm + '?source=' + encodeURIComponent(SOURCE) + '&Email=' + encodeURIComponent(email);
-  const zf = $('zf'); zf.innerHTML = `<iframe src="${url}" title="Join the Plugins for Breakfast list" loading="eager"></iframe>`; zf.hidden = false;
-  // The first load is the form; the next load is Zoho's thank-you page, which means they joined.
-  let loads = 0;
-  zf.querySelector('iframe').addEventListener('load', () => { if (++loads >= 2) { msg.textContent = 'Joined. Thank you!'; unlock(false); } });
+  btn.disabled = true; msg.textContent = 'Spreading the butter...';
+  try {
+    const r = await joinList(email);
+    msg.textContent = r.status === 'confirmed' ? "You're already on the list. Welcome back!" : `You're on the list! We've sent a confirmation to ${email}.`;
+    unlock(false, 'Your download is ready. Enjoy Butter Spread!');
+  } catch (err) { msg.textContent = err.message; }
+  finally { btn.disabled = false; }
 });
 
 // Delivery: the store's download panel when it is reachable, otherwise the installer straight from the release.
@@ -118,7 +128,7 @@ function store(){ if (!ready) ready = window.Moonbase ? Promise.resolve(Moonbase
 $('download').addEventListener('click', () => {
   store().then(() => Moonbase.download_product({product_id: CONFIG.products.bs}))
     .catch(() => { location.href = CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback; });
-  $('dlNote').textContent = 'Downloading. If nothing happens, use the link in your thank-you message.';
+  $('dlNote').textContent = 'Downloading. If nothing happens, use the link in your confirmation email.';
 });
 
 try { if (localStorage.getItem(KEY) === '1') unlock(true); } catch(e) {}

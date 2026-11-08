@@ -6,7 +6,7 @@ A static site: plain HTML, CSS and JavaScript, no build step and no server. The 
 - `index.html`: the home page, one continuous scroll with a section for each of the 16 plugins.
 - `config.js`: store address, launch dates, Moonbase product IDs. **Change settings here.**
 - `support.html`, `privacy.html`, `terms.html`: help and policy pages.
-- `butter-spread/`: the shareable Butter Spread download page. Visitors join the email list (Zoho Form, `?source=butter-spread-page`, or `?src=<name>` on the link to tag where they came from), then get the download (store panel first, `butterSpreadInstaller` if the store cannot load).
+- `butter-spread/`: the shareable Butter Spread download page. Visitors join the email list (our own form, `source=butter-spread-page`, or `?src=<name>` on the link to tag where they came from), then get the download (store panel first, `butterSpreadInstaller` if the store cannot load).
 - `videos/<plugin>-sweep.mp4`: each plugin's real editor with every control going lowest to highest, scrubbed by scroll. Made with each plugin's DemoVideo tool (`/mnt/project-files/website/real/tools`).
 - `videos/<plugin>.mp4`: the "Watch it work" films.
 
@@ -15,7 +15,7 @@ A static site: plain HTML, CSS and JavaScript, no build step and no server. The 
 - From `earlyAccess` (12 Nov), anyone who opens `/?menu=<earlyKey>` sees the selling site on that browser. Send that link to the waitlist.
 - `/?preview=sale` shows the selling site any time, for checking.
 - Checkout adds the basket to Moonbase's cart and opens Moonbase's checkout. "Try free" opens the plugin's Moonbase page. "Account" opens Moonbase sign-in.
-- Email sign-ups open our Zoho Form (its own captcha and consent) in place, with the email filled in and `?source=` set; links are `signupForm` / `unsubscribeForm` in config.js.
+- Email sign-ups POST to our own list (`signupEndpoint` in config.js, a Google Apps Script web app that saves to the Google Sheet and emails a confirmation). `/confirm/` and `/unsubscribe/` handle the email links.
 
 ## Before launch
 1. Moonbase: whitelist pluginsforbreakfast.com (and www) for the embedded storefront, or the store panels fail with CORS errors.

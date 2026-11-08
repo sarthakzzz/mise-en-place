@@ -41,9 +41,9 @@ window.CONFIG = {
   clubPrice: 90,                              // Breakfast Club price (a promotion, renewals also $90; shown as $150 struck through)
   clubVariation: 'breakfast-club',            // Breakfast Club: the yearly ($150) price's variation ID on the full-fridge bundle
 
-  // Newsletter: Zoho Forms (own captcha + consent). The site adds ?source=website-footer or butter-spread-popup
-  signupForm: 'https://forms.zohopublic.in/sarthakescaes1/form/PluginsforBreakfastJointhelist/formperma/2LG-lwgrWvlbXXXVYhO2BVRPVbe8ChhblJQOp2vSQhk',
-  unsubscribeForm: 'https://forms.zohopublic.in/sarthakescaes1/form/PluginsforBreakfastUnsubscribe/formperma/hUDjJQT4BqadQOnWX58lq52NhVeuJs9gPkizDCmx7kQ',
+  // Newsletter: our own list. Sign-ups POST to this Google Apps Script web app (owned by pluginsforbreakfast@gmail.com),
+  // which saves them to our Google Sheet and emails a confirmation from The Chef. Also used by /confirm/ and /unsubscribe/.
+  signupEndpoint: 'https://script.google.com/macros/s/AKfycbxJIiLH-Q_huphSw9bz8F8nHEBEanzNBISOMjuulfHxjAPZQxhx2o7eBMLAXgE-J3GGCQ/exec',
 
   // If Moonbase can't load, the Butter Spread button falls back to the open-source release page
   butterSpreadFallback: 'https://github.com/sarthakzzz/butter-spread/releases/latest',
