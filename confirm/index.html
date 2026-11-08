@@ -29,7 +29,7 @@ form.e input{flex:1 1 240px;font:inherit;font-size:17px;padding:14px 16px;border
   <h1 id="title">One moment...</h1>
   <p class="lead" id="text">Checking your link.</p>
   <div class="row" id="next" hidden>
-    <a class="btn" href="/butter-spread/">Download Butter Spread</a>
+    <a class="btn" id="bsDl" href="https://github.com/sarthakzzz/butter-spread/releases/latest" download>Download Butter Spread</a>
     <a class="btn ghost" href="/">See all our plugins</a>
   </div>
 </section>
@@ -54,6 +54,7 @@ const $ = id => document.getElementById(id), token = new URLSearchParams(locatio
 const show = (title, text) => { $('title').textContent = title; $('text').textContent = text; };
 </script>
 <script>
+if (CONFIG.butterSpreadInstaller) $('bsDl').href = CONFIG.butterSpreadInstaller;
 (async () => {
   if (!token) { show('Link missing', 'This confirmation link looks incomplete. Open it again from the email, or write to ' + CONFIG.supportEmail + '.'); return; }
   try {

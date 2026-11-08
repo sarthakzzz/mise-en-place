@@ -82,7 +82,6 @@ ol.install{margin:10px 0 0;padding-left:20px}
 </main>
 <footer>© 2026 Plugins for Breakfast by Escae Studios · <a href="../privacy.html">Privacy</a></footer>
 <script src="../config.js"></script>
-<script src="https://assets.moonbase.sh/storefront/moonbase.js"></script>
 <script>
 // Butter Spread download page: email first (our own list: CONFIG.signupEndpoint saves it to our Sheet and emails a confirmation), then the download.
 const SOURCE = new URLSearchParams(location.search).get('src') || 'butter-spread-page';
@@ -122,13 +121,10 @@ $('getForm').addEventListener('submit', async e => {
   finally { btn.disabled = false; }
 });
 
-// Delivery: the store's download panel when it is reachable, otherwise the installer straight from the release.
-let ready = null;
-function store(){ if (!ready) ready = window.Moonbase ? Promise.resolve(Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {})) : Promise.reject(); return ready; }
+// Delivery: straight from the installer (the store panel only showed product details, 8 Nov).
 $('download').addEventListener('click', () => {
-  store().then(() => Moonbase.download_product({product_id: CONFIG.products.bs}))
-    .catch(() => { location.href = CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback; });
-  $('dlNote').textContent = 'Downloading. If nothing happens, use the link in your confirmation email.';
+  location.href = CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback;
+  $('dlNote').innerHTML = `Downloading. If nothing happens, <a href="${CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback}">tap here</a>.`;
 });
 
 try { if (localStorage.getItem(KEY) === '1') unlock(true); } catch(e) {}

@@ -1193,9 +1193,9 @@ async function joinList(email, source){
   if (!out.ok) throw new Error(out.error || 'Something went wrong. Please try again.');
   return out;
 }
-function bsButton(){ const a = document.createElement('a'); a.className = 'btn btn-solid bs-get zf-bs'; a.href = CONFIG.butterSpreadFallback; a.target = '_blank'; a.rel = 'noopener';
+function bsButton(){ const a = document.createElement('a'); a.className = 'btn btn-solid bs-get zf-bs'; a.href = CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback; a.setAttribute('download', '');
   a.innerHTML = '<span class="ico" data-food="knife"></span>Download Butter Spread'; if (window.FOOD && FOOD.knife) a.querySelector('.ico').innerHTML = FOOD.knife();
-  a.addEventListener('click', e => { if (mb('download_product', {product_id: CONFIG.products.bs})) e.preventDefault(); }); return a; }
+  return a; }
 document.getElementById('unsub').href = 'unsubscribe/';
 async function subscribe(form, holder, onDone){
   const email = (new FormData(form).get('email') || '').trim(), src = form.dataset.source || 'website';
@@ -1225,7 +1225,7 @@ function startMoonbase(){ if (mbReady || !window.Moonbase) return; Moonbase.setu
     Moonbase.purchase(lastOrder); }); } catch (e) {} }
 addEventListener('load', startMoonbase); startMoonbase();
 document.getElementById('acct').addEventListener('click', () => { location.href = 'account/'; });
-document.querySelectorAll('[data-bs-download]').forEach(b => b.addEventListener('click', () => { if (!mb('download_product', {product_id: CONFIG.products.bs})) location.href = CONFIG.butterSpreadFallback; }));
+document.querySelectorAll('[data-bs-download]').forEach(b => b.addEventListener('click', () => { location.href = CONFIG.butterSpreadInstaller || CONFIG.butterSpreadFallback; }));
 
 // Waitlist until launch. Early-access members get a link with ?menu=<key> from 12 November; ?preview=sale shows the selling site.
 const qs = new URLSearchParams(location.search);
