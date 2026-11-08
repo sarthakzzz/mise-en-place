@@ -411,6 +411,20 @@ body.waitlist .countdown{display:inline-flex}
 .tag-chef u{font-weight:800;white-space:nowrap}
 .tag-chef:hover{background:rgba(246,234,212,.2)}
 .tag-chef[hidden]{display:none}
+#order{height:auto}
+#order .stick{position:relative;height:auto;min-height:100vh;padding-top:96px;padding-bottom:48px}
+#order .order-grid{grid-template-columns:minmax(200px,300px) 1fr;width:min(1240px,100%);gap:3vw}
+#order .tiers{min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+#order .tier{position:relative;inset:auto;opacity:1;transform:none;pointer-events:auto;justify-content:flex-start;gap:10px;padding:22px 20px;border-radius:22px;background:rgba(246,234,212,.07);border:1px solid rgba(246,234,212,.2);transition:transform .35s cubic-bezier(.3,1.4,.5,1),background .3s,border-color .3s}
+#order .tier.on{background:rgba(246,234,212,.14);border-color:rgba(246,234,212,.45);transform:translateY(-6px)}
+#order .tier h2{font-size:clamp(24px,2.2vw,32px);line-height:1.1}
+#order .tier .amt{font-size:clamp(40px,3.8vw,56px)}
+#order .tier .amt small{display:block;margin:6px 0 0;font-size:14px}
+#order .tier ul{font-size:15px;gap:6px}
+#order .tier .btn{margin-top:auto;align-self:stretch;justify-content:center}
+#order .dots{display:none}
+@media (max-width:1020px){#order .order-grid{grid-template-columns:1fr;gap:12px}#order .stackbox{max-width:220px}}
+@media (max-width:760px){#order .tiers{grid-template-columns:1fr}#order .stick{padding-top:76px}}
 </style>
 </head>
 <body>
@@ -1162,6 +1176,7 @@ stackbox.addEventListener('click', () => { const s = stackbox.querySelector('.st
 const orderEl = document.getElementById('order');
 dots.forEach((d,i) => d.addEventListener('click', () => { const top = orderEl.offsetTop + (orderEl.offsetHeight - innerHeight) * (i/3 + .16); scrollTo({top, behavior: reduce ? 'auto' : 'smooth'}); }));
 let tierNow = -1;
+tiers.forEach((t,k) => { t.addEventListener('mouseenter', () => setTier(k)); t.addEventListener('focusin', () => setTier(k)); });
 function setTier(i){ if (i === tierNow) return; tierNow = i; stacks.forEach((s,k) => s.classList.toggle('on', k === i)); tiers.forEach((t,k) => t.classList.toggle('on', k === i)); dots.forEach((d,k) => d.classList.toggle('on', k === i)); if (i >= 0) sfx.pop(380 + i*140, .1, .1); }
 
 /* toast colours */
@@ -1287,7 +1302,7 @@ function onScroll(){
     }
     if (r.top <= mid && r.bottom > mid && curScene !== s) { curScene = s; const st = document.documentElement.style; st.setProperty('--bg', s.dataset.bg); st.setProperty('--fg', s.dataset.fg); }
     if (s.id === 'story') { const lit = Math.floor(clamp(p*1.25) * storyWords.length); storyWords.forEach((w,i) => w.classList.toggle('lit', i < lit)); }
-    if (s.id === 'order') setTier(r.top > vh*.6 ? -1 : p < .36 ? 0 : p < .7 ? 1 : 2);
+    if (s.id === 'order') { if (r.top > vh*.6 || r.bottom < vh*.25) setTier(-1); else if (tierNow < 0) setTier(0); }
     if (s.id === 'trial') {
       const t = p;
       toastScene.style.setProperty('--toast', t < .5 ? mix('#f5e2b8','#e7b765',t*2) : mix('#e7b765','#c4853a',(t-.5)*2));
