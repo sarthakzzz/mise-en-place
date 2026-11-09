@@ -1,4 +1,4 @@
-/* Butter Spread download choice: Mac and Windows buttons plus the Read Me First link.
+/* Butter Spread download choice: Mac and Windows buttons (each zip carries its own Read Me First text file).
    PFB_BS.buttons(className) returns an element; the visitor's own system comes first. */
 (() => {
   const C = (window.CONFIG || {}).butterSpread || {}, fb = (window.CONFIG || {}).butterSpreadFallback || 'https://github.com/sarthakzzz/butter-spread/releases/latest';
@@ -16,9 +16,7 @@
     const make = (os, label, href) => { const a = document.createElement('a'); a.className = btnClass; a.href = href || fb; a.setAttribute('download', ''); a.textContent = label; a.dataset.os = os; return a; };
     const mac = make('mac', 'Download for Mac', C.mac), win = make('win', 'Download for Windows', C.win);
     (isWin ? [win, mac] : [mac, win]).forEach((a, i) => { if (i) a.classList.add('alt'); row.append(a); });
-    const rm = document.createElement('a'); rm.className = 'bsdl-rm'; rm.href = C.readme || '/butter-spread/read-me-first/'; rm.target = '_blank'; rm.rel = 'noopener';
-    rm.textContent = 'Read Me First: opening it the first time';
-    box.append(row, rm);
+    box.append(row);
     return box;
   }
   window.PFB_BS = {buttons, isWin};
