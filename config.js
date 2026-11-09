@@ -57,6 +57,10 @@ window.CONFIG = {
   goatcounter: '',
   // Tag the Chef: post a video with any plugin, tag us, pick one plugin free (India time). Shown on the pricing scene in this window.
   tagTheChef: { from: '2026-11-15T00:00:00+05:30', until: '2027-02-01T00:00:00+05:30' },
+  // Catch the fruit (assets/catch.js): a fruit rolls across the page on a visitor's first scroll, then at most once a week.
+  // Catching it gets one single-use Moonbase code with a random reward, handed out by our Apps Script ("Catch codes" tab).
+  // on: false keeps it hidden (preview any time with ?catch=test). Rewards: plugin50, fridge50, month50 (first month of the Club, once that exists).
+  catchFruit: { on: false, everyDays: 7, passes: 3, gapSeconds: 30, label: 'Catch me for 50% off!' },
   // Free Butter Spread downloads: each zip holds the installer plus a READ ME FIRST for the security warning
   butterSpread: {
     mac: 'https://github.com/sarthakzzz/butter-spread/releases/download/v1.0.0/Butter-Spread-1.0.0-mac.zip',

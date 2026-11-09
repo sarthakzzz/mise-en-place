@@ -940,6 +940,7 @@ function refresh(){
     : `<li class="empty"><div class="plate">${FOOD.plate()}</div>Your plate is empty. Add a plugin from the menu.</li>`;
   const plugins = cart.filter(id => !PRODUCTS[id].plan), plan = cart.find(id => PRODUCTS[id].plan);
   hintEl.innerHTML = plugins.length && !plan ? `<div class="hintbox"><span>Want everything? The <b>Full Fridge Bundle</b> gets you all 16 plugins for $${PRODUCTS.fridge.price}.</span><button class="btn btn-solid" type="button" id="swap" style="background:var(--ink);color:var(--butter)">Swap</button></div>` : '';
+  if (window.pfbCatch) hintEl.insertAdjacentHTML('beforeend', pfbCatch.note(cart));
   totalEl.textContent = '$' + cart.reduce((s, id) => s + PRODUCTS[id].price, 0);
   document.getElementById('checkout').disabled = !cart.length;
   document.getElementById('checkout').style.opacity = cart.length ? 1 : .5;
@@ -986,7 +987,9 @@ document.getElementById('checkout').addEventListener('click', async () => {
     if (cart.includes('club') && !CONFIG.clubVariation) throw new Error('club');
     // price steps: each item carries the coupon for today's step, e.g. STEP19 or FRIDGE49 (none once the full price is reached)
     const S = CONFIG.priceSteps || {}, coupon = id => id === 'club' ? '' : id === 'fridge' ? (PRICE.bundle < S.bundle?.max ? S.bundle.coupon + PRICE.bundle : '') : (PRICE.plugin < S.plugin?.max ? S.plugin.coupon + PRICE.plugin : '');
-    const coded = items.map((i, n) => coupon(cart[n]) ? {...i, coupon_code: coupon(cart[n])} : i);
+    // a caught-fruit code (assets/catch.js) replaces the step coupon on the one item it fits
+    const cc = window.pfbCatch ? pfbCatch.pick(cart) : -1; catchFallback = cc >= 0 ? coupon(cart[cc]) : '';
+    const coded = items.map((i, n) => n === cc ? {...i, coupon_code: pfbCatch.code} : coupon(cart[n]) ? {...i, coupon_code: coupon(cart[n])} : i);
     if (coded.some(i => i.coupon_code)) { lastOrder = coded; retries = 0; cart = []; save(); refresh(); closeCart(); sfx.ding(); await Moonbase.purchase(coded); }
     else {
       for (const i of items) await Moonbase.add_to_cart({...i, show_cart: false});
@@ -1276,8 +1279,9 @@ async function subscribe(form, holder, onDone){
   } finally { if (btn) btn.disabled = false; }
 }
 // If a step coupon is used up (sold.js a little behind), retry the order with the next step's coupon
-let lastOrder = null, retries = 0;
+let lastOrder = null, retries = 0, catchFallback = '';
 function nextCoupon(code){ const S = CONFIG.priceSteps || {};
+  if (window.pfbCatch && code && code === pfbCatch.code) { pfbCatch.used(); return catchFallback; }   // caught code already used: back to today's price
   for (const st of [S.plugin, S.bundle]) { if (!st) continue; const m = new RegExp('^' + st.coupon + '(\\d+)$').exec(code || ''); if (m) { const n = +m[1] + st.step; return n < st.max ? st.coupon + n : ''; } }
   return null; }
 function startMoonbase(){ if (mbReady || !window.Moonbase) return; Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {}); mbReady = true;
@@ -1363,6 +1367,7 @@ if (!shown) setTimeout(() => { if (!shown && back.hidden && cartEl.hidden && !st
 /* headings bounce as they arrive */
 const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('hopping'); setTimeout(() => en.target.classList.remove('hopping'), 1400); io.unobserve(en.target); } }), {threshold:.6});
 document.querySelectorAll('h2.hop').forEach(h => io.observe(h));
+window.PFB = {FOOD, sfx, burst, refresh};   // shared with assets/catch.js
 })();
 </script>
 <script>{ const T = CONFIG.tagTheChef, q = new URLSearchParams(location.search).get('preview'), now = Date.now();
@@ -1370,4 +1375,5 @@ document.querySelectorAll('h2.hop').forEach(h => io.observe(h));
 <script>document.querySelectorAll('.plug .buy').forEach(b => { const id = b.closest('.plug').id, a = document.createElement('a'); a.className = 'daw-line'; a.href = '#daws';
   a.textContent = 'One of our 16 plugins, with a new one every month · Mac: AU, VST3, AAX · Windows: VST3'; b.after(a); });</script>
 <script src="assets/maitred.js" defer></script>
+<script src="assets/catch.js" defer></script>
 </body></html>
