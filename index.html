@@ -1203,7 +1203,7 @@ document.getElementById('news').addEventListener('submit', e => { e.preventDefau
 /* ---------- live store: Moonbase, waitlist mode and the launch countdown ---------- */
 let storeUsed = false;
 document.addEventListener('click', e => { if (e.target.closest?.('[data-add],[data-trial],#checkout,[data-account]')) storeUsed = true; }, true);
-function mb(intent, args){ storeUsed = true; if (!window.Moonbase || !mbReady) return false; Moonbase[intent](args); return true; }
+function mb(intent, args){ storeUsed = true; if (!window.Moonbase || !mbReady) return false; try { const r = Moonbase[intent](args); if (r && r.catch) r.catch(e => { console.error('store', intent, e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); }); } catch (e) { console.error('store', intent, e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); } return true; }
 // Forgiving email boxes (8 Nov): trim spaces, stray quotes/brackets and trailing dots or commas before any check runs; + addresses are fine.
 const cleanEmail = v => (v || '').replace(/^mailto:/i, '').replace(/[\s<>"'()]/g, '').replace(/^[.,;:]+|[.,;:]+$/g, '');
 document.addEventListener('submit', e => { e.target.querySelectorAll?.('input[type=email]').forEach(i => { i.value = cleanEmail(i.value); i.style.borderColor = ''; }); }, true);
