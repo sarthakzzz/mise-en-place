@@ -32,7 +32,7 @@ window.CONFIG = {
     mg: 'muesli-granular'
   },
   // Optional Moonbase variation id per item (e.g. oc: 'regular'); sent with each checkout item when set
-  variations: { oc: 'regularregular', pc: 'regular', ss: 'regular', ps: 'regular', sd: 'regular', ff: 'regular', bo: 'regular', ct: 'regular', gp: 'regular', hp: 'regular', gg: 'regular', mc: 'regular', bt: 'regular', nf: 'regular', mg: 'regular', fridge: 'full-fridge' },
+  variations: { oc: 'regularregular', pc: 'regular', ss: 'regular', ps: 'regular', sd: 'regular', ff: 'regular', bo: 'regular', ct: 'regular', gp: 'regular', hp: 'regular', gg: 'regular', mc: 'regular', bt: 'regular', nf: 'regular', mg: 'regular', bs: 'free', fridge: 'full-fridge' },
   bundle: 'full-fridge',          // Full Fridge Bundle, $90 one time
   // Price steps (US$): prices rise after every 100 licences sold, until they reach the full $29 / $90.
   // The checkout applies the Moonbase coupon for the current step (STEP19..STEP27, FRIDGE49..FRIDGE85).
