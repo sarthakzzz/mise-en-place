@@ -107,9 +107,18 @@ if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out
     location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('My parting gift: ' + name)}&body=${encodeURIComponent(`Hello Chef, I am cancelling my membership. I would like ${name} as my parting gift. My account email is: `)}`;
     setTimeout(() => go('view_subscriptions'), 800); });
   gb.addEventListener('click', e => { if (e.target === gb) gb.hidden = true; });
-  document.getElementById('stayKeep').addEventListener('click', () => { shut();
-    if (R.variation) { say('Hooray, you are staying for seconds! Start the $7 pass in the checkout, then cancel the $10 one in Memberships. Shout if anything tastes odd.'); go('purchase', [{bundle_id: CONFIG.bundle, variation_id: R.variation, ...(R.code ? {coupon_code: R.code} : {})}]); }
-    else { say('Hooray, you are staying for seconds! Your email is ready to send, and the Chef will move you to $7 a month.'); location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('Keep me on the Monthly Pass for $7')}&body=${encodeURIComponent('Hello Chef, please move my Monthly Pass to $7 a month. My account email is: ')}`; } });
+  // $7 stay: one STAY code per account from the Apps Script ('stay' action), then a Monthly Pass checkout with it ($3 off every renewal)
+  const stayMail = () => { say('Hooray, you are staying for seconds! Your email is ready to send, and the Chef will move you to $7 a month.'); location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('Keep me on the Monthly Pass for $7')}&body=${encodeURIComponent('Hello Chef, please move my Monthly Pass to $7 a month. My account email is: ')}`; };
+  document.getElementById('stayKeep').addEventListener('click', async () => { shut();
+    if (!R.on) return stayMail();
+    try { say('One moment, the Chef is finding you a seat...');
+      const token = await store().then(() => Moonbase.getAccessToken && Moonbase.getAccessToken());
+      if (!token) { say('Sign in first, so we know whose table to keep warm.'); go('sign_in'); return; }
+      const r = await fetch(R.endpoint || CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({action: 'stay', vid: (() => { try { return JSON.parse(localStorage.getItem('pfb-md') || '{}').vid || ''; } catch (e) { return ''; } })(), token})}).then(r => r.json());
+      if (!r || !r.ok || !r.code) { say(r && r.error ? r.error : 'The Chef dropped the ladle. We have made you an email instead.'); return stayMail(); }
+      say(`Hooray, you are staying for seconds! Your code ${r.code} is already in the checkout. Start the $7 pass there, then cancel the $10 one in Memberships.`);
+      go('purchase', [{bundle_id: CONFIG.bundle, variation_id: R.variation || 'monthly-pass', coupon_code: r.code}]);
+    } catch (e) { stayMail(); } });
   back.addEventListener('click', e => { if (e.target === back) shut(); });
   addEventListener('keydown', e => { if (e.key === 'Escape') { shut(); gb.hidden = true; } }); }
 if (window.Moonbase) Moonbase.on('redeemed-voucher', () => say('Order up! Your new plugin is waiting in My plugins.'));</script>
