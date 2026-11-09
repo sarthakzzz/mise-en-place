@@ -25,8 +25,24 @@
 <button class="act main" type="button" id="again"><b>Activate</b><span>Opens the sign in, then unlocks</span></button>
 <button class="act" type="button" data-intent="view_products"><b>My plugins</b><span>See your licences and computers</span></button>
 </div>
+<section id="pick" hidden>
+<h2>Which plugins should we unlock?</h2>
+<p class="soft">These are the plugins in your account that are not unlocked on this computer yet. Untick any you don't want here.</p>
+<div id="pick-list" class="pick-list"></div>
+<div class="actions"><button class="act main" type="button" id="pick-go"><b>Unlock</b><span>Every ticked plugin, in one go</span></button>
+<button class="act" type="button" id="pick-one"><b>Only this plugin</b><span id="pick-one-name">Just the one you opened</span></button></div>
+</section>
+<style>
+.pick-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:14px 0}
+.pick{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:800;cursor:pointer}
+.pick input{width:22px;height:22px;accent-color:var(--accent);flex:none}
+.pick small{display:block;font-weight:600;color:var(--soft)}
+.pick.off{opacity:.55;cursor:default}
+.pick.done{border-color:#3f7a35}
+.soft{color:var(--soft)}
+</style>
 <h2>How it works</h2>
-<p>You pressed <b>Activate online</b> in the plugin, which brought you here. Once it says unlocked, go back to your DAW: the plugin is ready. No internet on that computer? In the plugin choose offline activation, then bring the file here and press <b>Activate</b>.</p>
+<p>You pressed <b>Activate</b> in the plugin, which brought you here. Sign in once and choose which of your plugins to unlock on this computer: all of them, a few, or only that one. Once it says unlocked, go back to your DAW: they are ready, even ones that are already open. No internet on that computer? In the plugin choose offline activation, then bring the file here and press <b>Activate</b>.</p>
 <p>Something not right? Write to <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a> and tell us which plugin and DAW.</p>
 
 </main>
@@ -51,13 +67,120 @@ let opened = false, done = false;
 // Signed in here: unlock in our panel. Not signed in here: go to the store's activation page, which knows their sign-in.
 const hosted = () => (CONFIG.store || 'https://escae-studios.moonbase.sh') + '/activate?token=' + encodeURIComponent(token);
 const activate = () => session().then(t => { if (token && !t) { say('Taking you to sign in and unlock...'); location.replace(hosted()); return; } opened = true; return Moonbase.activate_product(token ? {token} : {}); }, () => { if (token) location.replace(hosted()); });
-document.getElementById('again').addEventListener('click', activate);
+const multi = (qs.get('more') || '').split(',').map(s => s.trim()).filter(Boolean);
+document.getElementById('again').addEventListener('click', () => multi.length && window.pickPlugins ? window.pickPlugins() : activate());
 if (window.Moonbase) {
   Moonbase.on('activated-product', e => { done = true; say(`Unlocked${e && e.product && e.product.name ? ': ' + e.product.name : ''}! Go back to your DAW, it is ready to play.`); });
   // Signed in from inside the panel: reopen it so it shows "Use license" straight away
-  Moonbase.on('signed-in', () => { if (opened && !done && token) setTimeout(() => { try { Moonbase.activate_product({token}); } catch (e) {} }, 300); });
+  Moonbase.on('signed-in', () => { if (opened && !done && token && !multi.length) setTimeout(() => { try { Moonbase.activate_product({token}); } catch (e) {} }, 300); });
 }
-if (token) activate().then(() => say('Follow the steps in the panel to unlock your plugin.'), () => {}); else store().then(() => say('Press Activate to unlock a plugin with its file.'), () => {});
+if (multi.length && token) { /* several plugins: the picker below takes over */ }
+else if (token) activate().then(() => say('Follow the steps in the panel to unlock your plugin.'), () => {}); else store().then(() => say('Press Activate to unlock a plugin with its file.'), () => {});
+</script>
+<script>
+// Activate several plugins at once (9 Nov). A plugin opens /activate/?token=<its request>&more=<requests for the
+// customer's other plugins on this computer>. After one sign-in we list the ones their account owns, all ticked;
+// "Unlock" approves the ticked ones and cancels the rest (the plugins stop waiting for them). Each plugin then picks up
+// its own normal licence by itself. Anything unexpected falls back to the usual single-plugin panel.
+(() => {
+  if (!multi.length || !token || !window.Moonbase) return;
+  const api = (CONFIG.store || 'https://escae-studios.moonbase.sh').replace(/\/$/, '');
+  const $ = id => document.getElementById(id);
+  const ids = [token, ...multi.filter(id => id !== token)];
+  let rows = [];   // { id, name, owned, mine (the plugin they opened), box }
+  let busy = false;
+
+  const call = async (path, method, auth) => {
+    const t = auth ? await Moonbase.getAccessToken() : null;
+    const r = await fetch(api + path, { method: method || 'GET', mode: 'cors', redirect: 'manual',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'x-mb-cors': '1', ...(t ? { Authorization: 'Bearer ' + t } : {}) } });
+    if (r.status >= 400 || r.status === 0) throw new Error(path + ' ' + r.status);
+    const text = await r.text();
+    return text ? JSON.parse(text) : null;
+  };
+  const cancel = id => call(`/api/customer/activations/${encodeURIComponent(id)}/cancel`, 'POST').catch(() => {});
+  const fallback = why => { console.warn('Unlock all:', why); say('Follow the steps in the panel to unlock your plugin.'); try { Moonbase.activate_product({ token }); } catch (e) {} };
+
+  const signedIn = () => new Promise(resolve => {
+    session().then(t => {
+      if (t) return resolve();
+      say('Sign in once to unlock your plugins.');
+      Moonbase.on('signed-in', () => setTimeout(resolve, 300));
+      Moonbase.sign_in();
+    }, () => resolve());
+  });
+
+  async function load() {
+    say('Checking your plugins...');
+    const found = await Promise.all(ids.map(id => call(`/api/customer/activations/${encodeURIComponent(id)}`, 'GET', true).then(a => ({ id, a }), () => ({ id, a: null }))));
+    rows = found.filter(f => f.a && (!f.a.status || /request/i.test(f.a.status))).map(f => ({
+      id: f.id, mine: f.id === token,
+      name: (f.a.product && (f.a.product.name || f.a.product.id)) || 'Plugin',
+      owned: !!((f.a.licenseEligibility && f.a.licenseEligibility.eligible) || (f.a.product && f.a.product.owned))
+    }));
+    const mine = rows.find(r => r.mine);
+    if (!mine) return fallback('the plugin you opened was not found');
+    // plugins they don't own on this list: let those plugins stop waiting now
+    rows.filter(r => !r.owned && !r.mine).forEach(r => cancel(r.id));
+    rows = rows.filter(r => r.owned || r.mine);
+    if (rows.length === 1) return mine.owned ? unlock() : fallback('no other plugins owned');
+    show();
+  }
+
+  function show() {
+    const list = $('pick-list');
+    list.textContent = '';
+    for (const r of rows) {
+      const label = document.createElement('label');
+      label.className = 'pick' + (r.owned ? '' : ' off');
+      const box = document.createElement('input');
+      box.type = 'checkbox'; box.checked = r.owned; box.disabled = !r.owned;
+      const text = document.createElement('span');
+      text.textContent = r.name;
+      const sub = document.createElement('small');
+      sub.textContent = r.mine ? (r.owned ? 'The one you opened' : 'Not in your account yet: use Only this plugin for the trial') : 'In your account';
+      text.appendChild(sub);
+      label.append(box, text);
+      list.appendChild(label);
+      r.box = box; r.label = label; r.sub = sub;
+    }
+    const mine = rows.find(r => r.mine);
+    $('pick-one-name').textContent = 'Just ' + mine.name;
+    $('pick').hidden = false;
+    say(`You own ${rows.filter(r => r.owned).length} plugins that are not unlocked here yet. Pick the ones you want.`);
+    $('pick').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function unlock(onlyMine) {
+    if (busy) return; busy = true;
+    const mine = rows.find(r => r.mine);
+    const chosen = rows.filter(r => r.owned && (onlyMine ? r.mine : (!r.box || r.box.checked)));
+    const skipped = rows.filter(r => !r.mine && !chosen.includes(r));
+    say(chosen.length ? `Unlocking ${chosen.length === 1 ? chosen[0].name : chosen.length + ' plugins'}...` : 'Nothing ticked.');
+    skipped.forEach(r => cancel(r.id));
+    const ok = [], failed = [];
+    for (const r of chosen) {
+      try { await call(`/api/customer/activations/${encodeURIComponent(r.id)}/license`, 'POST', true); ok.push(r); if (r.sub) { r.sub.textContent = 'Unlocked'; r.label.classList.add('done'); } }
+      catch (e) { failed.push(r); if (r.sub) r.sub.textContent = 'Could not unlock this one'; }
+    }
+    busy = false;
+    if (ok.length) done = true;
+    const names = ok.map(r => r.name);
+    let msg = ok.length ? `Unlocked: ${names.join(', ')}! Go back to your DAW, ${ok.length > 1 ? 'they are' : 'it is'} ready to play.` : '';
+    if (failed.length) msg += ` We couldn't unlock ${failed.map(r => r.name).join(', ')}. Press Activate in ${failed.length > 1 ? 'those plugins' : 'that plugin'} to try again, or email ${CONFIG.supportEmail}.`;
+    // the one they opened isn't owned (or they unticked it): the usual panel offers the trial or buying
+    if (!mine.owned && (onlyMine || !chosen.includes(mine))) { if (msg) say(msg); return fallback('trial or purchase for the plugin they opened'); }
+    if (!chosen.includes(mine) && !onlyMine) cancel(mine.id);
+    say(msg || 'Nothing unlocked.');
+    status.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (ok.length) { $('pick-go').disabled = true; $('pick-one').disabled = true; }
+  }
+
+  $('pick-go').addEventListener('click', () => unlock(false));
+  $('pick-one').addEventListener('click', () => unlock(true));
+  window.pickPlugins = () => signedIn().then(load).catch(e => fallback(e));
+  window.pickPlugins();
+})();
 </script>
 </body>
 </html>
