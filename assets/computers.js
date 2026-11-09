@@ -84,7 +84,7 @@ window.Computers = (() => {
 
     const more = el('button', 'act' + (s.full ? ' main' : ''));
     more.type = 'button';
-    more.append(el('b', null, `Add ${count} computers`), el('span', null, 'Half price, because you already own it'));
+    more.append(el('b', null, `Add ${count} computers`), el('span', null, 'Half price if you bought this plugin'));
     more.addEventListener('click', () => buyMore(productId).catch(() => alert(`The checkout didn't open. Email ${CONFIG.supportEmail} and we'll sort it out.`)));
     const row = el('div', 'actions');
     row.appendChild(more);
