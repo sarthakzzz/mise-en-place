@@ -19,6 +19,9 @@
 .stay .row{display:flex;flex-direction:column;gap:10px}
 .stay .keep{font:inherit;font-weight:800;font-size:17px;border:0;border-radius:14px;padding:14px 20px;background:var(--accent);color:#fff;box-shadow:0 6px 0 #8f3a20;cursor:pointer}
 .stay .go{font:inherit;font-weight:700;background:none;border:0;color:var(--soft);text-decoration:underline;cursor:pointer;padding:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.stay select{font:inherit;font-weight:700;width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg,#fff);color:var(--fg);margin:0 0 14px}
+.stay .code{font:800 20px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.06em;background:var(--bg,#fff);border:2px dashed var(--accent);border-radius:14px;padding:12px;margin:0 0 14px;user-select:all}
 </style>
 </head>
 <body>
@@ -26,26 +29,35 @@
 <main>
 
 <h1>Your kitchen</h1>
-<p class="lead">Everything you own or are trying, in one place. Sign in with the email you bought with.</p>
+<p class="lead">Your pantry of plugins, all on one shelf. Sign in with the email you bought with, and we will lay the table.</p>
 <p class="status" id="status" role="status" aria-live="polite"></p>
 <div class="actions">
-<button class="act main" type="button" data-intent="view_products"><b>My plugins</b><span>Downloads, licences and computers</span></button>
-<button class="act" type="button" data-intent="sign_in"><b>Sign in</b><span>Or make a free account</span></button>
-<button class="act" type="button" data-intent="activate_product"><b>Activate a plugin</b><span>Offline? Use the file from the plugin</span></button>
-<button class="act" type="button" id="redeem"><b>Redeem a gift code</b><span>Got a free plugin code? Add it here</span></button>
-<button class="act" type="button" data-intent="view_subscriptions"><b>Memberships</b><span>Breakfast Club and passes: renewal and billing</span></button>
+<button class="act main" type="button" data-intent="view_products"><b>My plugins</b><span>Downloads, licences and computers, served hot</span></button>
+<button class="act" type="button" data-intent="sign_in"><b>Sign in</b><span>Or grab a free seat at the table</span></button>
+<button class="act" type="button" data-intent="activate_product"><b>Activate a plugin</b><span>Offline? The plugin packs you a takeaway file</span></button>
+<button class="act" type="button" id="redeem"><b>Redeem a gift code</b><span>Got a code? Swap it for something tasty</span></button>
+<button class="act" type="button" data-intent="view_subscriptions"><b>Memberships</b><span>Breakfast Club and passes: the bill and the refills</span></button>
 <button class="act" type="button" data-intent="view_account"><b>Account settings</b><span>Email, password and sign out</span></button>
-<button class="act" type="button" id="cancelBtn"><b>Cancel membership</b><span>Stop a pass or Breakfast Club renewing</span></button>
+<button class="act" type="button" id="cancelBtn"><b>Cancel membership</b><span>Leaving the table? We will walk you out</span></button>
 </div>
-<h2>Moving to a new computer?</h2>
-<p>Each licence works on 3 computers. Open <b>My plugins</b>, remove the old computer from the licence, then activate on the new one.</p>
-<p>Stuck? Write to <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a>.</p>
+<h2>Moving kitchens?</h2>
+<p>Each licence works on 3 computers. Open <b>My plugins</b>, clear the old computer off the licence, then activate on the new one. Fresh kitchen, same recipes.</p>
+<p>Something burnt? Write to <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a>.</p>
 
 <div class="stay-back" id="stayBack" hidden><div class="stay" role="dialog" aria-modal="true" aria-labelledby="stayTitle">
   <p class="big-emoji" aria-hidden="true">🥐</p>
-  <h2 id="stayTitle">Before you go, a little treat</h2>
-  <p id="stayText">On the Monthly Pass? Stay for <b>$7 a month</b> instead of $10, with every plugin and every new monthly release, same as now.</p>
-  <div class="row"><button class="keep" type="button" id="stayKeep">Keep it for $7 a month</button><button class="go" type="button" id="stayGo">No thanks, cancel my membership</button></div>
+  <h2 id="stayTitle">Leaving already? Your eggs are not even cold!</h2>
+  <p id="stayText">On the Monthly Pass? Stay for <b>$7 a month</b> instead of $10. Same full menu, every new monthly release, and the Chef stops crying into the soup.</p>
+  <div class="row"><button class="keep" type="button" id="stayKeep">Fine, pour me another for $7</button><button class="go" type="button" id="stayGo">No thanks, I am full. Cancel</button></div>
+</div></div>
+<div class="stay-back" id="giftBack" hidden><div class="stay" role="dialog" aria-modal="true" aria-labelledby="giftTitle">
+  <p class="big-emoji" aria-hidden="true">🎁</p>
+  <h2 id="giftTitle">A doggy bag for the road</h2>
+  <p id="giftText">Here's a parting gift from our side. It expires in 6 months, but thanks for being a customer in our plugin restaurant.</p>
+  <div id="giftPick"><label for="giftPlugin" class="sr">Pick a plugin to keep</label><select id="giftPlugin"></select>
+  <div class="row"><button class="keep" type="button" id="giftTake">Wrap it up for me</button><button class="go" type="button" id="giftSkip">No doggy bag, just cancel</button></div></div>
+  <div id="giftDone" hidden><p class="code" id="giftCode"></p>
+  <div class="row"><button class="keep" type="button" id="giftRedeem">Put it on my shelf</button><button class="go" type="button" id="giftOn">Continue to cancel</button></div></div>
 </div></div>
 </main>
 <footer>© 2026 Plugins for Breakfast by Escaé Studios · <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms and conditions</a> · <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a></footer>
@@ -55,27 +67,49 @@
 const qs = new URLSearchParams(location.search), status = document.getElementById('status');
 const say = t => { if (status) status.textContent = t; };
 let ready = null;
-function store(){ if (!ready) ready = (window.Moonbase ? Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {}) : Promise.reject()).catch(() => { say(`The kitchen is not answering. Check your internet, refresh, or email ${CONFIG.supportEmail}.`); throw 0; }); return ready; }
+function store(){ if (!ready) ready = (window.Moonbase ? Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {}) : Promise.reject()).catch(() => { say(`The kitchen phone is off the hook. Check your internet, refresh, or email ${CONFIG.supportEmail}.`); throw 0; }); return ready; }
 const go = (intent, args) => store().then(() => Moonbase[intent](args));
 document.querySelectorAll('[data-intent]').forEach(b => b.addEventListener('click', () => go(b.dataset.intent)));
 const signTile = document.querySelector('[data-intent="sign_in"]'), lead = document.querySelector('.lead');
-const signedIn = on => { if (signTile) signTile.hidden = on; if (lead) lead.textContent = on ? 'Everything you own or are trying, in one place.' : 'Everything you own or are trying, in one place. Sign in with the email you bought with.'; };
-if (window.Moonbase) { Moonbase.on('signed-in', e => { signedIn(true); say(`Signed in${e && e.user && e.user.name ? ' as ' + e.user.name : ''}. Welcome back!`); }); Moonbase.on('signed-out', () => { signedIn(false); say('Signed out. See you at breakfast!'); });
+const signedIn = on => { if (signTile) signTile.hidden = on; if (lead) lead.textContent = on ? 'Your pantry of plugins, all on one shelf. Help yourself!' : 'Your pantry of plugins, all on one shelf. Sign in with the email you bought with, and we will lay the table.'; };
+if (window.Moonbase) { Moonbase.on('signed-in', e => { signedIn(true); say(`Signed in${e && e.user && e.user.name ? ' as ' + e.user.name : ''}. Your usual table is ready!`); }); Moonbase.on('signed-out', () => { signedIn(false); say('Signed out. See you at breakfast, crumbs and all!'); });
   store().then(() => Moonbase.getAccessToken && Moonbase.getAccessToken()).then(t => { if (t) signedIn(true); }, () => {}); }
 </script><script>if (qs.get('open') === 'products') go('view_products');
 // gift links: /account/?redeem=CODE puts the free plugin straight into their account
 const gift = qs.get('redeem'); document.getElementById('redeem').addEventListener('click', () => go('redeem_voucher', gift ? {code: gift} : {}));
-if (gift) { say('Sign in or make a free account to claim your plugin.'); go('redeem_voucher', {code: gift}); }
+if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out of the oven.'); go('redeem_voucher', {code: gift}); }
 // Cancel membership: offer $7/month first (Sarthak 9 Nov); cancelling always stays one click away (Moonbase's memberships panel)
 { const back = document.getElementById('stayBack'), R = CONFIG.retention || {};
   const shut = () => { back.hidden = true; };
   document.getElementById('cancelBtn').addEventListener('click', () => { back.hidden = false; document.getElementById('stayKeep').focus(); });
-  document.getElementById('stayGo').addEventListener('click', () => { shut(); say('Cancel from the membership panel. You keep access until the end of the period you paid for.'); go('view_subscriptions'); });
+  const toCancel = () => { gb.hidden = true; say('Cancel from the membership panel. Your plate stays full until the end of the time you paid for.'); go('view_subscriptions'); };
+  // Still cancelling: a parting gift first, one plugin to keep for 6 months (Sarthak 9 Nov). Plugins in A to Z order, never ranked.
+  const gb = document.getElementById('giftBack'), G = CONFIG.partingGift || {}, $g = id => document.getElementById(id);
+  const NAMES = {oc:'Orange Crusher',pc:'Popping Candy',ss:'Spice Shelf EQ',ps:'Popcorn Sandwich Compressor',sd:'Spaghetti Delay',ff:'Food Fight',bo:'Bread Oven Reverb',ct:'Cherry on the Top Mastering',gp:'Ghost Pepper Clipper',hp:'Hot-o-Pan',gg:'Gummy Gate',mc:'Milkshake Chorus',bt:'Burnt Toast Tape Machine',nf:'Noodle Filter',mg:'Muesli Granular'};
+  $g('giftPlugin').innerHTML = '<option value="">Pick a plugin to keep</option>' + Object.entries(NAMES).sort((a, b) => a[1].localeCompare(b[1])).map(([k, n]) => `<option value="${k}">${n}</option>`).join('');
+  document.getElementById('stayGo').addEventListener('click', () => { shut(); $g('giftPick').hidden = false; $g('giftDone').hidden = true; gb.hidden = false; $g('giftPlugin').focus(); });
+  $g('giftSkip').addEventListener('click', toCancel); $g('giftOn').addEventListener('click', toCancel);
+  $g('giftRedeem').addEventListener('click', () => { const c = $g('giftCode').textContent; gb.hidden = true; say('Claim your doggy bag, then cancel from Memberships whenever you are ready.'); go('redeem_voucher', {code: c}); });
+  $g('giftTake').addEventListener('click', async () => { const k = $g('giftPlugin').value; if (!k) { $g('giftPlugin').focus(); return; }
+    const name = NAMES[k], btn = $g('giftTake');
+    if (G.on) { btn.disabled = true; btn.textContent = 'Wrapping it in foil...';
+      try { const token = await store().then(() => Moonbase.getAccessToken && Moonbase.getAccessToken());
+        if (!token) { btn.disabled = false; btn.textContent = 'Wrap it up for me'; say('Sign in first, so we know whose doggy bag this is.'); gb.hidden = true; go('sign_in'); return; }
+        const r = await fetch(G.endpoint || CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({action: 'parting', product: CONFIG.products[k], token})}).then(r => r.json());
+        btn.disabled = false; btn.textContent = 'Wrap it up for me';
+        if (r && r.ok && r.code) { $g('giftCode').textContent = r.code; $g('giftText').textContent = `One ${name}, on the house for 6 months. Thanks for being a customer in our plugin restaurant. Come back hungry!`; $g('giftPick').hidden = true; $g('giftDone').hidden = false; $g('giftRedeem').focus(); return; }
+        say(r && r.error ? r.error : 'The doggy bags ran out for a moment. Write to the Chef and we will pack one by hand.'); toCancel(); return;
+      } catch (e) { btn.disabled = false; btn.textContent = 'Wrap it up for me'; } }
+    // Until the gift codes are live: a ready-to-send email, The Chef sends the 6-month licence
+    gb.hidden = true; say(`Your email is ready to send. The Chef will pop ${name} on your shelf for 6 months.`);
+    location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('My parting gift: ' + name)}&body=${encodeURIComponent(`Hello Chef, I am cancelling my membership. I would like ${name} as my parting gift. My account email is: `)}`;
+    setTimeout(() => go('view_subscriptions'), 800); });
+  gb.addEventListener('click', e => { if (e.target === gb) gb.hidden = true; });
   document.getElementById('stayKeep').addEventListener('click', () => { shut();
-    if (R.variation) { say('Lovely! Start the $7 pass in the checkout, then cancel your $10 one in Memberships. We will help if anything looks odd.'); go('purchase', [{bundle_id: CONFIG.bundle, variation_id: R.variation, ...(R.code ? {coupon_code: R.code} : {})}]); }
-    else { say('Lovely! We will move you to $7 a month. Your email is ready to send, and The Chef will confirm.'); location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('Keep me on the Monthly Pass for $7')}&body=${encodeURIComponent('Hello Chef, please move my Monthly Pass to $7 a month. My account email is: ')}`; } });
+    if (R.variation) { say('Hooray, you are staying for seconds! Start the $7 pass in the checkout, then cancel the $10 one in Memberships. Shout if anything tastes odd.'); go('purchase', [{bundle_id: CONFIG.bundle, variation_id: R.variation, ...(R.code ? {coupon_code: R.code} : {})}]); }
+    else { say('Hooray, you are staying for seconds! Your email is ready to send, and the Chef will move you to $7 a month.'); location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('Keep me on the Monthly Pass for $7')}&body=${encodeURIComponent('Hello Chef, please move my Monthly Pass to $7 a month. My account email is: ')}`; } });
   back.addEventListener('click', e => { if (e.target === back) shut(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && !back.hidden) shut(); }); }
-if (window.Moonbase) Moonbase.on('redeemed-voucher', () => say('Claimed! Your new plugin is in My plugins.'));</script>
+  addEventListener('keydown', e => { if (e.key === 'Escape') { shut(); gb.hidden = true; } }); }
+if (window.Moonbase) Moonbase.on('redeemed-voucher', () => say('Order up! Your new plugin is waiting in My plugins.'));</script>
 </body>
 </html>
