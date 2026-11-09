@@ -12,7 +12,7 @@
     {k: 'licence license computer machine activate activation install new offline', q: 'Licences and computers', a: () => `Each licence works on 3 of your computers, and offline activation works too. Moving to a new computer? Open <a href="${root}account/">your account</a>, remove the old one, then activate on the new one.`},
     {k: 'butter spread free widener', q: 'Is Butter Spread free?', a: () => `Yes, completely. Join our list and the download link appears right away. It's open source too.`},
     {k: 'account sign login download where my plugins', q: 'Where are my plugins?', a: () => `In <a href="${root}account/">your account</a>. Sign in with the email you bought with, and every plugin you own or are trying is there.`},
-    {k: 'missing show scan not appear crash bug problem broken', q: 'A plugin isn\'t showing up', a: () => `Restart your DAW and rescan plugins. In Logic, open Plug-in Manager and reset the plugin. Still missing? Tell me your DAW and your macOS or Windows version below and I'll pass it to the kitchen.`},
+    {k: 'missing show scan not appear crash bug problem broken', q: 'A plugin isn\'t showing up', a: () => `Restart your DAW and rescan plugins. In Logic, open Plug-in Manager and reset the plugin. Still missing? Email ${MAIL} with your DAW and your macOS or Windows version, and The Chef will sort it out.`},
   ];
   const css = `
 .md-btn{position:fixed;left:16px;bottom:16px;z-index:70;display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:10px 18px 10px 12px;background:#2b1d16;color:#f6ead4;font:700 14px/1 Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:0 14px 30px -12px rgba(0,0,0,.55)}
@@ -49,7 +49,7 @@
   document.body.append(btn, panel);
   const log = panel.querySelector('.md-log'), chips = panel.querySelector('.md-chips'), input = panel.querySelector('input');
   const say = (html, me) => { const m = document.createElement('div'); m.className = 'md-m' + (me ? ' me' : ''); if (me) m.textContent = html; else m.innerHTML = html; log.append(m); log.scrollTop = log.scrollHeight; };
-  const person = q => `I'll pass this to the kitchen. <a href="mailto:${MAIL}?subject=${encodeURIComponent('A question for Plugins for Breakfast')}&body=${encodeURIComponent(q || '')}">Email ${MAIL}</a> and The Chef will reply, usually within a day.`;
+  const person = q => `The Chef answers this one personally. <a href="mailto:${MAIL}?subject=${encodeURIComponent('A question for Plugins for Breakfast')}&body=${encodeURIComponent(q || '')}">Email ${MAIL}</a> (your question is already filled in) and you'll get a reply, usually within a day.`;
   const answer = q => {
     const w = q.toLowerCase().split(/[^a-z0-9]+/).filter(x => x.length > 1);
     let best = null, score = 0;
