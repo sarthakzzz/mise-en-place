@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Plugins for Breakfast · We make delicious plugins</title>
-<meta name="description" content="We make delicious plugins. Sixteen audio plugins you play like toys: distortion, EQ, compression, reverb, delay, tape, granular and more, each one a little felt world. AU and VST3, 3-day free trial.">
+<meta name="description" content="We make delicious plugins. 16 audio plugins you play like toys, with a new one every month: distortion, EQ, compression, reverb, delay, tape, granular and more, each one a little felt world. AU, VST3 and AAX, 3-day free trial.">
 <meta property="og:title" content="Plugins for Breakfast · We make delicious plugins">
-<meta property="og:description" content="We make delicious plugins.">
+<meta property="og:description" content="We make delicious plugins. 16 audio plugins, and a new one every month.">
 <link rel="canonical" href="https://pluginsforbreakfast.com/">
 <meta property="og:url" content="https://pluginsforbreakfast.com/">
 <meta property="og:image" content="https://pluginsforbreakfast.com/assets/og.jpg">
@@ -474,7 +474,7 @@ body.waitlist .countdown{display:inline-flex}
 <section class="scene" id="hero" data-bg="#bb4526" data-fg="#f6ead4">
   <div class="stick pad">
     <h1 class="hero-title hop" data-split>We make <em>delicious plugins.</em></h1>
-    <p class="hero-sub">Mixing and sound-design tools you play like toys. Every one is a little felt world.</p>
+    <p class="hero-sub">16 mixing and sound-design plugins you play like toys, and a new one every month. Every one is a little felt world.</p>
     <div class="hero-ctas">
       <button class="btn btn-orange btn-toast" id="toastBtn" type="button"><span class="ico" data-food="toaster"></span>See the menu</button>
       <button class="btn btn-ghost" type="button" data-open-pop><span class="ico" data-food="butter"></span>Sign up, get a free plugin</button>
@@ -620,8 +620,8 @@ body.waitlist .countdown{display:inline-flex}
       </div>
       <div class="tiers">
         <div class="tier"><div class="eyebrow">One plate</div><h2>À la carte</h2><div class="amt">$29<small>per plugin</small></div><ul><li>Own it forever</li><li>Free updates for that plugin</li><li>3-day free trial first</li></ul><a class="btn btn-solid" href="#oc"><span class="ico" data-food="blueberry"></span>Choose a plugin</a></div>
-        <div class="tier"><div class="eyebrow">Best value</div><h2>Full Fridge Bundle</h2><div class="amt">$90<small>one time</small></div><ul><li>Every plugin released so far</li><li>Own them all forever</li><li>Saves more with every new plugin</li></ul><button class="btn btn-orange only-sale" type="button" data-add="fridge"><span class="ico" data-food="strawberry"></span>Add to basket</button><button class="btn btn-ghost only-wait" type="button" data-open-pop data-wait>Out 15 November · join the waitlist</button></div>
-        <div class="tier"><div class="eyebrow">A seat for the year</div><h2>Breakfast Club</h2><div class="amt">$150<small>for 1 year</small></div><ul><li>Every plugin for a full year</li><li>New releases on day one</li><li>Keep every plugin you got that year, forever</li></ul><button class="btn btn-solid only-sale" type="button" data-add="club"><span class="ico" data-food="cherry"></span>Add to basket</button><button class="btn btn-ghost only-wait" type="button" data-open-pop data-wait>Out 15 November · join the waitlist</button></div>
+        <div class="tier"><div class="eyebrow">Best value</div><h2>Full Fridge Bundle</h2><div class="amt">$90<small>one time</small></div><ul><li>All 16 plugins</li><li>Own them all forever</li><li>Saves more with every new plugin</li></ul><button class="btn btn-orange only-sale" type="button" data-add="fridge"><span class="ico" data-food="strawberry"></span>Add to basket</button><button class="btn btn-ghost only-wait" type="button" data-open-pop data-wait>Out 15 November · join the waitlist</button></div>
+        <div class="tier"><div class="eyebrow">A seat for the year</div><h2>Breakfast Club</h2><div class="amt">$150<small>for 1 year</small></div><ul><li>All 16 plugins for a full year</li><li>A new plugin every month, yours on day one</li><li>Keep every plugin you got that year, forever</li></ul><button class="btn btn-solid only-sale" type="button" data-add="club"><span class="ico" data-food="cherry"></span>Add to basket</button><button class="btn btn-ghost only-wait" type="button" data-open-pop data-wait>Out 15 November · join the waitlist</button></div>
       </div>
     </div>
     <div class="small-print">Every licence works on 3 of your computers, Mac or Windows, with offline activation.</div>
@@ -902,8 +902,8 @@ const PRODUCTS = {
   bt: {name:'Burnt Toast Tape Machine', sub:'Tape · lifetime licence', price:29, food:'toaster'},
   nf: {name:'Noodle Filter', sub:'Filter · lifetime licence', price:29, food:'spaghetti'},
   mg: {name:'Muesli Granular', sub:'Granular · lifetime licence', price:29, food:'blueberry'},
-  fridge: {name:'Full Fridge Bundle', sub:'Every plugin so far · own forever', price:90, food:'fridge', plan:true},
-  club: {name:'Breakfast Club', sub:'Every plugin for 1 year · keep them', price:150, food:'cherry', plan:true}
+  fridge: {name:'Full Fridge Bundle', sub:'All 16 plugins · own forever', price:90, food:'fridge', plan:true},
+  club: {name:'Breakfast Club', sub:'All 16 plugins + a new one every month · keep them', price:150, food:'cherry', plan:true}
 };
 for (const [k, p] of Object.entries(PRODUCTS)) p.mb = (CONFIG.products || {})[k];
 // Price steps: prices rise every 100 licences sold (counts in sold.js); ?sold=N previews a count
@@ -937,7 +937,7 @@ function refresh(){
   itemsEl.innerHTML = cart.length ? cart.map(id => { const p = PRODUCTS[id]; return `<li class="item"><span class="fi">${FOOD[p.food]()}</span><div><b>${p.name}</b><small>${p.sub}</small></div><span class="pr">$${p.price}</span><button class="rm" type="button" data-rm="${id}" aria-label="Remove ${p.name}">${FOOD.pretzel()}</button></li>`; }).join('')
     : `<li class="empty"><div class="plate">${FOOD.plate()}</div>Your plate is empty. Add a plugin from the menu.</li>`;
   const plugins = cart.filter(id => !PRODUCTS[id].plan), plan = cart.find(id => PRODUCTS[id].plan);
-  hintEl.innerHTML = plugins.length && !plan ? `<div class="hintbox"><span>Want everything? The <b>Full Fridge Bundle</b> gets you every plugin for $${PRODUCTS.fridge.price}.</span><button class="btn btn-solid" type="button" id="swap" style="background:var(--ink);color:var(--butter)">Swap</button></div>` : '';
+  hintEl.innerHTML = plugins.length && !plan ? `<div class="hintbox"><span>Want everything? The <b>Full Fridge Bundle</b> gets you all 16 plugins for $${PRODUCTS.fridge.price}.</span><button class="btn btn-solid" type="button" id="swap" style="background:var(--ink);color:var(--butter)">Swap</button></div>` : '';
   totalEl.textContent = '$' + cart.reduce((s, id) => s + PRODUCTS[id].price, 0);
   document.getElementById('checkout').disabled = !cart.length;
   document.getElementById('checkout').style.opacity = cart.length ? 1 : .5;
@@ -1292,7 +1292,7 @@ const qs = new URLSearchParams(location.search);
 try { if (qs.get('menu') && qs.get('menu') === CONFIG.earlyKey) localStorage.setItem('pfb-early', '1'); } catch(e) {}
 let early = false; try { early = localStorage.getItem('pfb-early') === '1'; } catch(e) {}
 const now = Date.now(), launch = Date.parse(CONFIG.launch), earlyAt = Date.parse(CONFIG.earlyAccess);
-const selling = qs.get('preview') === 'sale' || now >= launch || (early && now >= earlyAt);
+const selling = CONFIG.salesOpen === true || qs.get('preview') === 'sale' || now >= launch || (early && now >= earlyAt);
 document.body.classList.toggle('waitlist', !selling);
 // Early-access visitors (before launch) get the launch-price code from config.js
 if (selling && early && now < launch && CONFIG.earlyCode) {
@@ -1326,9 +1326,11 @@ function onScroll(){
     const p = free ? clamp((vh - r.top) / (vh + r.height)) : clamp(-r.top / Math.max(1, r.height - vh));
     s.style.setProperty('--p', p.toFixed(4));
     if (s.classList.contains('plug')) {
-      s.style.setProperty('--t', clamp(p*4).toFixed(3));
-      s.style.setProperty('--e', clamp(p*2.4).toFixed(3));
-      s.style.setProperty('--a', clamp((p - .28)*4).toFixed(3));
+      // The intro plays while the scene scrolls in, so it is settled (title, full UI, buy line) once its top reaches the top of the screen (Sarthak 9 Nov)
+      const enter = clamp(1 - r.top / vh);
+      s.style.setProperty('--t', Math.max(clamp(p*4), enter).toFixed(3));
+      s.style.setProperty('--e', Math.max(clamp(p*2.4), enter).toFixed(3));
+      s.style.setProperty('--a', Math.max(clamp((p - .28)*4), enter).toFixed(3));
       const rl = realById[s.id];
       if (rl && !reduce) { rl.want = clamp((p - .22)/.72); rl.seek(); if (rl.playing < 0 && !rl.seeking) rl.show(rl.want*(rl.v.duration || 0)); }
       const stg = stageById[s.id];
@@ -1364,6 +1366,6 @@ document.querySelectorAll('h2.hop').forEach(h => io.observe(h));
 <script>{ const T = CONFIG.tagTheChef, q = new URLSearchParams(location.search).get('preview'), now = Date.now();
   if (T && (q === 'sale' || (now >= Date.parse(T.from) && now < Date.parse(T.until)))) document.getElementById('tagChef').hidden = false; }</script>
 <script>document.querySelectorAll('.plug .buy').forEach(b => { const id = b.closest('.plug').id, a = document.createElement('a'); a.className = 'daw-line'; a.href = '#daws';
-  a.textContent = id === 'bs' ? 'Mac: AU, VST3 · Windows: VST3' : 'Mac: AU, VST3, AAX · Windows: VST3'; b.after(a); });</script>
+  a.textContent = 'One of our 16 plugins, with a new one every month · Mac: AU, VST3, AAX · Windows: VST3'; b.after(a); });</script>
 <script src="assets/maitred.js" defer></script>
 </body></html>

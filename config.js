@@ -17,6 +17,7 @@ window.CONFIG = {
 
   // Waitlist mode (countdown, sign-ups, no selling) until launch. Times are India time (+05:30).
   launch: '2026-11-15T00:00:00+05:30',
+  salesOpen: false, // true opens the store on the site straight away (ignores the dates)
   earlyAccess: '2026-11-12T00:00:00+05:30',
   // Waitlist members get https://<site>/?menu=<earlyKey> on 12 November; it unlocks the basket on their browser.
   // Moonbase decides what can really be bought, so this only changes what the page shows.
