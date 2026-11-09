@@ -11,25 +11,25 @@
   window.pfbMd = { get code(){ const s = mdGet(); return s.code && !s.used ? s.code : ''; }, used(){ mdPut({used: Date.now()}); } };
   const mdVid = () => { let v = mdGet().vid; if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); mdPut({vid: v}); } return v; };
   const discount = () => {
-    if (!MD.on) return `I don't have a code to hand just now. Join our emails, and treats and offers come straight to your inbox.`;
-    const have = window.pfbMd.code; if (have) return `Of course. Your extra 10% code is <b>${have}</b>. If the checkout doesn't show it already, type it into the coupon box there.`;
+    if (!MD.on) return `Ah, my apron pockets are empty just now. Join our emails, and treats and offers come straight to your inbox, still warm.`;
+    const have = window.pfbMd.code; if (have) return `For you? Always. Your extra 10% code is <b>${have}</b>. If the checkout doesn't show it already, type it into the coupon box there.`;
     const id = 'md' + Date.now(); setTimeout(async () => { const el = document.getElementById(id); try {
         const r = await (await fetch(MD.endpoint || C.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({action: 'maitred', vid: mdVid()})})).json();
         if (!r || !r.ok || !r.code) throw (r && r.error ? String(r.error) : 0); mdPut({code: r.code, at: Date.now()});
-        if (el) el.innerHTML = `For you, an extra 10% off whatever you buy: <b>${r.code}</b>. If the checkout doesn't show it already, type it into the coupon box there. Bon appétit!`;
-      } catch (e) { if (el) el.textContent = typeof e === 'string' && e ? e : 'The kitchen is busy just now. Please ask me again in a minute.'; } }, 0);
-    return `<span id="${id}">One moment, let me speak to the Chef...</span>`;
+        if (el) el.innerHTML = `Psst, the Chef says yes! An extra 10% off whatever you buy: <b>${r.code}</b>. If the checkout doesn't show it already, type it into the coupon box there. Bon appétit!`;
+      } catch (e) { if (el) el.textContent = typeof e === 'string' && e ? e : 'The kitchen is in a bit of a flap just now. Please ask me again in a minute.'; } }, 0);
+    return `<span id="${id}">One moment, let me whisper to the Chef...</span>`;
   };
   const A = [
     {k: 'discount coupon code cheaper deal offer promo voucher cheap expensive reduce', q: 'Any discount for me?', a: discount},
-    {k: 'trial try free demo test', q: 'How does the free trial work?', a: () => `Make a free account, download the plugin and use everything for 3 days. No card needed. When you buy, the same install unlocks and your presets stay put.`},
+    {k: 'trial try free demo test', q: 'How does the free trial work?', a: () => `Make a free account, download the plugin and use everything for 3 days. No card needed, just an appetite. When you buy, the same install unlocks and your presets stay put.`},
     {k: 'price cost how much buy pay dollar bundle fridge discount launch', q: 'What does it cost?', a: () => { const p = price(); return `Each plugin is $${p.plugin}${p.label ? ' (' + p.label.replace(/^Launch/, 'launch') + ')' : ''}. The Full Fridge Bundle, all 16 plugins, is $${p.bundle}. Breakfast Club is $${C.clubPrice || 150} for a year of everything, and you keep it all.`; }},
     {k: 'club membership subscription year renew', q: 'What is Breakfast Club?', a: () => `$90 for one year (usually $150). You get all 16 plugins, plus the new plugin we release every month during your year, and you keep all of them forever, even if you don't renew.`},
     {k: 'daw logic ableton fl cubase reaper studio bitwig pro tools format au vst vst3 aax mac windows garageband nuendo reason performer cakewalk sonar waveform ardour mixbus luna renoise mainstage compatible compatibility work', q: 'Will it work in my DAW?', a: () => `Mac: AU, VST3 and AAX (Pro Tools). Windows 10 and 11: VST3, 64-bit. They work in Logic Pro, GarageBand, Ableton Live, Pro Tools (Mac), FL Studio, Cubase, Nuendo, Studio One, Reaper, Bitwig, Reason, Digital Performer, Cakewalk Sonar, Waveform, Ardour, Mixbus, LUNA, Renoise and any host that loads these formats. <a href="${root}#daws">See the full list</a>. The formats for each plugin are listed with its download.`},
     {k: 'licence license computer machine activate activation install new offline', q: 'Licences and computers', a: () => `Each licence works on 3 of your computers, and offline activation works too. Moving to a new computer? Open <a href="${root}account/">your account</a>, remove the old one, then activate on the new one.`},
     {k: 'butter spread free widener', q: 'Is Butter Spread free?', a: () => `Yes, completely. Join our list and the download link appears right away. It's open source too.`},
     {k: 'account sign login download where my plugins', q: 'Where are my plugins?', a: () => `In <a href="${root}account/">your account</a>. Sign in with the email you bought with, and every plugin you own or are trying is there.`},
-    {k: 'missing show scan not appear crash bug problem broken', q: 'A plugin isn\'t showing up', a: () => `Restart your DAW and rescan plugins. In Logic, open Plug-in Manager and reset the plugin. Still missing? Email ${MAIL} with your DAW and your macOS or Windows version, and The Chef will sort it out.`},
+    {k: 'missing show scan not appear crash bug problem broken', q: 'A plugin isn\'t showing up', a: () => `Restart your DAW and rescan plugins. In Logic, open Plug-in Manager and reset the plugin. Still missing? Email ${MAIL} with your DAW and your macOS or Windows version, and the Chef will roll up their sleeves and sort it out.`},
   ];
   const css = `
 .md-btn{position:fixed;left:16px;bottom:16px;z-index:70;display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;padding:10px 18px 10px 12px;background:#2b1d16;color:#f6ead4;font:700 14px/1 Manrope,system-ui,sans-serif;cursor:pointer;box-shadow:0 14px 30px -12px rgba(0,0,0,.55)}
@@ -76,7 +76,7 @@
   A.forEach(e => { const b = Object.assign(document.createElement('button'), {type: 'button', textContent: e.q}); b.onclick = () => { say(e.q, true); setTimeout(() => say(e.a()), 350); }; chips.append(b); });
   const human = Object.assign(document.createElement('button'), {type: 'button', textContent: 'Talk to a person'}); human.onclick = () => { say('Talk to a person', true); setTimeout(() => say(person('')), 350); }; chips.append(human);
   let greeted = false;
-  const open = () => { panel.hidden = false; btn.hidden = true; if (!greeted) { greeted = true; const h = new Date().getHours(); say(`${h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}, and welcome. I'm the ${NAME}. How may I help you?`); } setTimeout(() => input.focus({preventScroll: true}), 50); };
+  const open = () => { panel.hidden = false; btn.hidden = true; if (!greeted) { greeted = true; const h = new Date().getHours(); say(`${h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}, and welcome to the plugin restaurant. I'm the ${NAME}. Table for one? How may I help you?`); } setTimeout(() => input.focus({preventScroll: true}), 50); };
   const close = () => { panel.hidden = true; btn.hidden = false; };
   btn.onclick = open; panel.querySelector('.md-x').onclick = close;
   addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) close(); });

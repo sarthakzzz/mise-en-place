@@ -95,7 +95,7 @@ if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out
     if (G.on) { btn.disabled = true; btn.textContent = 'Wrapping it in foil...';
       try { const token = await store().then(() => Moonbase.getAccessToken && Moonbase.getAccessToken());
         if (!token) { btn.disabled = false; btn.textContent = 'Wrap it up for me'; say('Sign in first, so we know whose doggy bag this is.'); gb.hidden = true; go('sign_in'); return; }
-        const r = await fetch(G.endpoint || CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({action: 'parting', product: CONFIG.products[k], token})}).then(r => r.json());
+        const r = await fetch(G.endpoint || CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({action: 'parting', vid: (() => { try { return JSON.parse(localStorage.getItem('pfb-md') || '{}').vid || ''; } catch (e) { return ''; } })(), product: CONFIG.products[k], token})}).then(r => r.json());
         btn.disabled = false; btn.textContent = 'Wrap it up for me';
         if (r && r.ok && r.code) { $g('giftCode').textContent = r.code; $g('giftText').textContent = `One ${name}, on the house for 6 months. Thanks for being a customer in our plugin restaurant. Come back hungry!`; $g('giftPick').hidden = true; $g('giftDone').hidden = false; $g('giftRedeem').focus(); return; }
         say(r && r.error ? r.error : 'The doggy bags ran out for a moment. Write to the Chef and we will pack one by hand.'); toCancel(); return;

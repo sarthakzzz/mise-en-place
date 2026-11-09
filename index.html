@@ -642,8 +642,8 @@ body.waitlist .countdown{display:inline-flex}
         <div class="tier"><div class="eyebrow">A seat for the year</div><h2>Breakfast Club</h2><div class="amt">$150<small>for 1 year</small></div><ul><li>All 16 plugins for a full year</li><li>A new plugin every month, yours on day one</li><li>Keep every plugin you got that year, forever</li></ul><button class="btn btn-solid only-sale" type="button" data-add="club"><span class="ico" data-food="cherry"></span>Add to basket</button><button class="btn btn-ghost only-wait" type="button" data-open-pop data-wait>Out 15 November · join the waitlist</button></div>
       </div>
     </div>
-    <div class="passes"><span><b>Rather rent?</b> All 16 plugins plus every new one each month, while your pass is active.</span><button class="btn btn-ghost" type="button" data-add="monthly" data-label="Monthly Pass · $10/month">Monthly Pass · $10/month</button><button class="btn btn-ghost" type="button" data-add="yearly" data-label="Yearly Pass · $80/year">Yearly Pass · $80/year</button></div>
-    <div class="small-print">Every licence works on 3 of your computers, Mac or Windows, with offline activation.</div>
+    <div class="passes"><span><b>Rather graze?</b> All 16 plugins plus every new one each month, for as long as your pass keeps the plates coming.</span><button class="btn btn-ghost" type="button" data-add="monthly" data-label="Monthly Pass · $10/month">Monthly Pass · $10/month</button><button class="btn btn-ghost" type="button" data-add="yearly" data-label="Yearly Pass · $80/year">Yearly Pass · $80/year</button></div>
+    <div class="small-print">Every licence feeds 3 of your computers, Mac or Windows, with offline activation for kitchens without wifi.</div>
     <a class="tag-chef" id="tagChef" href="tag-the-chef/" hidden><b>Tag the Chef.</b> <span>Cook something with our plugins, post it, tag @pluginsforbreakfast, and pick one plugin on us. The free trial counts.</span> <u>How it works</u></a>
     <div class="dots" id="dots"><button type="button" aria-label="À la carte"></button><button type="button" aria-label="Full Fridge Bundle"></button><button type="button" aria-label="Breakfast Club"></button></div>
   </div>
@@ -700,7 +700,7 @@ body.waitlist .countdown{display:inline-flex}
   <div id="hint"></div>
   <div class="total"><span>Total</span><span id="total">$0</span></div>
   <button class="btn btn-orange checkout" id="checkout" type="button"><span class="ico" data-food="cookie"></span>Checkout</button>
-  <div class="fine" id="fine">Secure checkout. Prices in USD, tax added at checkout.</div>
+  <div class="fine" id="fine">Secure checkout, freshly laid. Prices in USD, tax added at checkout.</div>
 </aside>
 
 <div class="pop-back" id="popBack" hidden>
@@ -957,11 +957,11 @@ const cartEl = document.getElementById('cart'), shade = document.getElementById(
 function refresh(){
   badge.textContent = cart.length; badge.classList.toggle('on', cart.length > 0);
   basketBtn.setAttribute('aria-label', `Open your basket, ${cart.length} item${cart.length === 1 ? '' : 's'}`);
-  document.querySelectorAll('[data-add]').forEach(b => { const inC = cart.includes(b.dataset.add); b.classList.toggle('added', inC); const n = cart.filter(x => x === b.dataset.add).length; b.lastChild.textContent = !inC ? (b.dataset.label || 'Add to basket') : (PRODUCTS[b.dataset.add]?.plan || PRODUCTS[b.dataset.add]?.free) ? 'In your basket' : `Add one more · ${n} in basket`; });
+  document.querySelectorAll('[data-add]').forEach(b => { const inC = cart.includes(b.dataset.add); b.classList.toggle('added', inC); const n = cart.filter(x => x === b.dataset.add).length; b.lastChild.textContent = !inC ? (b.dataset.label || 'Add to basket') : (PRODUCTS[b.dataset.add]?.plan || PRODUCTS[b.dataset.add]?.free) ? 'On your plate' : `Seconds? Add one more · ${n} in basket`; });
   itemsEl.innerHTML = cart.length ? cart.map((id, i) => { const p = PRODUCTS[id]; return `<li class="item"><span class="fi">${FOOD[p.food]()}</span><div><b>${p.name}</b><small>${p.sub}</small></div><span class="pr">$${p.price}</span><button class="rm" type="button" data-rm="${i}" aria-label="Remove ${p.name}">${FOOD.pretzel()}</button></li>`; }).join('')
-    : `<li class="empty"><div class="plate">${FOOD.plate()}</div>Your plate is empty. Add a plugin from the menu.</li>`;
+    : `<li class="empty"><div class="plate">${FOOD.plate()}</div>Your plate is empty, and the Chef is sad. Pick something tasty from the menu.</li>`;
   const plugins = cart.filter(id => !PRODUCTS[id].plan && !PRODUCTS[id].free), plan = cart.find(id => PRODUCTS[id].plan);
-  hintEl.innerHTML = plugins.length && !plan ? `<div class="hintbox"><span>Want everything? The <b>Full Fridge Bundle</b> gets you all 16 plugins for $${PRODUCTS.fridge.price}.</span><button class="btn btn-solid" type="button" id="swap" style="background:var(--ink);color:var(--butter)">Swap</button></div>` : '';
+  hintEl.innerHTML = plugins.length && !plan ? `<div class="hintbox"><span>Hungry for everything? Raid the <b>Full Fridge Bundle</b>: all 16 plugins for $${PRODUCTS.fridge.price}.</span><button class="btn btn-solid" type="button" id="swap" style="background:var(--ink);color:var(--butter)">Swap</button></div>` : '';
   if (window.pfbCatch) hintEl.insertAdjacentHTML('beforeend', pfbCatch.note(cart));
   if (window.pfbMd && pfbMd.code && cart.length) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">🛎️ Your extra 10% code <b>${pfbMd.code}</b>: if the checkout doesn't show it already, type it into the coupon box there.</div>`);
   totalEl.textContent = '$' + cart.reduce((s, id) => s + PRODUCTS[id].price, 0);
@@ -1000,11 +1000,11 @@ basketBtn.addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
 shade.addEventListener('click', closeCart);
 itemsEl.addEventListener('click', e => { const b = e.target.closest('[data-rm]'); if (!b) return; cart.splice(+b.dataset.rm, 1); save(); sfx.crunch(); refresh(); });
-hintEl.addEventListener('click', e => { if (!e.target.closest('#swap')) return; cart = ['fridge']; save(); sfx.ding(); refresh(); say('Swapped for the Full Fridge Bundle.'); });
+hintEl.addEventListener('click', e => { if (!e.target.closest('#swap')) return; cart = ['fridge']; save(); sfx.ding(); refresh(); say('Fridge raided! Swapped for the Full Fridge Bundle.'); });
 document.getElementById('checkout').addEventListener('click', async () => {
   const fine = document.getElementById('fine'), btn = document.getElementById('checkout');
-  if (!window.Moonbase || !mbReady) { fine.textContent = 'The checkout is still loading. Give it a second and try again.'; return; }
-  btn.disabled = true; fine.textContent = 'Opening the secure checkout...';
+  if (!window.Moonbase || !mbReady) { fine.textContent = 'The checkout is still warming up. Give it a second and try again.'; return; }
+  btn.disabled = true; fine.textContent = 'Laying the table for your checkout...';
   try {
     const V = CONFIG.variations || {}, items = cart.map(id => id === 'fridge' ? {bundle_id: CONFIG.bundle, ...(V.fridge ? {variation_id: V.fridge} : {})} : id === 'club' ? {bundle_id: CONFIG.bundle, variation_id: CONFIG.clubVariation} : PRODUCTS[id].pass ? {bundle_id: CONFIG.bundle, variation_id: PRODUCTS[id].pass} : {product_id: PRODUCTS[id].mb, ...(V[id] ? {variation_id: V[id]} : {})});
     if (cart.includes('club') && !CONFIG.clubVariation) throw new Error('club');
@@ -1022,9 +1022,9 @@ document.getElementById('checkout').addEventListener('click', async () => {
       cart = []; save(); refresh(); closeCart(); sfx.ding();
       Moonbase.checkout();
     }
-    fine.textContent = 'Secure checkout. Prices in USD, tax added at checkout.';
-  } catch (e) { if (e.message === 'club') { fine.textContent = 'Breakfast Club opens very soon. Take it out of the basket for now, or email us.'; btn.disabled = false; return; }
-    fine.innerHTML = `Something went wrong opening the checkout. Please email <b>${CONFIG.supportEmail}</b> and we'll sort it out.`; }
+    fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.';
+  } catch (e) { if (e.message === 'club') { fine.textContent = 'The Breakfast Club is still setting the table. Take it out of the basket for now, or email us.'; btn.disabled = false; return; }
+    fine.innerHTML = `Oops, we dropped the tray. Please email <b>${CONFIG.supportEmail}</b> and the Chef will plate it up by hand.`; }
   btn.disabled = false;
 });
 refresh();
@@ -1259,11 +1259,11 @@ document.getElementById('news').addEventListener('submit', e => { e.preventDefau
 /* ---------- live store: Moonbase, waitlist mode and the launch countdown ---------- */
 let storeUsed = false;
 function tryProduct(pid){ storeUsed = true; if (!window.Moonbase || !mbReady) return false;
-  const panel = () => { try { Moonbase.view_product({product_id: pid}); } catch (e) { console.error('store view_product', e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); } };
+  const panel = () => { try { Moonbase.view_product({product_id: pid}); } catch (e) { console.error('store view_product', e); say('The store got the hiccups. Please try again, or write to ' + CONFIG.supportEmail + '.'); } };
   try { const r = Moonbase.download_product({product_id: pid}); if (r && r.catch) r.catch(e => { console.error('store download_product', e); panel(); }); } catch (e) { console.error('store download_product', e); panel(); }
   return true; }
 document.addEventListener('click', e => { if (e.target.closest?.('[data-add],[data-trial],#checkout,[data-account]')) storeUsed = true; }, true);
-function mb(intent, args){ storeUsed = true; if (!window.Moonbase || !mbReady) return false; try { const r = Moonbase[intent](args); if (r && r.catch) r.catch(e => { console.error('store', intent, e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); }); } catch (e) { console.error('store', intent, e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); } return true; }
+function mb(intent, args){ storeUsed = true; if (!window.Moonbase || !mbReady) return false; try { const r = Moonbase[intent](args); if (r && r.catch) r.catch(e => { console.error('store', intent, e); say('The store got the hiccups. Please try again, or write to ' + CONFIG.supportEmail + '.'); }); } catch (e) { console.error('store', intent, e); say('The store got the hiccups. Please try again, or write to ' + CONFIG.supportEmail + '.'); } return true; }
 // Forgiving email boxes (8 Nov): trim spaces, stray quotes/brackets and trailing dots or commas before any check runs; + addresses are fine.
 const cleanEmail = v => (v || '').replace(/^mailto:/i, '').replace(/[\s<>"'()]/g, '').replace(/^[.,;:]+|[.,;:]+$/g, '');
 document.addEventListener('submit', e => { e.target.querySelectorAll?.('input[type=email]').forEach(i => { i.value = cleanEmail(i.value); i.style.borderColor = ''; }); }, true);
@@ -1280,7 +1280,7 @@ async function joinOnce(email, source){
   try { res = await fetch(CONFIG.signupEndpoint, {method: 'POST', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); }
   catch (e) { await fetch(CONFIG.signupEndpoint, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); return {ok: true}; }
   let out = {ok: res.ok}; try { out = await res.json(); } catch (e) {}
-  if (!out.ok) throw new Error(out.error || 'Something went wrong. Please try again.');
+  if (!out.ok) throw new Error(out.error || 'Something got a bit scrambled. Please try again.');
   return out;
 }
 // Butter Spread: Mac and Windows downloads, each zip with a Read Me First (assets/bs-download.js, 8 Nov)
