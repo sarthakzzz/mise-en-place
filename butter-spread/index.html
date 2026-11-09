@@ -107,8 +107,8 @@ async function joinOnce(email){
   if (!CONFIG.signupEndpoint) throw new Error('Sign-ups open very soon. Please check back shortly.');
   const body = JSON.stringify({email, name: '', source: SOURCE, consent: true, website: $('hp').value, t: pageT});
   let res;
-  try { res = await fetch(CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); }
-  catch (e) { await fetch(CONFIG.signupEndpoint, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); return {ok: true}; }
+  try { res = await fetch(CONFIG.signupEndpoint, {method: 'POST', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); }
+  catch (e) { await fetch(CONFIG.signupEndpoint, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); return {ok: true}; }
   let out = {ok: res.ok}; try { out = await res.json(); } catch (e) {}
   if (!out.ok) throw new Error(out.error || 'Something went wrong. Please try again.');
   return out;
@@ -123,7 +123,8 @@ $('getForm').addEventListener('submit', async e => {
   if (!email || !$('email').checkValidity()) { msg.textContent = 'That email looks half-baked. Check it and try again.'; return; }
   btn.disabled = true; msg.textContent = 'Spreading the butter...';
   try {
-    const r = await joinList(email);
+    if (!CONFIG.signupEndpoint) throw new Error('Sign-ups open very soon. Please check back shortly.');
+    joinList(email).catch(e => console.warn('signup', e));
     msg.textContent = `Thank you for subscribing! Butter Spread is yours, and a copy of the link is on its way to ${email}. Enjoy the meal.`;
     unlock(false, 'Your download is ready. Enjoy Butter Spread!');
   } catch (err) { msg.textContent = err.message; }
