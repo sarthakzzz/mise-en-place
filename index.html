@@ -442,6 +442,22 @@ body.waitlist .countdown{display:inline-flex}
 .daws-tm{text-align:center;font-size:12px;opacity:.55;margin:6px 0 0}
 .daw-line{display:block;margin-top:10px;font-size:13px;font-weight:700;opacity:.8;color:inherit}
 </style>
+<style id="plug-clean">
+/* Cleaner plugin pages, bigger plugin view (Sarthak 9 Nov) */
+.plug .stick{gap:1.2vh}
+.plug .pl-head h2{font-size:clamp(30px,min(6vw,7vh),84px)}
+.plug .pl-head .eyebrow{margin-bottom:2px}
+.plug .pl-head p{margin-top:4px;font-size:clamp(14px,1.2vw,17px)}
+.stage.real{width:min(1180px,94vw)}
+.realv{width:min(1180px,94vw,calc(64vh*1200/840));max-width:94vw}
+.ctrlbar{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;gap:6px;margin-top:10px;max-width:min(1180px,94vw);padding:4px 2px;scrollbar-width:none;mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+.ctrlbar::-webkit-scrollbar{display:none}
+.ctrlbar button{flex:none;border-width:1.5px;font-size:13px;padding:7px 12px}
+.ctrlbar button.on{transform:none}
+.plug .ctrl-hint,.plug .tourbar{display:none}
+.plug .daw-line{margin-top:6px;font-size:12px;font-weight:600;opacity:.6}
+@media (min-width:900px){.ctrlbar{justify-content:safe center}}
+</style>
 </head>
 <body>
 
