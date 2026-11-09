@@ -39,9 +39,16 @@ document.querySelectorAll('[data-intent]').forEach(b => b.addEventListener('clic
 if (window.Moonbase) { Moonbase.on('signed-in', e => say(`Signed in${e && e.user && e.user.name ? ' as ' + e.user.name : ''}. Welcome back!`)); Moonbase.on('signed-out', () => say('Signed out. See you at breakfast!')); }
 </script><script>
 const token = qs.get('token') || qs.get('t') || qs.get('mb_token') || undefined;
-const activate = () => go('activate_product', token ? {token} : {});
+// 9 Nov fix: wait for the store to restore an existing sign-in before opening the panel, otherwise it says "Please sign in" to people who are signed in.
+const session = () => store().then(() => Promise.race([Promise.resolve(Moonbase.getAccessToken ? Moonbase.getAccessToken() : null).catch(() => null), new Promise(r => setTimeout(() => r(null), 4000))]));
+let opened = false, done = false;
+const activate = () => session().then(() => { opened = true; return Moonbase.activate_product(token ? {token} : {}); });
 document.getElementById('again').addEventListener('click', activate);
-if (window.Moonbase) Moonbase.on('activated-product', e => say(`Unlocked${e && e.product && e.product.name ? ': ' + e.product.name : ''}! Go back to your DAW, it is ready to play.`));
+if (window.Moonbase) {
+  Moonbase.on('activated-product', e => { done = true; say(`Unlocked${e && e.product && e.product.name ? ': ' + e.product.name : ''}! Go back to your DAW, it is ready to play.`); });
+  // Signed in from inside the panel: reopen it so it shows "Use license" straight away
+  Moonbase.on('signed-in', () => { if (opened && !done && token) setTimeout(() => { try { Moonbase.activate_product({token}); } catch (e) {} }, 300); });
+}
 if (token) activate().then(() => say('Follow the steps in the panel to unlock your plugin.'), () => {}); else store().then(() => say('Press Activate to unlock a plugin with its file.'), () => {});
 </script>
 </body>
