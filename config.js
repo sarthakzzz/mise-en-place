@@ -44,6 +44,10 @@ window.CONFIG = {
   stepsFrom: '2026-11-12T00:00:00+05:30',     // STEP/FRIDGE coupons are live in the store from this moment
   clubPrice: 90,                              // Breakfast Club price (a promotion, renewals also $90; shown as $150 struck through)
   clubVariation: 'breakfast-club',            // Breakfast Club: the yearly ($150) price's variation ID on the full-fridge bundle
+  // More computers: each licence works on 3 computers. A customer who needs more buys this variation of the plugin:
+  // a licence for 2 computers, with 50% off for anyone who already owns that plugin (set up in the store on every
+  // paid plugin, same variation ID everywhere). Used by /activate/ and /account/ (assets/computers.js).
+  extraComputers: { variation: 'extra-computers', count: 2 },
 
   // Newsletter: our own list. Sign-ups POST to this Google Apps Script web app (owned by pluginsforbreakfast@gmail.com),
   // which saves them to our Google Sheet and emails a confirmation from The Chef. Also used by /confirm/ and /unsubscribe/.

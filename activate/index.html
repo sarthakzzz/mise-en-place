@@ -32,6 +32,7 @@
 <div class="actions"><button class="act main" type="button" id="pick-go"><b>Unlock</b><span>Every ticked plugin, in one go</span></button>
 <button class="act" type="button" id="pick-one"><b>Only this plugin</b><span id="pick-one-name">Just the one you opened</span></button></div>
 </section>
+<section id="full" hidden></section>
 <style>
 .pick-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:14px 0}
 .pick{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:800;cursor:pointer}
@@ -43,6 +44,7 @@
 </style>
 <h2>How it works</h2>
 <p>You pressed <b>Activate</b> in the plugin, which brought you here. Sign in once and choose which of your plugins to unlock on this computer: all of them, a few, or only that one. Once it says unlocked, go back to your DAW: they are ready, even ones that are already open. No internet on that computer? In the plugin choose offline activation, then bring the file here and press <b>Activate</b>.</p>
+<p>Each licence works on 3 computers. If a plugin is on all of them already, this page lists them so you can remove an old one, or add 2 more computers at half price.</p>
 <p>Something not right? Write to <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a> and tell us which plugin and DAW.</p>
 
 </main>
@@ -50,6 +52,7 @@
 <script src="../config.js"></script><script src="../assets/maitred.js" defer></script>
 <script src="../config.js"></script>
 <script src="https://assets.moonbase.sh/storefront/moonbase.js"></script>
+<script src="../assets/computers.js"></script>
 <script>
 const qs = new URLSearchParams(location.search), status = document.getElementById('status');
 const say = t => { if (status) status.textContent = t; };
@@ -66,16 +69,39 @@ let opened = false, done = false;
 // The store keeps sign-ins per website, so someone signed in on the store's own page is not signed in here.
 // Signed in here: unlock in our panel. Not signed in here: go to the store's activation page, which knows their sign-in.
 const hosted = () => (CONFIG.store || 'https://escae-studios.moonbase.sh') + '/activate?token=' + encodeURIComponent(token);
-const activate = () => session().then(t => { if (token && !t) { say('Taking you to sign in and unlock...'); location.replace(hosted()); return; } opened = true; return Moonbase.activate_product(token ? {token} : {}); }, () => { if (token) location.replace(hosted()); });
+// All computers in use (9 Nov): instead of an error, show the plugin's computers with Remove and "Add 2 computers"
+// (assets/computers.js). Resolves true when that box is showing; anything unexpected resolves false (the usual panel).
+const fullBox = document.getElementById('full');
+function showFull(pid, name, retry) {
+  const box = document.createElement('div');
+  fullBox.appendChild(box); fullBox.hidden = false;
+  const recheck = () => Computers.seats(pid).then(s => { if (s.full) return; box.remove(); if (!fullBox.children.length) fullBox.hidden = true; retry(); }, () => {});
+  return Computers.render(box, { productId: pid, name, full: true, onChange: recheck }).then(() => { box.scrollIntoView({ behavior: 'smooth', block: 'start' }); return recheck; });
+}
+const checkFull = () => {
+  if (!token || !window.Computers || !Moonbase.getAccessToken) return Promise.resolve(false);
+  return (async () => {
+    const t = await Moonbase.getAccessToken();
+    const r = await fetch((CONFIG.store || 'https://escae-studios.moonbase.sh').replace(/\/$/, '') + `/api/customer/activations/${encodeURIComponent(token)}`,
+      { mode: 'cors', redirect: 'manual', headers: { Accept: 'application/json', 'x-mb-cors': '1', Authorization: 'Bearer ' + t } });
+    if (r.status >= 400 || r.status === 0) return false;
+    const a = await r.json(), pid = a && a.product && a.product.id, name = (a && a.product && a.product.name) || 'This plugin';
+    if (!pid || !(await Computers.seats(pid)).full) return false;
+    say(`${name} is already on all your computers. Free one up or add more below, and it unlocks here.`);
+    await showFull(pid, name, () => { say('Follow the steps in the panel to unlock your plugin.'); Moonbase.activate_product({ token }); });
+    return true;
+  })().catch(() => false);
+};
+const activate = () => session().then(t => { if (token && !t) { say('Taking you to sign in and unlock...'); location.replace(hosted()); return; } opened = true; return checkFull().then(full => full ? 'full' : Moonbase.activate_product(token ? {token} : {})); }, () => { if (token) location.replace(hosted()); });
 const multi = (qs.get('more') || '').split(',').map(s => s.trim()).filter(Boolean);
 document.getElementById('again').addEventListener('click', () => multi.length && window.pickPlugins ? window.pickPlugins() : activate());
 if (window.Moonbase) {
   Moonbase.on('activated-product', e => { done = true; say(`Unlocked${e && e.product && e.product.name ? ': ' + e.product.name : ''}! Go back to your DAW, it is ready to play.`); });
   // Signed in from inside the panel: reopen it so it shows "Use license" straight away
-  Moonbase.on('signed-in', () => { if (opened && !done && token && !multi.length) setTimeout(() => { try { Moonbase.activate_product({token}); } catch (e) {} }, 300); });
+  Moonbase.on('signed-in', () => { if (opened && !done && token && !multi.length) setTimeout(() => checkFull().then(full => { if (!full) Moonbase.activate_product({token}); }).catch(() => {}), 300); });
 }
 if (multi.length && token) { /* several plugins: the picker below takes over */ }
-else if (token) activate().then(() => say('Follow the steps in the panel to unlock your plugin.'), () => {}); else store().then(() => say('Press Activate to unlock a plugin with its file.'), () => {});
+else if (token) activate().then(r => { if (r !== 'full') say('Follow the steps in the panel to unlock your plugin.'); }, () => {}); else store().then(() => say('Press Activate to unlock a plugin with its file.'), () => {});
 </script>
 <script>
 // Activate several plugins at once (9 Nov). A plugin opens /activate/?token=<its request>&more=<requests for the
@@ -114,7 +140,7 @@ else if (token) activate().then(() => say('Follow the steps in the panel to unlo
     say('Checking your plugins...');
     const found = await Promise.all(ids.map(id => call(`/api/customer/activations/${encodeURIComponent(id)}`, 'GET', true).then(a => ({ id, a }), () => ({ id, a: null }))));
     rows = found.filter(f => f.a && (!f.a.status || /request/i.test(f.a.status))).map(f => ({
-      id: f.id, mine: f.id === token,
+      id: f.id, mine: f.id === token, pid: f.a.product && f.a.product.id,
       name: (f.a.product && (f.a.product.name || f.a.product.id)) || 'Plugin',
       owned: !!((f.a.licenseEligibility && f.a.licenseEligibility.eligible) || (f.a.product && f.a.product.owned))
     }));
@@ -156,17 +182,22 @@ else if (token) activate().then(() => say('Follow the steps in the panel to unlo
     const mine = rows.find(r => r.mine);
     const chosen = rows.filter(r => r.owned && (onlyMine ? r.mine : (!r.box || r.box.checked)));
     const skipped = rows.filter(r => !r.mine && !chosen.includes(r));
+    fullBox.textContent = ''; fullBox.hidden = true;
     say(chosen.length ? `Unlocking ${chosen.length === 1 ? chosen[0].name : chosen.length + ' plugins'}...` : 'Nothing ticked.');
     skipped.forEach(r => cancel(r.id));
-    const ok = [], failed = [];
+    const ok = [], failed = [], full = [];
     for (const r of chosen) {
-      try { await call(`/api/customer/activations/${encodeURIComponent(r.id)}/license`, 'POST', true); ok.push(r); if (r.sub) { r.sub.textContent = 'Unlocked'; r.label.classList.add('done'); } }
-      catch (e) { failed.push(r); if (r.sub) r.sub.textContent = 'Could not unlock this one'; }
+      const result = await unlockOne(r);
+      (result === 'ok' ? ok : result === 'full' ? full : failed).push(r);
     }
     busy = false;
     if (ok.length) done = true;
     const names = ok.map(r => r.name);
     let msg = ok.length ? `Unlocked: ${names.join(', ')}! Go back to your DAW, ${ok.length > 1 ? 'they are' : 'it is'} ready to play.` : '';
+    // all computers in use: the plugin keeps waiting while they free one up or add more below, then it unlocks
+    for (const r of full) showFull(r.pid, r.name, () => unlockOne(r).then(res => say(res === 'ok' ? `Unlocked: ${r.name}! Go back to your DAW, it is ready to play.`
+      : `We couldn't unlock ${r.name}. Press Activate in that plugin to try again, or email ${CONFIG.supportEmail}.`)));
+    if (full.length) msg += ` ${full.map(r => r.name).join(', ')} ${full.length > 1 ? 'are' : 'is'} already on all your computers: free one up or add more below.`;
     if (failed.length) msg += ` We couldn't unlock ${failed.map(r => r.name).join(', ')}. Press Activate in ${failed.length > 1 ? 'those plugins' : 'that plugin'} to try again, or email ${CONFIG.supportEmail}.`;
     // the one they opened isn't owned (or they unticked it): the usual panel offers the trial or buying
     if (!mine.owned && (onlyMine || !chosen.includes(mine))) { if (msg) say(msg); return fallback('trial or purchase for the plugin they opened'); }
@@ -174,6 +205,15 @@ else if (token) activate().then(() => say('Follow the steps in the panel to unlo
     say(msg || 'Nothing unlocked.');
     status.scrollIntoView({ behavior: 'smooth', block: 'center' });
     if (ok.length) { $('pick-go').disabled = true; $('pick-one').disabled = true; }
+  }
+
+  // 'ok', 'full' (every computer on its licences is taken) or 'failed'
+  async function unlockOne(r) {
+    const isFull = async () => { try { return !!(r.pid && window.Computers && (await Computers.seats(r.pid)).full); } catch (e) { return false; } };
+    const mark = (text, cls) => { if (r.sub) r.sub.textContent = text; if (cls && r.label) r.label.classList.add(cls); };
+    if (await isFull()) { mark('On all your computers already'); return 'full'; }
+    try { await call(`/api/customer/activations/${encodeURIComponent(r.id)}/license`, 'POST', true); mark('Unlocked', 'done'); return 'ok'; }
+    catch (e) { if (await isFull()) { mark('On all your computers already'); return 'full'; } mark('Could not unlock this one'); return 'failed'; }
   }
 
   $('pick-go').addEventListener('click', () => unlock(false));
