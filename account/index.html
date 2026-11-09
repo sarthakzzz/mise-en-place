@@ -89,7 +89,9 @@ if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out
   $g('giftPlugin').innerHTML = '<option value="">Pick a plugin to keep</option>' + Object.entries(NAMES).sort((a, b) => a[1].localeCompare(b[1])).map(([k, n]) => `<option value="${k}">${n}</option>`).join('');
   document.getElementById('stayGo').addEventListener('click', () => { shut(); $g('giftPick').hidden = false; $g('giftDone').hidden = true; gb.hidden = false; $g('giftPlugin').focus(); });
   $g('giftSkip').addEventListener('click', toCancel); $g('giftOn').addEventListener('click', toCancel);
-  $g('giftRedeem').addEventListener('click', () => { const c = $g('giftCode').textContent; gb.hidden = true; say('Claim your doggy bag, then cancel from Memberships whenever you are ready.'); go('redeem_voucher', {code: c}); });
+  $g('giftRedeem').addEventListener('click', () => { const c = $g('giftCode').textContent; gb.hidden = true; say('Claim your doggy bag, then cancel from Memberships whenever you are ready.'); const k = $g('giftPlugin').value, V = CONFIG.variations || {};
+    // a GIFT code is a 100% coupon with no item limit, so it always goes on a one-plugin checkout, never the basket
+    go('purchase', [{product_id: CONFIG.products[k], ...(V[k] ? {variation_id: V[k]} : {}), coupon_code: c}]); });
   $g('giftTake').addEventListener('click', async () => { const k = $g('giftPlugin').value; if (!k) { $g('giftPlugin').focus(); return; }
     const name = NAMES[k], btn = $g('giftTake');
     if (G.on) { btn.disabled = true; btn.textContent = 'Wrapping it in foil...';
