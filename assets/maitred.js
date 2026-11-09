@@ -12,11 +12,11 @@
   const mdVid = () => { let v = mdGet().vid; if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); mdPut({vid: v}); } return v; };
   const discount = () => {
     if (!MD.on) return `I don't have a code to hand just now. Join our emails, and treats and offers come straight to your inbox.`;
-    const have = window.pfbMd.code; if (have) return `Of course. Your 10% code is <b>${have}</b>, and it's applied automatically at checkout.`;
+    const have = window.pfbMd.code; if (have) return `Of course. Your extra 10% code is <b>${have}</b>. If the checkout doesn't show it already, type it into the coupon box there.`;
     const id = 'md' + Date.now(); setTimeout(async () => { const el = document.getElementById(id); try {
         const r = await (await fetch(MD.endpoint || C.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({action: 'maitred', vid: mdVid()})})).json();
         if (!r || !r.ok || !r.code) throw (r && r.error ? String(r.error) : 0); mdPut({code: r.code, at: Date.now()});
-        if (el) el.innerHTML = `For you, an extra 10% off whatever you buy: <b>${r.code}</b>. It's applied automatically at checkout. Bon appétit!`;
+        if (el) el.innerHTML = `For you, an extra 10% off whatever you buy: <b>${r.code}</b>. If the checkout doesn't show it already, type it into the coupon box there. Bon appétit!`;
       } catch (e) { if (el) el.textContent = typeof e === 'string' && e ? e : 'The kitchen is busy just now. Please ask me again in a minute.'; } }, 0);
     return `<span id="${id}">One moment, let me speak to the Chef...</span>`;
   };

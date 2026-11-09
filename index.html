@@ -959,6 +959,7 @@ function refresh(){
   const plugins = cart.filter(id => !PRODUCTS[id].plan && !PRODUCTS[id].free), plan = cart.find(id => PRODUCTS[id].plan);
   hintEl.innerHTML = plugins.length && !plan ? `<div class="hintbox"><span>Want everything? The <b>Full Fridge Bundle</b> gets you all 16 plugins for $${PRODUCTS.fridge.price}.</span><button class="btn btn-solid" type="button" id="swap" style="background:var(--ink);color:var(--butter)">Swap</button></div>` : '';
   if (window.pfbCatch) hintEl.insertAdjacentHTML('beforeend', pfbCatch.note(cart));
+  if (window.pfbMd && pfbMd.code && cart.length) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">🛎️ Your extra 10% code <b>${pfbMd.code}</b>: if the checkout doesn't show it already, type it into the coupon box there.</div>`);
   totalEl.textContent = '$' + cart.reduce((s, id) => s + PRODUCTS[id].price, 0);
   document.getElementById('checkout').disabled = !cart.length;
   document.getElementById('checkout').style.opacity = cart.length ? 1 : .5;
