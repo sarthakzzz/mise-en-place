@@ -42,7 +42,10 @@ const token = qs.get('token') || qs.get('t') || qs.get('mb_token') || undefined;
 // 9 Nov fix: wait for the store to restore an existing sign-in before opening the panel, otherwise it says "Please sign in" to people who are signed in.
 const session = () => store().then(() => Promise.race([Promise.resolve(Moonbase.getAccessToken ? Moonbase.getAccessToken() : null).catch(() => null), new Promise(r => setTimeout(() => r(null), 4000))]));
 let opened = false, done = false;
-const activate = () => session().then(() => { opened = true; return Moonbase.activate_product(token ? {token} : {}); });
+// The store keeps sign-ins per website, so someone signed in on the store's own page is not signed in here.
+// Signed in here: unlock in our panel. Not signed in here: go to the store's activation page, which knows their sign-in.
+const hosted = () => (CONFIG.store || 'https://escae-studios.moonbase.sh') + '/activate?token=' + encodeURIComponent(token);
+const activate = () => session().then(t => { if (token && !t) { say('Taking you to sign in and unlock...'); location.replace(hosted()); return; } opened = true; return Moonbase.activate_product(token ? {token} : {}); }, () => { if (token) location.replace(hosted()); });
 document.getElementById('again').addEventListener('click', activate);
 if (window.Moonbase) {
   Moonbase.on('activated-product', e => { done = true; say(`Unlocked${e && e.product && e.product.name ? ': ' + e.product.name : ''}! Go back to your DAW, it is ready to play.`); });
