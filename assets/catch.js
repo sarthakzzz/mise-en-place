@@ -73,7 +73,7 @@
     const tap = e => { // touch: a near miss makes it hop away (twice at most), a direct hit catches it
       if (e.target.closest('.cf,.cf-tag,.cf-win')) return; const d = Math.hypot(e.clientX - f.x, e.clientY - f.y);
       if (d < 130 && f.hops < 2 && !reduce) hop(e.clientX, e.clientY); };
-    const hop = (x, y) => { f.hops++; f.scared = performance.now(); const ang = Math.atan2(f.y - y, f.x - x); f.vx += Math.cos(ang) * 650; f.vy += Math.sin(ang) * 650 - 320; const sx = G('sfx'); if (sx) sx.pop(900, .06, .06); };
+    const hop = (x, y) => { f.hops++; f.scared = performance.now(); const ang = Math.atan2(f.y - y, f.x - x); f.vx += Math.cos(ang) * 700; f.vy += Math.sin(ang) * 700 - 330; const sx = G('sfx'); if (sx) sx.pop(900, .06, .06); };
     if (fine) addEventListener('pointermove', move, {passive: true}); else addEventListener('pointerdown', tap, {passive: true});
 
     function step(now){
@@ -88,11 +88,11 @@
         // close call: a quick side-step (it has a few, and earns one back every few seconds)
         if (d < 78 && f.jukes >= 1 && now - f.lastJuke > 260) { f.jukes--; f.lastJuke = now; const ang = Math.atan2(dy, dx) + (Math.random() < .5 ? 1 : -1) * (.9 + Math.random() * .6);
           f.vx = Math.cos(ang) * 1100; f.vy = Math.sin(ang) * 1100; const sx = G('sfx'); if (sx) sx.pop(1000, .05, .05); }
-        f.jukes = Math.min(4, f.jukes + dt * .3);
+        f.jukes = Math.min(4, f.jukes + dt * .34);
         if (chased) { const push = (1 - d / R) * 1900 * f.stam * dt / Math.max(.3, d / R); f.vx += dx / (d || 1) * push; f.vy += dy / (d || 1) * push;
-          f.stam = Math.max(.18, f.stam - dt * .22); }
+          f.stam = Math.max(.22, f.stam - dt * .22); }
         else f.stam = Math.min(1, f.stam + dt * .08);
-        const sp = Math.hypot(f.vx, f.vy), max = (now - f.lastJuke < 220 ? 1100 : 260 + 520 * f.stam); if (sp > max) { f.vx *= max / sp; f.vy *= max / sp; }
+        const sp = Math.hypot(f.vx, f.vy), max = (now - f.lastJuke < 220 ? 1100 : 280 + 520 * f.stam); if (sp > max) { f.vx *= max / sp; f.vy *= max / sp; }
       }
       f.x += f.vx * dt; f.y += f.vy * dt;
       // while it is being chased it keeps inside the screen; otherwise it rolls on and out
