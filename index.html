@@ -442,6 +442,7 @@ body.waitlist .countdown{display:inline-flex}
 .daws-tm{text-align:center;font-size:12px;opacity:.55;margin:6px 0 0}
 .daw-line{display:block;margin-top:10px;font-size:13px;font-weight:700;opacity:.8;color:inherit}
 </style>
+<style id="passes-css">.passes{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin:14px auto 0;max-width:900px;font-size:15px}.passes .btn{padding:9px 16px;font-size:15px}</style>
 <style id="plug-clean">
 /* Cleaner plugin pages, bigger plugin view (Sarthak 9 Nov) */
 .plug .stick{gap:1.2vh}
@@ -641,6 +642,7 @@ body.waitlist .countdown{display:inline-flex}
         <div class="tier"><div class="eyebrow">A seat for the year</div><h2>Breakfast Club</h2><div class="amt">$150<small>for 1 year</small></div><ul><li>All 16 plugins for a full year</li><li>A new plugin every month, yours on day one</li><li>Keep every plugin you got that year, forever</li></ul><button class="btn btn-solid only-sale" type="button" data-add="club"><span class="ico" data-food="cherry"></span>Add to basket</button><button class="btn btn-ghost only-wait" type="button" data-open-pop data-wait>Out 15 November · join the waitlist</button></div>
       </div>
     </div>
+    <div class="passes"><span><b>Rather rent?</b> Every plugin while your pass is active.</span><button class="btn btn-ghost" type="button" data-add="monthly" data-label="Monthly Pass · $10/month">Monthly Pass · $10/month</button><button class="btn btn-ghost" type="button" data-add="yearly" data-label="Yearly Pass · $80/year">Yearly Pass · $80/year</button></div>
     <div class="small-print">Every licence works on 3 of your computers, Mac or Windows, with offline activation.</div>
     <a class="tag-chef" id="tagChef" href="tag-the-chef/" hidden><b>Tag the Chef.</b> <span>Cook something with our plugins, post it, tag @pluginsforbreakfast, and pick one plugin on us. The free trial counts.</span> <u>How it works</u></a>
     <div class="dots" id="dots"><button type="button" aria-label="À la carte"></button><button type="button" aria-label="Full Fridge Bundle"></button><button type="button" aria-label="Breakfast Club"></button></div>
@@ -921,6 +923,8 @@ const PRODUCTS = {
   mg: {name:'Muesli Granular', sub:'Granular · lifetime licence', price:29, food:'blueberry'},
   bs: {name:'Butter Spread', sub:'Stereo widener · free, yours forever', price:0, food:'butter', free:true},
   fridge: {name:'Full Fridge Bundle', sub:'All 16 plugins · own forever', price:90, food:'fridge', plan:true},
+  monthly: {name:'Monthly Pass', sub:'All 16 plugins while subscribed · cancel any time', price:10, food:'teacup', plan:true, pass:'monthly-pass'},
+  yearly: {name:'Yearly Pass', sub:'All 16 plugins while subscribed · renews yearly', price:80, food:'teacup', plan:true, pass:'yearly-pass'},
   club: {name:'Breakfast Club', sub:'All 16 plugins + a new one every month · keep them', price:150, food:'cherry', plan:true}
 };
 for (const [k, p] of Object.entries(PRODUCTS)) p.mb = (CONFIG.products || {})[k];
@@ -953,7 +957,7 @@ const cartEl = document.getElementById('cart'), shade = document.getElementById(
 function refresh(){
   badge.textContent = cart.length; badge.classList.toggle('on', cart.length > 0);
   basketBtn.setAttribute('aria-label', `Open your basket, ${cart.length} item${cart.length === 1 ? '' : 's'}`);
-  document.querySelectorAll('[data-add]').forEach(b => { const inC = cart.includes(b.dataset.add); b.classList.toggle('added', inC); const n = cart.filter(x => x === b.dataset.add).length; b.lastChild.textContent = !inC ? 'Add to basket' : (PRODUCTS[b.dataset.add]?.plan || PRODUCTS[b.dataset.add]?.free) ? 'In your basket' : `Add one more · ${n} in basket`; });
+  document.querySelectorAll('[data-add]').forEach(b => { const inC = cart.includes(b.dataset.add); b.classList.toggle('added', inC); const n = cart.filter(x => x === b.dataset.add).length; b.lastChild.textContent = !inC ? (b.dataset.label || 'Add to basket') : (PRODUCTS[b.dataset.add]?.plan || PRODUCTS[b.dataset.add]?.free) ? 'In your basket' : `Add one more · ${n} in basket`; });
   itemsEl.innerHTML = cart.length ? cart.map((id, i) => { const p = PRODUCTS[id]; return `<li class="item"><span class="fi">${FOOD[p.food]()}</span><div><b>${p.name}</b><small>${p.sub}</small></div><span class="pr">$${p.price}</span><button class="rm" type="button" data-rm="${i}" aria-label="Remove ${p.name}">${FOOD.pretzel()}</button></li>`; }).join('')
     : `<li class="empty"><div class="plate">${FOOD.plate()}</div>Your plate is empty. Add a plugin from the menu.</li>`;
   const plugins = cart.filter(id => !PRODUCTS[id].plan && !PRODUCTS[id].free), plan = cart.find(id => PRODUCTS[id].plan);
@@ -1002,10 +1006,10 @@ document.getElementById('checkout').addEventListener('click', async () => {
   if (!window.Moonbase || !mbReady) { fine.textContent = 'The checkout is still loading. Give it a second and try again.'; return; }
   btn.disabled = true; fine.textContent = 'Opening the secure checkout...';
   try {
-    const V = CONFIG.variations || {}, items = cart.map(id => id === 'fridge' ? {bundle_id: CONFIG.bundle, ...(V.fridge ? {variation_id: V.fridge} : {})} : id === 'club' ? {bundle_id: CONFIG.bundle, variation_id: CONFIG.clubVariation} : {product_id: PRODUCTS[id].mb, ...(V[id] ? {variation_id: V[id]} : {})});
+    const V = CONFIG.variations || {}, items = cart.map(id => id === 'fridge' ? {bundle_id: CONFIG.bundle, ...(V.fridge ? {variation_id: V.fridge} : {})} : id === 'club' ? {bundle_id: CONFIG.bundle, variation_id: CONFIG.clubVariation} : PRODUCTS[id].pass ? {bundle_id: CONFIG.bundle, variation_id: PRODUCTS[id].pass} : {product_id: PRODUCTS[id].mb, ...(V[id] ? {variation_id: V[id]} : {})});
     if (cart.includes('club') && !CONFIG.clubVariation) throw new Error('club');
     // price steps: each item carries the coupon for today's step, e.g. STEP19 or FRIDGE49 (none once the full price is reached)
-    const S = CONFIG.priceSteps || {}, coupon = id => id === 'club' || PRODUCTS[id].free ? '' : id === 'fridge' ? (PRICE.bundle < S.bundle?.max ? S.bundle.coupon + PRICE.bundle : '') : (PRICE.plugin < S.plugin?.max ? S.plugin.coupon + PRICE.plugin : '');
+    const S = CONFIG.priceSteps || {}, coupon = id => id === 'club' || PRODUCTS[id].free || PRODUCTS[id].pass ? '' : id === 'fridge' ? (PRICE.bundle < S.bundle?.max ? S.bundle.coupon + PRICE.bundle : '') : (PRICE.plugin < S.plugin?.max ? S.plugin.coupon + PRICE.plugin : '');
     // a caught-fruit code (assets/catch.js) replaces the step coupon on the one item it fits
     const cc = window.pfbCatch ? pfbCatch.pick(cart) : -1; catchFallback = cc >= 0 ? coupon(cart[cc]) : '';
     // a Maître D' 10% code (assets/maitred.js) goes on any other paid item where it saves more than the step price
