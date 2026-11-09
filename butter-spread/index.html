@@ -85,7 +85,7 @@ ol.install{margin:10px 0 0;padding-left:20px}
 <script src="../config.js"></script>
 <script src="../assets/bs-download.js"></script>
 <script>
-// Butter Spread download page: email first (our own list: CONFIG.signupEndpoint saves it to our Sheet and emails a confirmation), then the download.
+// Butter Spread download page: email first (our own list: CONFIG.signupEndpoint saves it to our Sheet and emails a thank-you with Butter Spread), then the download.
 const SOURCE = new URLSearchParams(location.search).get('src') || 'butter-spread-page';
 const $ = id => document.getElementById(id), msg = $('msg');
 const KEY = 'pfb-bs-joined', pageT = Date.now();
@@ -121,7 +121,7 @@ $('getForm').addEventListener('submit', async e => {
   btn.disabled = true; msg.textContent = 'Spreading the butter...';
   try {
     const r = await joinList(email);
-    msg.textContent = r.status === 'confirmed' ? "You're already on the list. Welcome back!" : `You're on the list! We've sent a confirmation to ${email}.`;
+    msg.textContent = `Thank you for subscribing! Butter Spread is yours, and a copy of the link is on its way to ${email}. Enjoy the meal.`;
     unlock(false, 'Your download is ready. Enjoy Butter Spread!');
   } catch (err) { msg.textContent = err.message; }
   finally { btn.disabled = false; }

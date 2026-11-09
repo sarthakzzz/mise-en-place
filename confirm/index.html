@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>You're in · Plugins for Breakfast</title>
 <meta name="robots" content="noindex">
-<meta name="description" content="Confirm your Plugins for Breakfast email.">
+<meta name="description" content="Thank you for subscribing to Plugins for Breakfast.">
 <link rel="icon" href="/assets/icon.png">
 <link rel="stylesheet" href="/assets/page.css">
 <style>
@@ -57,10 +57,10 @@ const show = (title, text) => { $('title').textContent = title; $('text').textCo
 <script>
 $('bsDl').replaceWith(PFB_BS.buttons('btn', {left: true}));
 (async () => {
-  if (!token) { show('Link missing', 'This confirmation link looks incomplete. Open it again from the email, or write to ' + CONFIG.supportEmail + '.'); return; }
+  if (!token) { show('Link missing', 'This link looks incomplete. Open it again from the email, or write to ' + CONFIG.supportEmail + '.'); return; }
   try {
     const r = await ask({a: 'confirm', t: token});
-    if (r.ok) { show(r.title || "You're in!", r.message || 'Thanks for confirming. Your Butter Spread download is ready, and we will send news about new plugins.'); $('next').hidden = false; }
+    if (r.ok) { show("Greetings from the Chef!", 'Thank you for subscribing. Your complimentary Butter Spread is ready below, and early access, launch news and new plugins will come to your inbox. Enjoy the meal!'); $('next').hidden = false; }
     else show(r.title || 'That link has gone stale', r.message || 'This link is no longer valid. Join again from our home page, or write to ' + CONFIG.supportEmail + '.');
   } catch (e) { show('The kitchen is busy', 'We could not check your link just now. Please try again in a minute, or write to ' + CONFIG.supportEmail + '.'); }
 })();
