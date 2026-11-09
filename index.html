@@ -911,6 +911,8 @@ const PRICE = (() => { const S = CONFIG.priceSteps, sold = Object.assign({plugin
   if (q !== null) sold.plugins = sold.bundles = +q || 0;
   const at = (st, n) => { const i = Math.floor(n / st.every), now = Math.min(st.start + i * st.step, st.max); return {now, left: now < st.max ? st.every * (i + 1) - n : 0}; };
   if (!S) return {plugin: 29, bundle: 90};
+  // Sales opened early (CONFIG.salesOpen): the step coupons only start at CONFIG.stepsFrom, so show full price and send no coupon until then
+  if (CONFIG.salesOpen === true && q === null && CONFIG.stepsFrom && Date.now() < Date.parse(CONFIG.stepsFrom)) return {plugin: S.plugin.max, bundle: S.bundle.max, pluginLeft: 0, bundleLeft: 0, label: ''};
   const pl = at(S.plugin, sold.plugins), bu = at(S.bundle, sold.bundles);
   return {plugin: pl.now, bundle: bu.now, pluginLeft: pl.left, bundleLeft: bu.left, label: pl.left ? `${pl.left} left at this price` : ''}; })();
 window.PRICE = PRICE;

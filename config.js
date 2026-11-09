@@ -41,6 +41,7 @@ window.CONFIG = {
     plugin: { start: 19, step: 2, every: 100, max: 29, coupon: 'STEP' },
     bundle: { start: 49, step: 6, every: 100, max: 90, coupon: 'FRIDGE' }
   },
+  stepsFrom: '2026-11-12T00:00:00+05:30',     // STEP/FRIDGE coupons are live in the store from this moment
   clubPrice: 90,                              // Breakfast Club price (a promotion, renewals also $90; shown as $150 struck through)
   clubVariation: 'breakfast-club',            // Breakfast Club: the yearly ($150) price's variation ID on the full-fridge bundle
 
