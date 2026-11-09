@@ -60,6 +60,7 @@ window.CONFIG = {
   // Catch the fruit (assets/catch.js): a fruit rolls across the page on a visitor's first scroll, then at most once a week.
   // Catching it gets one single-use Moonbase code with a random reward, handed out by our Apps Script ("Catch codes" tab).
   // on: false keeps it hidden (preview any time with ?catch=test). Rewards: plugin50, fridge50, month50 (first month of the Club, once that exists).
+  retention: { variation: '', code: '' },   // $7 stay offer on cancel: set the Moonbase variation (and code) when ready; empty = email The Chef
   maitredDiscount: { on: false },   // Maître D' 10% code; turn on once the Moonbase code pool and the Apps Script 'maitred' action exist
   catchFruit: { on: false, everyDays: 7, passes: 3, gapSeconds: 30, label: 'Catch me for 50% off!' },
   // Free Butter Spread downloads: each zip holds the installer plus a READ ME FIRST for the security warning
