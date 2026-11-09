@@ -942,7 +942,7 @@ function add(id, fromEl){
   if (p.plan) refresh();
 }
 document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => add(b.dataset.add, b)));
-document.querySelectorAll('[data-trial]').forEach(b => b.addEventListener('click', () => { const id = b.closest('.plug').id; if (!mb('view_product', {product_id: PRODUCTS[id].mb})) say(`${b.dataset.trial}: the store is warming up, try again in a moment.`); const r = b.getBoundingClientRect(); burst(r.left + r.width/2, r.top, ['#7fb342','#c6ea8a'], 10, 1, {size:5}); sfx.pop(500); }));
+document.querySelectorAll('[data-trial]').forEach(b => b.addEventListener('click', () => { const id = b.closest('.plug').id; if (!tryProduct(PRODUCTS[id].mb)) say(`${b.dataset.trial}: the store is warming up, try again in a moment.`); const r = b.getBoundingClientRect(); burst(r.left + r.width/2, r.top, ['#7fb342','#c6ea8a'], 10, 1, {size:5}); sfx.pop(500); }));
 let cartFocus = null;
 function openCart(){ cartFocus = document.activeElement; refresh(); shade.hidden = false; cartEl.hidden = false; document.getElementById('cartClose').focus(); sfx.pop(420); }
 function closeCart(){ shade.hidden = true; cartEl.hidden = true; if (cartFocus) cartFocus.focus(); }
@@ -1202,6 +1202,10 @@ document.getElementById('news').addEventListener('submit', e => { e.preventDefau
 
 /* ---------- live store: Moonbase, waitlist mode and the launch countdown ---------- */
 let storeUsed = false;
+function tryProduct(pid){ storeUsed = true; if (!window.Moonbase || !mbReady) return false;
+  const panel = () => { try { Moonbase.view_product({product_id: pid}); } catch (e) { console.error('store view_product', e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); } };
+  try { const r = Moonbase.download_product({product_id: pid}); if (r && r.catch) r.catch(e => { console.error('store download_product', e); panel(); }); } catch (e) { console.error('store download_product', e); panel(); }
+  return true; }
 document.addEventListener('click', e => { if (e.target.closest?.('[data-add],[data-trial],#checkout,[data-account]')) storeUsed = true; }, true);
 function mb(intent, args){ storeUsed = true; if (!window.Moonbase || !mbReady) return false; try { const r = Moonbase[intent](args); if (r && r.catch) r.catch(e => { console.error('store', intent, e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); }); } catch (e) { console.error('store', intent, e); say('The store hiccuped. Please try again, or write to ' + CONFIG.supportEmail + '.'); } return true; }
 // Forgiving email boxes (8 Nov): trim spaces, stray quotes/brackets and trailing dots or commas before any check runs; + addresses are fine.
