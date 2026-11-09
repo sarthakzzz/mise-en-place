@@ -1007,7 +1007,10 @@ document.getElementById('checkout').addEventListener('click', async () => {
     const S = CONFIG.priceSteps || {}, coupon = id => id === 'club' || PRODUCTS[id].free ? '' : id === 'fridge' ? (PRICE.bundle < S.bundle?.max ? S.bundle.coupon + PRICE.bundle : '') : (PRICE.plugin < S.plugin?.max ? S.plugin.coupon + PRICE.plugin : '');
     // a caught-fruit code (assets/catch.js) replaces the step coupon on the one item it fits
     const cc = window.pfbCatch ? pfbCatch.pick(cart) : -1; catchFallback = cc >= 0 ? coupon(cart[cc]) : '';
-    const coded = items.map((i, n) => n === cc ? {...i, coupon_code: pfbCatch.code} : coupon(cart[n]) ? {...i, coupon_code: coupon(cart[n])} : i);
+    // a Maître D' 10% code (assets/maitred.js) goes on any other paid item where it saves more than the step price
+    const md = window.pfbMd ? pfbMd.code : '', full = id => id === 'fridge' ? (S.bundle?.max || 90) : id === 'club' ? 150 : (S.plugin?.max || 29);
+    const mdBetter = id => md && !PRODUCTS[id].free && full(id) * .1 > full(id) - PRODUCTS[id].price;
+    const coded = items.map((i, n) => n === cc ? {...i, coupon_code: pfbCatch.code} : mdBetter(cart[n]) ? {...i, coupon_code: md} : coupon(cart[n]) ? {...i, coupon_code: coupon(cart[n])} : i);
     if (coded.some(i => i.coupon_code)) { lastOrder = coded; retries = 0; cart = []; save(); refresh(); closeCart(); sfx.ding(); await Moonbase.purchase(coded); }
     else {
       for (const i of items) await Moonbase.add_to_cart({...i, show_cart: false});
@@ -1300,7 +1303,8 @@ async function subscribe(form, holder, onDone){
 // If a step coupon is used up (sold.js a little behind), retry the order with the next step's coupon
 let lastOrder = null, retries = 0, catchFallback = '';
 function nextCoupon(code){ const S = CONFIG.priceSteps || {};
-  if (window.pfbCatch && code && code === pfbCatch.code) { pfbCatch.used(); return catchFallback; }   // caught code already used: back to today's price
+  if (window.pfbCatch && code && code === pfbCatch.code) { pfbCatch.used(); return catchFallback; }
+  if (window.pfbMd && code && code === pfbMd.code) { pfbMd.used(); return ''; }   // Maître D' code already used: today's price   // caught code already used: back to today's price
   for (const st of [S.plugin, S.bundle]) { if (!st) continue; const m = new RegExp('^' + st.coupon + '(\\d+)$').exec(code || ''); if (m) { const n = +m[1] + st.step; return n < st.max ? st.coupon + n : ''; } }
   return null; }
 function startMoonbase(){ if (mbReady || !window.Moonbase) return; Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {}); mbReady = true;

@@ -4,7 +4,24 @@
   const NAME = C.assistantName || "Maître D'";
   const price = () => window.PRICE || {plugin: 29, bundle: 90};
   const root = /\/(account|activate)\//.test(location.pathname) ? '../' : '';
+  // Ask for a discount: one single-use 10% code per visitor from our Apps Script (CONFIG.maitredDiscount), never stored in this file
+  const MD = C.maitredDiscount || {}, mdKey = 'pfb-md';
+  const mdGet = () => { try { return JSON.parse(localStorage.getItem(mdKey) || '{}'); } catch (e) { return {}; } };
+  const mdPut = o => { try { localStorage.setItem(mdKey, JSON.stringify(Object.assign(mdGet(), o))); } catch (e) {} };
+  window.pfbMd = { get code(){ const s = mdGet(); return s.code && !s.used ? s.code : ''; }, used(){ mdPut({used: Date.now()}); } };
+  const mdVid = () => { let v = mdGet().vid; if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); mdPut({vid: v}); } return v; };
+  const discount = () => {
+    if (!MD.on) return `I don't have a code to hand just now. Join our emails, and treats and offers come straight to your inbox.`;
+    const have = window.pfbMd.code; if (have) return `Of course. Your 10% code is <b>${have}</b>, and it's applied automatically at checkout.`;
+    const id = 'md' + Date.now(); setTimeout(async () => { const el = document.getElementById(id); try {
+        const r = await (await fetch(MD.endpoint || C.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({action: 'maitred', vid: mdVid()})})).json();
+        if (!r || !r.ok || !r.code) throw 0; mdPut({code: r.code, at: Date.now()});
+        if (el) el.innerHTML = `For you, an extra 10% off whatever you buy: <b>${r.code}</b>. It's applied automatically at checkout. Bon appétit!`;
+      } catch (e) { if (el) el.innerHTML = `The kitchen is busy just now. Please ask me again in a minute.`; } }, 0);
+    return `<span id="${id}">One moment, let me speak to the Chef...</span>`;
+  };
   const A = [
+    {k: 'discount coupon code cheaper deal offer promo voucher cheap expensive reduce', q: 'Any discount for me?', a: discount},
     {k: 'trial try free demo test', q: 'How does the free trial work?', a: () => `Make a free account, download the plugin and use everything for 3 days. No card needed. When you buy, the same install unlocks and your presets stay put.`},
     {k: 'price cost how much buy pay dollar bundle fridge discount launch', q: 'What does it cost?', a: () => { const p = price(); return `Each plugin is $${p.plugin}${p.label ? ' (' + p.label.replace(/^Launch/, 'launch') + ')' : ''}. The Full Fridge Bundle, all 16 plugins, is $${p.bundle}. Breakfast Club is $${C.clubPrice || 150} for a year of everything, and you keep it all.`; }},
     {k: 'club membership subscription year renew', q: 'What is Breakfast Club?', a: () => `$90 for one year (usually $150). You get all 16 plugins, plus the new plugin we release every month during your year, and you keep all of them forever, even if you don't renew.`},
