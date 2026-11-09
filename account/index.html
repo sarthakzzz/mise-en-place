@@ -29,8 +29,13 @@
 <button class="act" type="button" data-intent="view_subscriptions"><b>Breakfast Club</b><span>Your membership and renewal</span></button>
 <button class="act" type="button" data-intent="view_account"><b>Account settings</b><span>Email, password and sign out</span></button>
 </div>
+<section id="computers" hidden>
+<h2>Your computers</h2>
+<p class="soft">Each licence works on 3 computers. Remove one you don't use any more, or add 2 more computers to a plugin at half price.</p>
+<div id="computer-list"></div>
+</section>
 <h2>Moving to a new computer?</h2>
-<p>Each licence works on 3 computers. Open <b>My plugins</b>, remove the old computer from the licence, then activate on the new one.</p>
+<p>Each licence works on 3 computers. Remove the old computer under <b>Your computers</b> above (or in <b>My plugins</b>), then activate on the new one. Need more than 3? Add 2 more computers to any plugin you own at half price.</p>
 <p>Stuck? Write to <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a>.</p>
 
 </main>
@@ -38,6 +43,7 @@
 <script src="../config.js"></script><script src="../assets/maitred.js" defer></script>
 <script src="../config.js"></script>
 <script src="https://assets.moonbase.sh/storefront/moonbase.js"></script>
+<script src="../assets/computers.js"></script>
 <script>
 const qs = new URLSearchParams(location.search), status = document.getElementById('status');
 const say = t => { if (status) status.textContent = t; };
@@ -54,5 +60,50 @@ if (window.Moonbase) { Moonbase.on('signed-in', e => { signedIn(true); say(`Sign
 const gift = qs.get('redeem'); document.getElementById('redeem').addEventListener('click', () => go('redeem_voucher', gift ? {code: gift} : {}));
 if (gift) { say('Sign in or make a free account to claim your plugin.'); go('redeem_voucher', {code: gift}); }
 if (window.Moonbase) Moonbase.on('redeemed-voucher', () => say('Claimed! Your new plugin is in My plugins.'));</script>
+<script>
+// Your computers (9 Nov): every paid plugin the customer owns, how many of its computers are used, and for each one
+// Remove and "Add 2 computers" (assets/computers.js). /account/?computers=<product id> opens that plugin (the plugins
+// link here when all their computers are in use).
+(() => {
+  if (!window.Moonbase || !window.Computers) return;
+  const section = document.getElementById('computers'), list = document.getElementById('computer-list');
+  const want = qs.get('computers');
+  const api = (CONFIG.store || 'https://escae-studios.moonbase.sh').replace(/\/$/, '');
+  let loading = false;
+  async function load() {
+    if (loading) return; loading = true;
+    try {
+      const t = await Moonbase.getAccessToken();
+      if (!t) return;
+      const r = await fetch(api + '/api/customer/inventory/products', { mode: 'cors', redirect: 'manual', headers: { Accept: 'application/json', 'x-mb-cors': '1', Authorization: 'Bearer ' + t } });
+      if (r.status >= 400 || r.status === 0) return;
+      const data = await r.json();
+      const owned = ((data && (Array.isArray(data) ? data : data.items)) || []).filter(p => p && p.id && p.id !== (CONFIG.products || {}).bs && (p.maxActivations || 0) > 0);
+      list.textContent = '';
+      if (!owned.length) return;
+      for (const p of owned) {
+        const d = document.createElement('details');
+        const sum = document.createElement('summary');
+        const line = () => `${p.name || p.id}: on ${p.currentActivations || 0} of ${p.maxActivations} computers${(p.currentActivations || 0) >= p.maxActivations ? ' (all in use)' : ''}`;
+        sum.textContent = line();
+        const box = document.createElement('div');
+        d.append(sum, box);
+        let drawn = false;
+        const draw = () => Computers.render(box, { productId: p.id, name: p.name || p.id, onChange: () => { p.currentActivations = Math.max(0, (p.currentActivations || 1) - 1); sum.textContent = line(); } });
+        d.addEventListener('toggle', () => { if (d.open && !drawn) { drawn = true; draw(); } });
+        list.appendChild(d);
+        if (want && want === p.id) { d.open = true; setTimeout(() => d.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300); }
+      }
+      section.hidden = false;
+      if (want && !owned.some(p => p.id === want)) say('That plugin is not in this account. Signed in with the email you bought with?');
+    } catch (e) { /* the My plugins panel still has everything */ }
+    finally { loading = false; }
+  }
+  Moonbase.on('signed-in', () => setTimeout(load, 300));
+  Moonbase.on('signed-out', () => { section.hidden = true; list.textContent = ''; });
+  store().then(load, () => {});
+  if (want) store().then(() => Moonbase.getAccessToken()).then(t => { if (!t) { say('Sign in to see the computers your plugin is on.'); go('sign_in'); } }, () => {});
+})();
+</script>
 </body>
 </html>
