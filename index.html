@@ -997,6 +997,7 @@ document.getElementById('checkout').addEventListener('click', async () => {
       cart = []; save(); refresh(); closeCart(); sfx.ding();
       Moonbase.checkout();
     }
+    fine.textContent = 'Secure checkout. Prices in USD, tax added at checkout.';
   } catch (e) { if (e.message === 'club') { fine.textContent = 'Breakfast Club opens very soon. Take it out of the basket for now, or email us.'; btn.disabled = false; return; }
     fine.innerHTML = `Something went wrong opening the checkout. Please email <b>${CONFIG.supportEmail}</b> and we'll sort it out.`; }
   btn.disabled = false;
