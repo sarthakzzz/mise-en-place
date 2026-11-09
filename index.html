@@ -962,9 +962,16 @@ function refresh(){
     : `<li class="empty"><div class="plate">${FOOD.plate()}</div>Your plate is empty, and the Chef is sad. Pick something tasty from the menu.</li>`;
   const plugins = cart.filter(id => !PRODUCTS[id].plan && !PRODUCTS[id].free), plan = cart.find(id => PRODUCTS[id].plan);
   hintEl.innerHTML = plugins.length && !plan ? `<div class="hintbox"><span>Hungry for everything? Raid the <b>Full Fridge Bundle</b>: all 16 plugins for $${PRODUCTS.fridge.price}.</span><button class="btn btn-solid" type="button" id="swap" style="background:var(--ink);color:var(--butter)">Swap</button></div>` : '';
+  // basket discount (Moonbase automatic offer, no code): 2 plugins 10%, 3 = 15%, 4+ = 20%; taken off at checkout, best single discount wins
+  // only while plugins are at full price: a STEP coupon already beats it and offers don't stack
+  let bdOff = 0;
+  if (PRICE.plugin >= ((CONFIG.priceSteps || {}).plugin?.max || 29)) { const n = plugins.length; bdOff = n >= 4 ? 20 : n === 3 ? 15 : n === 2 ? 10 : 0;
+    const t = n === 1 ? '🥞 Stack the plate! Add one more plugin and both get <b>10% off</b>.' : n === 2 ? '🥞 Two on the plate: <b>10% off</b> at checkout. Add a third for <b>15%</b>.' : n === 3 ? '🥞 Three on the plate: <b>15% off</b> at checkout. A fourth makes it <b>20%</b>.' : n >= 4 ? '🥞 A proper feast: <b>20% off</b> your plugins at checkout.' : '';
+    if (t) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">${t}</div>`); }
   if (window.pfbCatch) hintEl.insertAdjacentHTML('beforeend', pfbCatch.note(cart));
   if (window.pfbMd && pfbMd.code && cart.length) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">🛎️ Your extra 10% code <b>${pfbMd.code}</b>: if the checkout doesn't show it already, type it into the coupon box there.</div>`);
-  totalEl.textContent = '$' + cart.reduce((s, id) => s + PRODUCTS[id].price, 0);
+  { const sum = cart.reduce((s, id) => s + PRODUCTS[id].price, 0), cut = Math.round(plugins.reduce((s, id) => s + PRODUCTS[id].price, 0) * bdOff) / 100;
+    if (cut > 0) totalEl.innerHTML = `<s style="opacity:.5;font-size:.7em">$${sum}</s> $${+(sum - cut).toFixed(2)}`; else totalEl.textContent = '$' + sum; }
   document.getElementById('checkout').disabled = !cart.length;
   document.getElementById('checkout').style.opacity = cart.length ? 1 : .5;
 }
@@ -988,7 +995,7 @@ function add(id, fromEl){
   if (p.plan) cart = [];
   cart.push(id); save();
   sfx.pop(620);
-  fly(fromEl, p.food).then(() => { refresh(); basketBtn.classList.remove('bump'); void basketBtn.offsetWidth; basketBtn.classList.add('bump'); sfx.pop(900,.08,.12); const r = basketBtn.getBoundingClientRect(); burst(r.left + r.width/2, r.top + r.height/2, ['#f39a1e','#d8344a','#7fb342','#ffe08a'], 12, 1, {speed:300, size:5}); say(p.plan ? `${p.name} added. It covers every plugin, so single plugins were removed.` : `${p.name} added to your basket.`); });
+  fly(fromEl, p.food).then(() => { refresh(); basketBtn.classList.remove('bump'); void basketBtn.offsetWidth; basketBtn.classList.add('bump'); sfx.pop(900,.08,.12); const r = basketBtn.getBoundingClientRect(); burst(r.left + r.width/2, r.top + r.height/2, ['#f39a1e','#d8344a','#7fb342','#ffe08a'], 12, 1, {speed:300, size:5}); say(p.plan ? `${p.name} added. It already has every plugin on the menu, so we cleared the single plates.` : `${p.name} is on your plate. Yum!`); });
   if (p.plan) refresh();
 }
 document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => add(b.dataset.add, b)));
