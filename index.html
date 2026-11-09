@@ -425,6 +425,19 @@ body.waitlist .countdown{display:inline-flex}
 #order .dots{display:none}
 @media (max-width:1020px){#order .order-grid{grid-template-columns:1fr;gap:12px}#order .stackbox{max-width:220px}}
 @media (max-width:760px){#order .tiers{grid-template-columns:1fr}#order .stick{padding-top:76px}}
+#daws{padding-block:12vh 10vh}
+#daws h2{text-align:center;margin-bottom:12px}
+.daws-lead{max-width:760px;margin:0 auto 22px;text-align:center;font-size:17px;opacity:.85}
+.daws{list-style:none;padding:0;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;max-width:1100px}
+.daws li{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(43,29,22,.05);border:1px solid rgba(43,29,22,.12)}
+.daws li i{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;font-style:normal;font-family:var(--display);font-weight:800;font-size:17px;color:#fff;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--t) 70%,#fff),var(--t) 65%,color-mix(in srgb,var(--t) 70%,#000));box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 3px 8px rgba(43,29,22,.18);text-shadow:0 1px 0 rgba(0,0,0,.2)}
+.daws li div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.daws li b{font-family:var(--display);font-size:17px;line-height:1.15}
+.daws li span{font-size:13px;opacity:.7}
+.daws li em{position:absolute;top:-8px;right:10px;font-style:normal;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#7fb342;color:#fff;border-radius:999px;padding:2px 8px}
+.daws-note{text-align:center;font-size:14px;opacity:.7;margin:18px 0 0}
+.daws-tm{text-align:center;font-size:12px;opacity:.55;margin:6px 0 0}
+.daw-line{display:block;margin-top:10px;font-size:13px;font-weight:700;opacity:.8;color:inherit}
 </style>
 </head>
 <body>
@@ -628,6 +641,16 @@ body.waitlist .countdown{display:inline-flex}
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="scene" id="daws" data-bg="#f6ead4" data-fg="#2b1d16">
+  <div class="inner pad">
+    <h2 class="hop" data-split>Works with your DAW</h2>
+    <p class="daws-lead">AU and VST3 on Mac (Apple Silicon and Intel), AAX for Pro Tools on Mac, and VST3 on Windows 10 and 11. 64-bit only. If your DAW loads one of these formats, our plugins work in it.</p>
+    <ul class="daws"><li><i aria-hidden="true" style="--t:#e8892b">LP</i><div><b>Logic Pro</b><span>AU · Mac</span></div><em>Tested</em></li><li><i aria-hidden="true" style="--t:#c4532f">AL</i><div><b>Ableton Live</b><span>AU, VST3 · Mac & Windows</span></div><em>Tested</em></li><li><i aria-hidden="true" style="--t:#7fb342">PT</i><div><b>Pro Tools</b><span>AAX · Mac</span></div><em>Tested</em></li><li><i aria-hidden="true" style="--t:#f3a9c4">FS</i><div><b>FL Studio</b><span>AU, VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#4f8fc0">Cu</i><div><b>Cubase</b><span>VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#f4c542">Nu</i><div><b>Nuendo</b><span>VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#9b6fd1">SO</i><div><b>Studio One</b><span>AU, VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#2b9c8f">Rp</i><div><b>Reaper</b><span>AU, VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#e8892b">Bw</i><div><b>Bitwig Studio</b><span>VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#c4532f">Rs</i><div><b>Reason</b><span>VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#7fb342">GB</i><div><b>GarageBand</b><span>AU · Mac</span></div></li><li><i aria-hidden="true" style="--t:#f3a9c4">MS</i><div><b>MainStage</b><span>AU · Mac</span></div></li><li><i aria-hidden="true" style="--t:#4f8fc0">DP</i><div><b>Digital Performer</b><span>AU, VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#f4c542">CS</i><div><b>Cakewalk Sonar</b><span>VST3 · Windows</span></div></li><li><i aria-hidden="true" style="--t:#9b6fd1">Wf</i><div><b>Waveform</b><span>AU, VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#2b9c8f">Ar</i><div><b>Ardour</b><span>AU, VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#e8892b">Mx</i><div><b>Mixbus</b><span>AU, VST3 · Mac & Windows</span></div></li><li><i aria-hidden="true" style="--t:#c4532f">LU</i><div><b>LUNA</b><span>AU · Mac</span></div></li><li><i aria-hidden="true" style="--t:#7fb342">Rn</i><div><b>Renoise</b><span>AU, VST3 · Mac & Windows</span></div></li></ul>
+    <p class="daws-note">Tested by us in Logic Pro, Ableton Live and Pro Tools. Butter Spread is AU and VST3 only (no AAX).</p>
+    <p class="daws-tm">All product names are trademarks of their owners. Plugins for Breakfast is not affiliated with or endorsed by them.</p>
   </div>
 </section>
 
@@ -1337,5 +1360,7 @@ document.querySelectorAll('h2.hop').forEach(h => io.observe(h));
 </script>
 <script>{ const T = CONFIG.tagTheChef, q = new URLSearchParams(location.search).get('preview'), now = Date.now();
   if (T && (q === 'sale' || (now >= Date.parse(T.from) && now < Date.parse(T.until)))) document.getElementById('tagChef').hidden = false; }</script>
+<script>document.querySelectorAll('.plug .buy').forEach(b => { const id = b.closest('.plug').id, a = document.createElement('a'); a.className = 'daw-line'; a.href = '#daws';
+  a.textContent = id === 'bs' ? 'Mac: AU, VST3 · Windows: VST3. Works in Logic, Ableton, FL Studio, Cubase and more' : 'Mac: AU, VST3, AAX · Windows: VST3. Works in Logic, Ableton, Pro Tools, FL Studio, Cubase and more'; b.after(a); });</script>
 <script src="assets/maitred.js" defer></script>
 </body></html>
