@@ -11,7 +11,7 @@
 .real .frame .realv{cursor:zoom-in}
 .fs-back{position:fixed;inset:0;z-index:60;background:#140c08;display:grid;place-items:center;animation:fade .25s}
 .fs-back[hidden]{display:none}
-.fs-back canvas,.fs-back img{display:block;width:min(100vw,calc(100vh * var(--ar,1.43)));height:auto;cursor:zoom-out}
+.fs-back video,.fs-back img{display:block;width:min(100vw,calc(100vh * var(--ar,1.43)));height:auto;cursor:zoom-out}
 .fs-back .fs-x{position:fixed;top:14px;right:14px;z-index:1}
 .fs-back .fs-cap{display:none;position:fixed;left:14px;top:14px;margin:0;color:#fff8e8;font:700 14px/1.2 var(--body,system-ui);background:rgba(20,12,8,.55);padding:7px 14px;border-radius:999px;pointer-events:none;white-space:nowrap}
 @media (max-width:600px){.fs-btn span{display:none}.fs-btn{padding:9px}}`;
@@ -32,14 +32,18 @@
   function open (stage) {
     const v = stage.querySelector('.realv'), name = stage.closest('.plug')?.querySelector('h2')?.textContent.trim() || 'Plugin';
     pic.innerHTML = '';
-    if (v && v.readyState >= 2 && v.videoWidth) {
-      // the plugin exactly as it is on the page right now
-      const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
-      c.getContext('2d').drawImage(v, 0, 0); c.setAttribute('role', 'img'); c.setAttribute('aria-label', name);
-      pic.appendChild(c); back.style.setProperty('--ar', v.videoWidth / v.videoHeight);
+    // the plugin as it is on the page right now: the same real recording, paused at the same moment
+    const src = v?.currentSrc || v?.src || v?.dataset.src, poster = v?.dataset.poster || v?.poster || '';
+    back.style.setProperty('--ar', (v && v.videoWidth ? v.videoWidth / v.videoHeight : v?.dataset.ar) || 1.43);
+    if (src) {
+      const big = document.createElement('video');
+      big.muted = true; big.playsInline = true; big.preload = 'auto'; big.poster = poster; big.setAttribute('aria-label', name);
+      big.src = src;
+      const t = v.currentTime || 0;
+      big.addEventListener('loadedmetadata', () => { if (t > 0) big.currentTime = t; }, { once: true });
+      pic.appendChild(big);
     } else {
-      const img = new Image(); img.alt = name; img.src = v?.dataset.poster || v?.poster || ''; pic.appendChild(img);
-      back.style.setProperty('--ar', v?.dataset.ar || 1.43);
+      const img = new Image(); img.alt = name; img.src = poster; pic.appendChild(img);
     }
     cap.textContent = name + ' · served full size';
     lastFocus = document.activeElement; back.hidden = false; document.documentElement.style.overflow = 'hidden';
