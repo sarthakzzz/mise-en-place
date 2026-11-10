@@ -342,6 +342,15 @@ footer a:hover{text-decoration:underline;text-underline-offset:4px}
 .player .soon{position:absolute;top:16px;left:16px;background:var(--butter);color:var(--ink);font-weight:800;font-size:12px;border-radius:999px;padding:6px 12px}
 .vid-x{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:max(14px,env(safe-area-inset-right,0px));width:46px;height:46px;border:0;background:var(--cream);border-radius:50%;padding:6px;cursor:pointer;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
 .vid-x:hover{transform:rotate(90deg)}
+.woohoo{position:fixed;left:50%;top:38%;z-index:80;transform:translate(-50%,-50%);pointer-events:none;display:grid;place-items:center}
+.woohoo b{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:800;font-size:clamp(26px,5vw,44px);color:var(--ink);background:var(--butter,#f9df8f);padding:14px 26px;border-radius:999px;box-shadow:0 8px 0 rgba(43,29,22,.25),0 30px 60px -20px rgba(0,0,0,.45);white-space:nowrap;position:relative;z-index:1;animation:wooPop 2s cubic-bezier(.3,1.6,.5,1) forwards}
+.woohoo i{position:absolute;font-style:normal;font-size:32px;opacity:0;animation:wooBit 1.3s cubic-bezier(.15,.9,.3,1) forwards}
+@keyframes wooPop{0%{transform:scale(.3) rotate(-8deg);opacity:0}14%{transform:scale(1.08) rotate(2deg);opacity:1}22%{transform:scale(1) rotate(-1deg)}80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.92) translateY(-14px)}}
+@keyframes wooBit{0%{opacity:1;transform:rotate(var(--a)) translateY(0) rotate(0)}85%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) rotate(var(--r))}}
+#total.woo-bump{display:inline-block;animation:wooBump .6s cubic-bezier(.3,1.8,.5,1)}
+@keyframes wooBump{40%{transform:scale(1.18);color:var(--accent,#c4532f)}}
+@media (prefers-reduced-motion:reduce){.woohoo i{display:none}.woohoo b{animation:wooFade 2s forwards}#total.woo-bump{animation:none}}
+@keyframes wooFade{0%,80%{opacity:1}100%{opacity:0}}
 .toastmsg{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 78px);z-index:55;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 20px;border-radius:999px;font-weight:700;font-size:14px;max-width:calc(100vw - 32px);text-align:center;animation:popin .4s cubic-bezier(.3,1.6,.5,1)}
 .flyer{position:fixed;left:0;top:0;width:48px;height:48px;z-index:58;pointer-events:none}
 .fx{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
@@ -954,6 +963,16 @@ const save = () => { try { localStorage.setItem('pfb-cart', JSON.stringify(cart)
 const badge = document.getElementById('badge'), basketBtn = document.getElementById('basketBtn');
 const cartEl = document.getElementById('cart'), shade = document.getElementById('shade'), itemsEl = document.getElementById('items'), hintEl = document.getElementById('hint'), totalEl = document.getElementById('total');
 
+const woo = {ready: false, off: 0, md: '', fruit: 0, count: 0};
+function woohoo(text){
+  document.querySelectorAll('.woohoo').forEach(e => e.remove());
+  const d = document.createElement('div'); d.className = 'woohoo'; d.setAttribute('role', 'status');
+  const bits = ['🧈','🍓','🥞','🍒','🧁','🍊','🥐','✨'];
+  d.innerHTML = `<b>${text}</b>` + Array.from({length: 14}, (_, i) => `<i style="--a:${i * 360 / 14 + Math.random() * 14}deg;--d:${170 + Math.random() * 120}px;--r:${Math.random() * 540 - 270}deg">${bits[i % bits.length]}</i>`).join('');
+  document.body.appendChild(d); try { sfx.ding(); setTimeout(() => sfx.ding(), 160); } catch (e) {}
+  const tot = document.getElementById('total'); if (tot) { tot.classList.remove('woo-bump'); void tot.offsetWidth; tot.classList.add('woo-bump'); }
+  setTimeout(() => d.remove(), 2100);
+}
 function refresh(){
   badge.textContent = cart.length; badge.classList.toggle('on', cart.length > 0);
   basketBtn.setAttribute('aria-label', `Open your basket, ${cart.length} item${cart.length === 1 ? '' : 's'}`);
@@ -971,7 +990,13 @@ function refresh(){
   if (window.pfbCatch) hintEl.insertAdjacentHTML('beforeend', pfbCatch.note(cart));
   if (window.pfbMd && pfbMd.code && cart.length) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">🛎️ Your extra 10% code <b>${pfbMd.code}</b>: if the checkout doesn't show it already, type it into the coupon box there.</div>`);
   { const sum = cart.reduce((s, id) => s + PRODUCTS[id].price, 0), cut = Math.round(plugins.reduce((s, id) => s + PRODUCTS[id].price, 0) * bdOff) / 100;
-    if (cut > 0) totalEl.innerHTML = `<s style="opacity:.5;font-size:.7em">$${sum}</s> $${+(sum - cut).toFixed(2)}`; else totalEl.textContent = '$' + sum; }
+    const money = v => '$' + (Number.isInteger(v) ? v : v.toFixed(2));
+    if (cut > 0) totalEl.innerHTML = `<s style="opacity:.5;font-size:.7em">${money(sum)}</s> ${money(Math.round((sum - cut) * 100) / 100)}`; else totalEl.textContent = money(sum); }
+  // Woohoo! When the total drops (a bigger basket discount, or a fresh Maitre D' / caught-fruit code), celebrate (Sarthak 10 Nov)
+  { const md = window.pfbMd && pfbMd.code && cart.length ? pfbMd.code : '', fruit = window.pfbCatch && cart.length && pfbCatch.note(cart) ? 1 : 0;
+    if (woo.ready) { const wins = (bdOff > woo.off ? 1 : 0) + (md && md !== woo.md ? 1 : 0) + (fruit > woo.fruit ? 1 : 0);
+      if (wins) { woo.count += wins; woohoo(woo.count > 1 ? 'Woohoo, another discount!' : 'Woohoo, a discount!'); } }
+    woo.off = bdOff; woo.md = md; woo.fruit = fruit; woo.ready = true; }
   document.getElementById('checkout').disabled = !cart.length;
   document.getElementById('checkout').style.opacity = cart.length ? 1 : .5;
 }
