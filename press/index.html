@@ -24,19 +24,36 @@
 .kit img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:14px;border:1px solid var(--line);display:block;margin-bottom:6px;background:var(--bg)}
 blockquote{margin:14px 0;padding:4px 0 4px 16px;border-left:4px solid var(--accent);font-family:Fraunces,Georgia,serif;font-size:19px}
 @media (max-width:520px){.facts{grid-template-columns:1fr}.facts dt{margin-top:6px}}
+.hero{display:block;width:100%;height:auto;border-radius:22px;border:1px solid var(--line);margin:4px 0 8px;box-shadow:0 8px 0 var(--line)}
+.bites{background:#ffd966;color:#3b2a20;border-radius:18px;padding:16px 20px;margin:18px 0;font-weight:600}
+.bites b{display:block;font-size:12px;letter-spacing:.18em;color:#b23e18;margin-bottom:6px}
+.plates{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:760px){.plates{grid-template-columns:1fr 1fr}}
+.plates li{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:10px;display:flex;flex-direction:column;transition:transform .15s}
+.plates li:hover{transform:translateY(-3px) rotate(-.4deg)}
+.plate{text-decoration:none;color:var(--fg);display:flex;flex-direction:column;flex:1}
+.plate img{width:100%;height:auto;border-radius:12px;display:block;margin-bottom:10px}
+.plate .kind{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.plate b{font-family:Fraunces,Georgia,serif;font-size:17px;line-height:1.2;margin:3px 0}
+.plate .line{font-size:13.5px;color:var(--soft);line-height:1.45}
+.dl{font-size:12.5px;font-weight:800;margin-top:8px}
+.bigbtn{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:17px;border-radius:14px;padding:14px 22px;text-decoration:none;background:var(--accent);color:#fff;box-shadow:0 6px 0 #8f3a20;margin:6px 0}
+@media (max-width:440px){.plates{grid-template-columns:1fr 1fr;gap:10px}.plate b{font-size:16px}.plate .line{display:none}}
 </style>
 <meta property="og:title" content="Breakfast is served: 16 audio plugins made of felt">
 <meta property="og:description" content="Plugins for Breakfast opens its kitchen: 16 audio plugins for Mac and Windows, each one a hand-made felt world. Butter Spread is free.">
 <meta property="og:image" content="https://pluginsforbreakfast.com/assets/og.jpg">
 <meta property="og:url" content="https://pluginsforbreakfast.com/press/">
 <meta property="og:type" content="article">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"NewsArticle","headline":"Breakfast is served: Plugins for Breakfast opens its kitchen with 16 audio plugins made of felt","datePublished":"2026-11-10","dateModified":"2026-11-10","image":["https://pluginsforbreakfast.com/assets/og.jpg","https://pluginsforbreakfast.com/assets/logo-square.jpg"],"author":{"@type":"Organization","name":"Plugins for Breakfast","url":"https://pluginsforbreakfast.com/"},"publisher":{"@id":"https://pluginsforbreakfast.com/#org","@type":"Organization","name":"Plugins for Breakfast","logo":{"@type":"ImageObject","url":"https://pluginsforbreakfast.com/assets/logo-square.jpg"}},"mainEntityOfPage":"https://pluginsforbreakfast.com/press/","about":{"@id":"https://pluginsforbreakfast.com/#org"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"NewsArticle","headline":"Breakfast is served: Plugins for Breakfast opens its kitchen with 16 audio plugins made of felt","datePublished":"2026-11-10","dateModified":"2026-11-10","image":["https://pluginsforbreakfast.com/assets/og.jpg","https://pluginsforbreakfast.com/assets/press/oc-sweep.jpg","https://pluginsforbreakfast.com/assets/press/popping-candy-sweep.jpg","https://pluginsforbreakfast.com/assets/press/spice-shelf-sweep.jpg","https://pluginsforbreakfast.com/assets/press/popcorn-sandwich-sweep.jpg","https://pluginsforbreakfast.com/assets/logo-square.jpg"],"author":{"@type":"Organization","name":"Plugins for Breakfast","url":"https://pluginsforbreakfast.com/"},"publisher":{"@id":"https://pluginsforbreakfast.com/#org","@type":"Organization","name":"Plugins for Breakfast","logo":{"@type":"ImageObject","url":"https://pluginsforbreakfast.com/assets/logo-square.jpg"}},"mainEntityOfPage":"https://pluginsforbreakfast.com/press/","about":{"@id":"https://pluginsforbreakfast.com/#org"}}</script>
 </head>
 <body>
 <header><a class="brand" href="/">Plugins<small>for breakfast</small></a><nav><a href="/plugins/">Plugins</a><a href="/support.html">Help</a></nav></header>
 <main>
 <h1>Press &amp; news</h1>
 <p class="lead">Fresh from the kitchen. Everything a writer, editor or curious cook needs, served warm.</p>
+<img class="hero" src="/assets/og.jpg" width="1200" height="630" alt="Plugins for Breakfast: a felt chef in headphones sipping coffee above puffy wool letters">
+<p><a class="bigbtn" href="/assets/press/plugins-for-breakfast-press-kit.zip" download>🧺 Download the whole press kit (logos + all 16 pictures)</a></p>
 
 <article class="card" id="breakfast-is-served">
   <p class="date">London · 10 November 2026</p>
@@ -44,13 +61,33 @@ blockquote{margin:14px 0;padding:4px 0 4px 16px;border-left:4px solid var(--acce
   <p><b>Plugins for Breakfast</b>, a new audio software brand founded by Escaé Studios, has opened its doors with a full menu of 16 audio plugins for music producers. Each plugin is a hand-made needle-felt miniature world where every control is a little object you play like a toy: an orange that crushes your drums, a delay made of spaghetti, a reverb that lives inside a bread oven.</p>
   <p>Under the wool sit serious tools. Every plugin comes with level-matched factory presets, full undo and redo, smooth click-free controls and tempo sync wherever timing matters, in AU, VST3 and AAX on Mac and VST3 on Windows.</p>
   <blockquote>"We wanted plugins you smile at before you even hear them, and then they sound great. Think of it as the most important plug-in of the day."<br><small>The Chef, Plugins for Breakfast</small></blockquote>
-  <h3>On the menu</h3>
-  <ul class="menu">
-    <li>Orange Crusher</li><li>Popping Candy</li><li>Butter Spread (free)</li><li>Spice Shelf EQ</li><li>Popcorn Sandwich Compressor</li><li>Spaghetti Delay</li><li>Food Fight</li><li>Bread Oven Reverb</li><li>Cherry on the Top Mastering</li><li>Ghost Pepper Clipper</li><li>Hot-o-Pan</li><li>Gummy Gate</li><li>Milkshake Chorus</li><li>Burnt Toast Tape Machine</li><li>Noodle Filter</li><li>Muesli Granular</li>
-  </ul>
+  <div class="bites"><b>THE QUICK BITES</b>🧈 Butter Spread is free and open source<br>⏱️ Free 3-day trial on every plugin<br>🏷️ From $19, early prices step up after every 100 sold<br>🍽️ A new plugin joins the menu every month</div>
   <h3>Price and availability</h3>
   <p>Available now at <a href="/">pluginsforbreakfast.com</a>, with a free 3-day trial of every plugin. Plugins start at $19 each, all 16 together (the Full Fridge) start at $50, and the Breakfast Club starts at $75 a year. Early prices step up a little after every 100 sold, so the first cooks eat cheapest. Butter Spread, a stereo widener, is free and open source. A new plugin joins the menu every month.</p>
 </article>
+
+<section class="card" id="menu">
+  <h2>The full menu · all 16</h2>
+  <p>Tap a plate to see it cook. Every picture is free to use with a story about us.</p>
+  <ul class="plates">
+    <li><a class="plate" href="/plugins/orange-crusher/"><img src="/assets/press/oc-sweep.jpg" width="600" height="420" alt="Orange Crusher plugin" loading="lazy"><span class="kind">Distortion</span><b>Orange Crusher</b><span class="line">Squeeze juice out of drums, bass and anything else.</span></a><a class="dl" href="/videos/oc-sweep.jpg" download="orange-crusher.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/popping-candy/"><img src="/assets/press/popping-candy-sweep.jpg" width="600" height="420" alt="Popping Candy plugin" loading="lazy"><span class="kind">Glitch &amp; stutter</span><b>Popping Candy</b><span class="line">Nine jars of effects that pop on random steps, in time.</span></a><a class="dl" href="/videos/popping-candy-sweep.jpg" download="popping-candy.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/spice-shelf-eq/"><img src="/assets/press/spice-shelf-sweep.jpg" width="600" height="420" alt="Spice Shelf EQ plugin" loading="lazy"><span class="kind">EQ</span><b>Spice Shelf EQ</b><span class="line">Five spice jars that season your sound by taste.</span></a><a class="dl" href="/videos/spice-shelf-sweep.jpg" download="spice-shelf-eq.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/popcorn-sandwich-compressor/"><img src="/assets/press/popcorn-sandwich-sweep.jpg" width="600" height="420" alt="Popcorn Sandwich plugin" loading="lazy"><span class="kind">Compressor</span><b>Popcorn Sandwich</b><span class="line">Squeeze it flat or pop it open, all from one dial.</span></a><a class="dl" href="/videos/popcorn-sandwich-sweep.jpg" download="popcorn-sandwich-compressor.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/cherry-on-the-top-mastering/"><img src="/assets/press/chefs-kiss-sweep.jpg" width="600" height="420" alt="Cherry on the Top plugin" loading="lazy"><span class="kind">Mastering</span><b>Cherry on the Top</b><span class="line">Finish a track with one dial. Cherry on top at 100%.</span></a><a class="dl" href="/videos/chefs-kiss-sweep.jpg" download="cherry-on-the-top-mastering.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/spaghetti-delay/"><img src="/assets/press/spaghetti-delay-sweep.jpg" width="600" height="420" alt="Spaghetti Delay plugin" loading="lazy"><span class="kind">Delay</span><b>Spaghetti Delay</b><span class="line">Echoes rolled out of a pasta machine, one tomato per repeat.</span></a><a class="dl" href="/videos/spaghetti-delay-sweep.jpg" download="spaghetti-delay.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/bread-oven-reverb/"><img src="/assets/press/bread-oven-sweep.jpg" width="600" height="420" alt="Bread Oven Reverb plugin" loading="lazy"><span class="kind">Reverb</span><b>Bread Oven Reverb</b><span class="line">Rooms, chambers, halls and plates, baked to taste.</span></a><a class="dl" href="/videos/bread-oven-sweep.jpg" download="bread-oven-reverb.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/food-fight/"><img src="/assets/press/food-fight-sweep.jpg" width="600" height="420" alt="Food Fight plugin" loading="lazy"><span class="kind">Performance multi-effect</span><b>Food Fight</b><span class="line">Eight foods, eight effects and a catapult, in time.</span></a><a class="dl" href="/videos/food-fight-sweep.jpg" download="food-fight.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/ghost-pepper-clipper/"><img src="/assets/press/ghost-pepper-clipper-sweep.jpg" width="600" height="420" alt="Ghost Pepper Clipper plugin" loading="lazy"><span class="kind">Clipper</span><b>Ghost Pepper Clipper</b><span class="line">Hot, clean loudness. The ghost rises as you clip.</span></a><a class="dl" href="/videos/ghost-pepper-clipper-sweep.jpg" download="ghost-pepper-clipper.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/hot-o-pan/"><img src="/assets/press/hot-o-pan-sweep.jpg" width="600" height="420" alt="Hot-o-Pan plugin" loading="lazy"><span class="kind">Auto-panner</span><b>Hot-o-Pan</b><span class="line">The pancake flips between left and right.</span></a><a class="dl" href="/videos/hot-o-pan-sweep.jpg" download="hot-o-pan.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/gummy-gate/"><img src="/assets/press/gummy-gate-sweep.jpg" width="600" height="420" alt="Gummy Gate plugin" loading="lazy"><span class="kind">Gate</span><b>Gummy Gate</b><span class="line">The jar fills with your signal and the gate swings open.</span></a><a class="dl" href="/videos/gummy-gate-sweep.jpg" download="gummy-gate.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/milkshake-chorus/"><img src="/assets/press/milkshake-chorus-sweep.jpg" width="600" height="420" alt="Milkshake Chorus plugin" loading="lazy"><span class="kind">Chorus</span><b>Milkshake Chorus</b><span class="line">Thick, creamy chorus, from vintage synth to ensemble.</span></a><a class="dl" href="/videos/milkshake-chorus-sweep.jpg" download="milkshake-chorus.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/burnt-toast-tape-machine/"><img src="/assets/press/burnt-toast-sweep.jpg" width="600" height="420" alt="Burnt Toast plugin" loading="lazy"><span class="kind">Tape machine</span><b>Burnt Toast</b><span class="line">A toaster that thinks it's a tape machine.</span></a><a class="dl" href="/videos/burnt-toast-sweep.jpg" download="burnt-toast-tape-machine.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/noodle-filter/"><img src="/assets/press/noodle-filter-sweep.jpg" width="600" height="420" alt="Noodle Filter plugin" loading="lazy"><span class="kind">Filter</span><b>Noodle Filter</b><span class="line">Lift the noodles to open it, curl them for resonance.</span></a><a class="dl" href="/videos/noodle-filter-sweep.jpg" download="noodle-filter.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/muesli-granular/"><img src="/assets/press/muesli-granular-sweep.jpg" width="600" height="420" alt="Muesli Granular plugin" loading="lazy"><span class="kind">Granular</span><b>Muesli Granular</b><span class="line">Your audio in grains, scattered over a breakfast bowl.</span></a><a class="dl" href="/videos/muesli-granular-sweep.jpg" download="muesli-granular.jpg">Download picture</a></li>
+    <li><a class="plate" href="/plugins/butter-spread/"><img src="/assets/press/butter-spread-sweep.jpg" width="600" height="420" alt="Butter Spread plugin" loading="lazy"><span class="kind">Stereo widener · FREE</span><b>Butter Spread</b><span class="line">Wider and smooth as butter, safe in mono. Open source.</span></a><a class="dl" href="/videos/butter-spread-sweep.jpg" download="butter-spread.jpg">Download picture</a></li>
+  </ul>
+</section>
 
 <section class="card" id="facts">
   <h2>Fact sheet</h2>
@@ -72,14 +109,12 @@ blockquote{margin:14px 0;padding:4px 0 4px 16px;border-left:4px solid var(--acce
   <h2>Press kit</h2>
   <p>Help yourself. Use these with any story about us; no need to ask.</p>
   <div class="kit">
-    <a href="/assets/logo-square.jpg" download><img src="/assets/logo-square.jpg" alt="Plugins for Breakfast logo" loading="lazy">Logo (square)</a>
+    <a href="/assets/logo-square.jpg" download><img src="/assets/logo-square.jpg" alt="Plugins for Breakfast logo, square" loading="lazy">Logo (square)</a>
+    <a href="/assets/logo.jpg" download><img src="/assets/logo.jpg" alt="Plugins for Breakfast logo, wide" loading="lazy">Logo (wide)</a>
     <a href="/assets/og.jpg" download><img src="/assets/og.jpg" alt="Plugins for Breakfast banner" loading="lazy">Banner</a>
-    <a href="/videos/orange-crusher.jpg" download><img src="/videos/orange-crusher.jpg" alt="Orange Crusher plugin" loading="lazy">Orange Crusher</a>
-    <a href="/videos/popping-candy.jpg" download><img src="/videos/popping-candy.jpg" alt="Popping Candy plugin" loading="lazy">Popping Candy</a>
-    <a href="/videos/spice-shelf.jpg" download><img src="/videos/spice-shelf.jpg" alt="Spice Shelf EQ plugin" loading="lazy">Spice Shelf EQ</a>
-    <a href="/videos/butter-spread.jpg" download><img src="/videos/butter-spread.jpg" alt="Butter Spread plugin" loading="lazy">Butter Spread</a>
   </div>
-  <p>Every plugin has its own page with pictures and a "Watch it work" video in <a href="/plugins/">All plugins</a>.</p>
+  <p><a class="bigbtn" href="/assets/press/plugins-for-breakfast-press-kit.zip" download>🧺 Download everything (zip)</a></p>
+  <p>Plugin pictures are in <a href="#menu">the full menu</a> above, and every plugin has a "Watch it work" video on its own page.</p>
 </section>
 
 <section class="card" id="reviews">
