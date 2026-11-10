@@ -66,7 +66,7 @@
     tag = document.createElement('div'); tag.className = 'cf-tag'; tag.innerHTML = `<span>${C.label || 'Catch me for 50% off!'}</span><button type="button" aria-label="Not now">×</button>`;
     document.body.append(el, tag);
 
-    const W = () => innerWidth, H = () => innerHeight, dir = Math.random() < .5 ? 1 : -1, mob = !fine;
+    const W = () => innerWidth, H = () => innerHeight, mob = !fine; let dir = Math.random() < .5 ? 1 : -1;
     const base = (reduce ? 70 : mob ? 150 : 220) * (0.9 + Math.random() * .3);
     const f = {x: dir > 0 ? -50 : W() + 50, y: H() * (.45 + Math.random() * .3), vx: base * dir, vy: 0, a: 0, home: 0, stam: 1, hops: 0, jukes: 6, lastJuke: 0, t0: performance.now()};
     f.home = f.y;
@@ -97,19 +97,16 @@
         const sp = Math.hypot(f.vx, f.vy), max = (now - f.lastJuke < 220 ? 1100 : 340 + 560 * f.stam); if (sp > max) { f.vx *= max / sp; f.vy *= max / sp; }
       }
       f.x += f.vx * dt; f.y += f.vy * dt;
-      // while it is being chased it keeps inside the screen; otherwise it rolls on and out
       const m = 46, top = 90, bot = h - m;
       if (f.y < top) { f.y = top; f.vy = Math.abs(f.vy) * .5; } if (f.y > bot) { f.y = bot; f.vy = -Math.abs(f.vy) * .5; }
       f.home = Math.min(bot - 10, Math.max(top + 10, f.home + (f.y - f.home) * dt * .8));
-      // it may only leave by the far side; the near side (and the far side while chased) bounces it back
-      if (f.x > m && f.x < w - m) f.in = true; const inside = f.in;
-      if (inside && dir > 0 && f.x < m) { f.x = m; f.vx = Math.abs(f.vx) * .7; } if (inside && dir < 0 && f.x > w - m) { f.x = w - m; f.vx = -Math.abs(f.vx) * .7; }
-      const held = chased || now - (f.scared || -9e9) < 3500;
-      if (held && dir > 0 && f.x > w - m && f.vx > 0) { f.x = w - m; f.vx = -Math.abs(f.vx) * .7; } if (held && dir < 0 && f.x < m && f.vx < 0) { f.x = m; f.vx = Math.abs(f.vx) * .7; }
+      // it never leaves (Sarthak 10 Nov): once on screen it bounces off both sides and turns round until caught
+      if (f.x > m && f.x < w - m) f.in = true;
+      if (f.in && f.x < m) { f.x = m; f.vx = Math.abs(f.vx) * .8; dir = 1; }
+      if (f.in && f.x > w - m) { f.x = w - m; f.vx = -Math.abs(f.vx) * .8; dir = -1; }
       f.a += f.vx * dt / 32 * 57.3;
       el.style.transform = `translate(${f.x}px,${f.y}px) rotate(${f.a}deg)`;
       tag.style.transform = `translate(calc(${f.x}px - 50%),calc(${f.y - 44}px - 100%))`;
-      if (dir > 0 ? f.x > w + 120 : f.x < -120) return end(false);
       raf = requestAnimationFrame(step);
     }
     function end(caught){
