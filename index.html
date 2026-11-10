@@ -1109,6 +1109,10 @@ document.getElementById('checkout').addEventListener('click', async () => {
     // Moonbase's own cart (localStorage 'moonbase_session') is emptied first, then filled with exactly our basket, then its cart
     // panel opens: there the buyer can still remove items or change quantities, the basket offers (10/15/20%) apply, and its
     // Checkout button goes on to payment. (purchase() skips the basket offers, and a stale cart kept old items: Sarthak 10 Nov)
+    // A caught-fruit code rides on a direct purchase so it applies by itself (Moonbase takes one code per order there).
+    // A Maitre D' code is typed in the checkout's coupon box (the basket note shows it), so its order keeps the cart panel and basket offers.
+    const fruit = cc >= 0 && window.pfbCatch ? pfbCatch.code : '';
+    if (fruit) { lastOrder = merged.map(x => { const {coupon_code, ...i} = x.i; return i; }); lastOrder[0] = {...lastOrder[0], coupon_code: fruit}; retries = 0; closeCart(); sfx.ding(); await Moonbase.purchase(lastOrder); fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.'; btn.disabled = false; return; }
     mbFreshCart();
     for (const x of merged) { const {coupon_code, ...i} = x.i; await Moonbase.add_to_cart({...i, show_cart: false}); }
     lastOrder = null; closeCart(); sfx.ding(); mbSync = true; Moonbase.view_cart();
