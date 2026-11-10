@@ -721,7 +721,7 @@ body.waitlist .countdown{display:inline-flex}
         <div class="note" id="news-note">The milk fills up as you type.</div>
       </div>
     </div>
-    <footer><span>© 2026 Plugins for Breakfast by Escaé Studios</span><div class="links"><span>Support: <b class="mail" id="mail">chef@pluginsforbreakfast.com</b> <button class="copy" id="copyMail" type="button">Copy</button></span><a href="plugins/">All plugins</a><a href="support.html">Help &amp; FAQ</a><a href="press/">Press &amp; news</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms and conditions</a><a id="unsub" href="unsubscribe/">Unsubscribe</a></div></footer>
+    <footer><span>© 2026 Plugins for Breakfast by Escaé Studios</span><div class="links"><span>Support: <b class="mail" id="mail">chef@pluginsforbreakfast.com</b> <button class="copy" id="copyMail" type="button">Copy</button></span><a href="plugins/">All plugins</a><a href="install/">Installing safely</a><a href="support.html">Help &amp; FAQ</a><a href="press/">Press &amp; news</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms and conditions</a><a id="unsub" href="unsubscribe/">Unsubscribe</a></div></footer>
   </div>
 </section>
 </main>
@@ -1416,11 +1416,16 @@ setInterval(() => { if (!mbSync) return; let o; try { o = JSON.parse(localStorag
   const byVar = {[V.fridge || 'full-fridge']: 'fridge', [CONFIG.clubVariation]: 'club'}; for (const [k, p] of Object.entries(PRODUCTS)) if (p.pass) byVar[p.pass] = k;
   const next = []; for (const it of o.items) { const id = it.productId ? byProduct[it.productId] : byVar[it.variationId || (it.variation && it.variation.id)]; if (!id || !PRODUCTS[id]) return; for (let n = 0; n < (it.quantity || 1); n++) next.push(id); }
   const a = [...cart].sort().join(), b = [...next].sort().join(); if (a !== b) { cart = next; save(); refresh(); } }, 1500);
+// Thank-you card after a paid order: where to download, and help with the one-time install warning
+function orderUp(){ if (document.getElementById('orderUp')) return; const d = document.createElement('div'); d.id = 'orderUp'; d.setAttribute('role', 'status');
+  d.style.cssText = 'position:fixed;right:16px;bottom:16px;left:16px;max-width:380px;margin-left:auto;z-index:9999;background:#fffaf0;color:#2b1d16;border:1px solid #e3d2b4;border-radius:20px;padding:18px 20px;box-shadow:0 10px 0 #e3d2b4,0 18px 40px rgba(0,0,0,.18);font:15px/1.55 Manrope,system-ui,sans-serif';
+  d.innerHTML = '<button type="button" aria-label="Close" style="position:absolute;top:8px;right:10px;border:0;background:none;font-size:22px;cursor:pointer;color:inherit">×</button><b style="font:800 20px Fraunces,Georgia,serif">Order up! 🍳</b><p style="margin:6px 0 10px">Your plugins are waiting in <a href="account/" style="color:#c4532f;font-weight:800">your kitchen</a>. First install? Your computer may show a one-time warning: <a href="install/" style="color:#c4532f;font-weight:800">Installing safely</a> has the one-minute fix.</p><span style="font-size:13px;opacity:.75">Questions? chef@pluginsforbreakfast.com</span>';
+  d.querySelector('button').onclick = () => d.remove(); document.body.appendChild(d); }
 function mbFreshCart(){ try { localStorage.removeItem('moonbase_session'); } catch (e) {}
   try { window.dispatchEvent(new StorageEvent('storage', {key: 'moonbase_session', oldValue: '{}', newValue: null})); } catch (e) {} }
 function startMoonbase(){ if (mbReady || !window.Moonbase) return; Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {}); mbReady = true;
   // the basket empties only once the order is paid; a closed checkout leaves it as it was
-  try { Moonbase.on('checkout-completed', () => { cart = []; save(); refresh(); lastOrder = null; mbFreshCart(); }); } catch (e) {}
+  try { Moonbase.on('checkout-completed', () => { cart = []; save(); refresh(); lastOrder = null; mbFreshCart(); orderUp(); }); } catch (e) {}
   try { Moonbase.on('checkout-closed', e => { if (e && e.completed) { cart = []; save(); refresh(); lastOrder = null; } else if (cart.length) say('Your basket is just as you left it. Change anything you like.'); }); } catch (e) {}
   try { Moonbase.on('coupon-rejected', (e, ...rest) => { const code = typeof e === 'string' ? e : (e && (e.code || (e.detail && e.detail.code))) || '';
     const next = nextCoupon(code); if (!lastOrder || next === null || retries++ > 8) return;
