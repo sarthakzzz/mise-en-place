@@ -944,9 +944,14 @@ for (const [k, p] of Object.entries(PRODUCTS)) p.mb = (CONFIG.products || {})[k]
 const PRICE = (() => { const S = CONFIG.priceSteps, sold = Object.assign({plugins: 0, bundles: 0}, window.SOLD || {}), q = new URLSearchParams(location.search).get('sold');
   if (q !== null) sold.plugins = sold.bundles = +q || 0;
   const at = (st, n) => { const i = Math.floor(n / st.every), now = Math.min(st.start + i * st.step, st.max); return {now, left: now < st.max ? st.every * (i + 1) - n : 0}; };
-  if (CONFIG.simplePricing) { const L = CONFIG.ladders, items = (window.SOLD || {}).items || {};
+  if (CONFIG.simplePricing) { const L = CONFIG.ladders, items = (window.SOLD || {}).items || {}, steps = (window.SOLD || {}).steps || {};
     // ladder step for one item: now = current step, later = final price, left = licences until the next step
-    const step = (key, id) => { const lad = L[key], n = q !== null ? (+q || 0) : (items[id || key] || 0), i = Math.min(Math.floor(n / L.every), lad.length - 1); return {now: lad[i], later: lad[lad.length - 1], left: i < lad.length - 1 ? L.every * (i + 1) - n : 0}; };
+    // sold.js (scripts/store/price_ladder.py): steps[k] = current step index, items[k] = sold at that step; k = Moonbase product id for plugins, else monthly/fridge/club/lifetime.
+    // Prices can step down too, so the step index decides the price; ?sold=N previews N sold from the first step.
+    const step = (key, id) => { const lad = L[key], k = key === 'plugin' ? (CONFIG.products || {})[id] || id : key;
+      const i = q !== null ? Math.min(Math.floor((+q || 0) / L.every), lad.length - 1) : Math.max(0, Math.min(+steps[k] || 0, lad.length - 1));
+      const at = q !== null ? (+q || 0) - i * L.every : (+items[k] || 0);
+      return {now: lad[i], later: lad[lad.length - 1], left: i < lad.length - 1 ? Math.max(1, L.every - at) : 0}; };
     const pl = step('plugin', 'oc'), fr = step('fridge');
     return {plugin: pl.now, bundle: fr.now, pluginLeft: pl.left, bundleLeft: fr.left, label: '', simple: true, step}; }
   if (!S) return {plugin: 29, bundle: 90};

@@ -81,7 +81,7 @@ if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out
 // Cancel membership: offer $7/month first (Sarthak 9 Nov); cancelling always stays one click away (Moonbase's memberships panel)
 { const back = document.getElementById('stayBack'), R = CONFIG.retention || {};
   // stay price: CONFIG.retention.price vs the Monthly Pass's current price (simple prices: $5 instead of $7)
-  const usd = v => '$' + (Number.isInteger(v) ? v : v.toFixed(2)), mo = CONFIG.simplePricing && CONFIG.ladders ? CONFIG.ladders.monthly[Math.min(Math.floor((((window.SOLD || {}).items || {}).monthly || 0) / CONFIG.ladders.every), CONFIG.ladders.monthly.length - 1)] : 10;
+  const usd = v => '$' + (Number.isInteger(v) ? v : v.toFixed(2)), mo = CONFIG.simplePricing && CONFIG.ladders ? CONFIG.ladders.monthly[Math.max(0, Math.min(+(((window.SOLD || {}).steps || {}).monthly) || 0, CONFIG.ladders.monthly.length - 1))] : 10;
   const SN = usd(CONFIG.simplePricing ? (R.price || 5) : 7), SO = usd(mo);
   document.querySelectorAll('.stay-new').forEach(e => e.textContent = SN); document.querySelectorAll('.stay-old').forEach(e => e.textContent = SO);
   const shut = () => { back.hidden = true; };
