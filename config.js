@@ -45,7 +45,7 @@ window.CONFIG = {
   // Simple dynamic prices (Sarthak 10 Nov): each item steps up after every 100 of THAT item sold (counts: SOLD.items in sold.js).
   // The store charges the current step as its list price (no coupons); the site shows the final price struck through and 'X left at this price'.
   // simplePricing: true switches the site over (no STEP/FRIDGE coupons, Lifetime Pass on, Yearly Pass off). Flip together with the store.
-  simplePricing: false,
+  simplePricing: true,
   ladders: { every: 100, plugin: [19, 21, 23, 25, 27, 29], monthly: [7, 7.5, 8, 8.5, 9, 10], fridge: [50, 60, 70, 80, 90, 100], club: [75, 90, 105, 120, 135, 150], lifetime: [150, 170, 190, 210, 230, 250] },
   clubPrice: 90,                              // Breakfast Club price (a promotion, renewals also $90; shown as $150 struck through)
   clubVariation: 'breakfast-club',            // Breakfast Club: the yearly ($150) price's variation ID on the full-fridge bundle
