@@ -33,8 +33,10 @@
   if (!due) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   let armed = false;
-  const onScroll = () => { if (armed || scrollY < innerHeight * .6) return; armed = true; removeEventListener('scroll', onScroll); put({seen: Date.now()}); setTimeout(pass, 1200); };
-  addEventListener('scroll', onScroll, {passive: true});
+  // appears straight away (Sarthak 10 Nov): about a second after the page opens
+  const arm = () => { if (armed) return; armed = true; put({seen: Date.now()}); setTimeout(pass, 900); };
+  if (document.readyState === 'complete') arm(); else addEventListener('load', arm, {once: true});
+  setTimeout(arm, 2500);   // slow connections: don't wait for every picture
 
   /* ---- styles (only injected when the fruit is due) ---- */
   const css = document.createElement('style');
@@ -65,14 +67,14 @@
     document.body.append(el, tag);
 
     const W = () => innerWidth, H = () => innerHeight, dir = Math.random() < .5 ? 1 : -1, mob = !fine;
-    const base = (reduce ? 70 : mob ? 120 : 190) * (0.9 + Math.random() * .3);
-    const f = {x: dir > 0 ? -50 : W() + 50, y: H() * (.45 + Math.random() * .3), vx: base * dir, vy: 0, a: 0, home: 0, stam: 1, hops: 0, jukes: 4, lastJuke: 0, t0: performance.now()};
+    const base = (reduce ? 70 : mob ? 150 : 220) * (0.9 + Math.random() * .3);
+    const f = {x: dir > 0 ? -50 : W() + 50, y: H() * (.45 + Math.random() * .3), vx: base * dir, vy: 0, a: 0, home: 0, stam: 1, hops: 0, jukes: 6, lastJuke: 0, t0: performance.now()};
     f.home = f.y;
     let px = -1e4, py = -1e4, last = performance.now(), chased = false;
     const move = e => { px = e.clientX; py = e.clientY; };
     const tap = e => { // touch: a near miss makes it hop away (twice at most), a direct hit catches it
       if (e.target.closest('.cf,.cf-tag,.cf-win')) return; const d = Math.hypot(e.clientX - f.x, e.clientY - f.y);
-      if (d < 130 && f.hops < 2 && !reduce) hop(e.clientX, e.clientY); };
+      if (d < 140 && f.hops < 3 && !reduce) hop(e.clientX, e.clientY); };
     const hop = (x, y) => { f.hops++; f.scared = performance.now(); const ang = Math.atan2(f.y - y, f.x - x); f.vx += Math.cos(ang) * 700; f.vy += Math.sin(ang) * 700 - 330; const sx = G('sfx'); if (sx) sx.pop(900, .06, .06); };
     if (fine) addEventListener('pointermove', move, {passive: true}); else addEventListener('pointerdown', tap, {passive: true});
 
@@ -83,16 +85,16 @@
       f.vx += (want - f.vx) * Math.min(1, dt * (chased ? .6 : 1.4));
       f.vy += ((f.home + Math.sin(now / 260) * 6) - f.y) * dt * 6 - f.vy * dt * 3;
       if (fine && !reduce) { // dodge the cursor, but tire while chased
-        const dx = f.x - px, dy = f.y - py, d = Math.hypot(dx, dy), R = 150;
+        const dx = f.x - px, dy = f.y - py, d = Math.hypot(dx, dy), R = 185;
         chased = d < R;
         // close call: a quick side-step (it has a few, and earns one back every few seconds)
-        if (d < 78 && f.jukes >= 1 && now - f.lastJuke > 260) { f.jukes--; f.lastJuke = now; const ang = Math.atan2(dy, dx) + (Math.random() < .5 ? 1 : -1) * (.9 + Math.random() * .6);
+        if (d < 95 && f.jukes >= 1 && now - f.lastJuke > 200) { f.jukes--; f.lastJuke = now; const ang = Math.atan2(dy, dx) + (Math.random() < .5 ? 1 : -1) * (.9 + Math.random() * .6);
           f.vx = Math.cos(ang) * 1100; f.vy = Math.sin(ang) * 1100; const sx = G('sfx'); if (sx) sx.pop(1000, .05, .05); }
-        f.jukes = Math.min(4, f.jukes + dt * .34);
-        if (chased) { const push = (1 - d / R) * 1900 * f.stam * dt / Math.max(.3, d / R); f.vx += dx / (d || 1) * push; f.vy += dy / (d || 1) * push;
-          f.stam = Math.max(.22, f.stam - dt * .22); }
+        f.jukes = Math.min(6, f.jukes + dt * .55);
+        if (chased) { const push = (1 - d / R) * 2300 * f.stam * dt / Math.max(.3, d / R); f.vx += dx / (d || 1) * push; f.vy += dy / (d || 1) * push;
+          f.stam = Math.max(.38, f.stam - dt * .18); }
         else f.stam = Math.min(1, f.stam + dt * .08);
-        const sp = Math.hypot(f.vx, f.vy), max = (now - f.lastJuke < 220 ? 1100 : 280 + 520 * f.stam); if (sp > max) { f.vx *= max / sp; f.vy *= max / sp; }
+        const sp = Math.hypot(f.vx, f.vy), max = (now - f.lastJuke < 220 ? 1100 : 340 + 560 * f.stam); if (sp > max) { f.vx *= max / sp; f.vy *= max / sp; }
       }
       f.x += f.vx * dt; f.y += f.vy * dt;
       // while it is being chased it keeps inside the screen; otherwise it rolls on and out
@@ -115,7 +117,7 @@
       el.remove(); tag.remove();
       if (!caught && !done) setTimeout(pass, (C.gapSeconds || 30) * 1000 * (0.8 + Math.random() * .6));
     }
-    const grab = e => { e.preventDefault(); e.stopPropagation(); if (!fine && !reduce && f.hops < 2) { hop(e.clientX - 30 + Math.random() * 60, e.clientY + 20); return; } const r = el.getBoundingClientRect(); const bu = G('burst'), sx = G('sfx'); if (bu) bu(r.left + r.width / 2, r.top + r.height / 2, ['#f39a1e', '#d8344a', '#7fb342', '#ffe08a'], 26, 1, {speed: 520}); if (sx) sx.ding(); done = true; end(true); claim(Math.round(performance.now() - f.t0)); };
+    const grab = e => { e.preventDefault(); e.stopPropagation(); if (!fine && !reduce && f.hops < 3) { hop(e.clientX - 30 + Math.random() * 60, e.clientY + 20); return; } const r = el.getBoundingClientRect(); const bu = G('burst'), sx = G('sfx'); if (bu) bu(r.left + r.width / 2, r.top + r.height / 2, ['#f39a1e', '#d8344a', '#7fb342', '#ffe08a'], 26, 1, {speed: 520}); if (sx) sx.ding(); done = true; end(true); claim(Math.round(performance.now() - f.t0)); };
     el.addEventListener('pointerdown', grab);
     el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') grab(e); });
     tag.querySelector('button').addEventListener('click', () => { done = true; end(true); });
