@@ -68,7 +68,7 @@ window.CONFIG = {
   retention: { on: false, variation: 'monthly-pass', price: 5 },   // $7 stay offer: on once the Apps Script 'stay' action is deployed (STAY codes); off = email The Chef
   partingGift: { on: false },   // 6-month plugin gift when someone cancels anyway; on once Moonbase gift codes + Apps Script 'parting' exist; off = email The Chef
   maitredDiscount: { on: false },   // Maître D' 10% code; turn on once the Moonbase code pool and the Apps Script 'maitred' action exist
-  catchFruit: { on: false, everyDays: 7, passes: 3, gapSeconds: 30, label: 'Catch me for 50% off!' },
+  catchFruit: { on: true, everyDays: 7, passes: 3, gapSeconds: 30, label: 'Catch me for 50% off!' },
   // Free Butter Spread downloads: each zip holds the installer plus a READ ME FIRST for the security warning
   butterSpread: {
     mac: 'https://github.com/sarthakzzz/butter-spread/releases/download/v1.0.0/Butter-Spread-1.0.0-mac.zip',
