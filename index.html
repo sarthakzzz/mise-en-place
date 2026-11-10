@@ -1106,7 +1106,12 @@ document.getElementById('checkout').addEventListener('click', async () => {
     // Same items merge into one line with a quantity. Our basket stays until the order completes, so closing the checkout
     // brings the buyer back to a basket they can still change (Sarthak 10 Nov).
     const merged = []; for (const i of coded) { const k = JSON.stringify(i), m = merged.find(x => x.k === k); if (m) m.i.quantity = (m.i.quantity || 1) + 1; else merged.push({k, i: {...i}}); }
-    lastOrder = merged.map(x => x.i); retries = 0; closeCart(); sfx.ding(); await Moonbase.purchase(lastOrder);
+    // Moonbase's own cart (localStorage 'moonbase_session') is emptied first, then filled with exactly our basket, then its cart
+    // panel opens: there the buyer can still remove items or change quantities, the basket offers (10/15/20%) apply, and its
+    // Checkout button goes on to payment. (purchase() skips the basket offers, and a stale cart kept old items: Sarthak 10 Nov)
+    mbFreshCart();
+    for (const x of merged) { const {coupon_code, ...i} = x.i; await Moonbase.add_to_cart({...i, show_cart: false}); }
+    lastOrder = null; closeCart(); sfx.ding(); Moonbase.view_cart();
     fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.';
   } catch (e) { if (e.message === 'club') { fine.textContent = 'The Breakfast Club is still setting the table. Take it out of the basket for now, or email us.'; btn.disabled = false; return; }
     fine.innerHTML = `Oops, we dropped the tray. Please email <b>${CONFIG.supportEmail}</b> and the Chef will plate it up by hand.`; }
@@ -1400,9 +1405,11 @@ function nextCoupon(code){ const S = CONFIG.priceSteps || {};
   if (window.pfbMd && code && code === pfbMd.code) { pfbMd.used(); return ''; }   // Maître D' code already used: today's price   // caught code already used: back to today's price
   for (const st of [S.plugin, S.bundle]) { if (!st) continue; const m = new RegExp('^' + st.coupon + '(\\d+)$').exec(code || ''); if (m) { const n = +m[1] + st.step; return n < st.max ? st.coupon + n : ''; } }
   return null; }
+function mbFreshCart(){ try { localStorage.removeItem('moonbase_session'); } catch (e) {}
+  try { window.dispatchEvent(new StorageEvent('storage', {key: 'moonbase_session', oldValue: '{}', newValue: null})); } catch (e) {} }
 function startMoonbase(){ if (mbReady || !window.Moonbase) return; Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {}); mbReady = true;
   // the basket empties only once the order is paid; a closed checkout leaves it as it was
-  try { Moonbase.on('checkout-completed', () => { cart = []; save(); refresh(); lastOrder = null; }); } catch (e) {}
+  try { Moonbase.on('checkout-completed', () => { cart = []; save(); refresh(); lastOrder = null; mbFreshCart(); }); } catch (e) {}
   try { Moonbase.on('checkout-closed', e => { if (e && e.completed) { cart = []; save(); refresh(); lastOrder = null; } else if (cart.length) say('Your basket is just as you left it. Change anything you like.'); }); } catch (e) {}
   try { Moonbase.on('coupon-rejected', (e, ...rest) => { const code = typeof e === 'string' ? e : (e && (e.code || (e.detail && e.detail.code))) || '';
     const next = nextCoupon(code); if (!lastOrder || next === null || retries++ > 8) return;
