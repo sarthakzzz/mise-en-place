@@ -66,7 +66,7 @@ window.CONFIG = {
   // Catching it gets one single-use Moonbase code with a random reward, handed out by our Apps Script ("Catch codes" tab).
   // on: false keeps it hidden (preview any time with ?catch=test). Rewards: plugin50, fridge50, month50 (first month of the Club, once that exists).
   retention: { on: true, variation: 'monthly-pass', price: 5 },   // $5 stay offer on cancel: STAY codes from the Apps Script 'stay' action (live 10 Nov); off = email The Chef
-  partingGift: { on: false },   // 6-month plugin gift when someone cancels anyway; on once Moonbase gift codes + Apps Script 'parting' exist; off = email The Chef
+  partingGift: { on: true },   // 6-month plugin gift when someone cancels anyway: GIFT codes via the Apps Script 'parting' action, always a one-plugin checkout (live 10 Nov)
   maitredDiscount: { on: true },   // Maître D' 10% code from the Apps Script 'maitred' action (live 10 Nov)
   catchFruit: { on: true, everyDays: 7, passes: 3, gapSeconds: 30, label: 'Catch me for 50% off!' },
   // Free Butter Spread downloads: each zip holds the installer plus a READ ME FIRST for the security warning
