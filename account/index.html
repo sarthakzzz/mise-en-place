@@ -47,8 +47,8 @@
 <div class="stay-back" id="stayBack" hidden><div class="stay" role="dialog" aria-modal="true" aria-labelledby="stayTitle">
   <p class="big-emoji" aria-hidden="true">🥐</p>
   <h2 id="stayTitle">Leaving already? Your eggs are not even cold!</h2>
-  <p id="stayText">On the Monthly Pass? Stay for <b>$7 a month</b> instead of $10. Same full menu, every new monthly release, and the Chef stops crying into the soup.</p>
-  <div class="row"><button class="keep" type="button" id="stayKeep">Fine, pour me another for $7</button><button class="go" type="button" id="stayGo">No thanks, I am full. Cancel</button></div>
+  <p id="stayText">On the Monthly Pass? Stay for <b><span class="stay-new">$7</span> a month</b> instead of <span class="stay-old">$10</span>. Same full menu, every new monthly release, and the Chef stops crying into the soup.</p>
+  <div class="row"><button class="keep" type="button" id="stayKeep">Fine, pour me another for <span class="stay-new">$7</span></button><button class="go" type="button" id="stayGo">No thanks, I am full. Cancel</button></div>
 </div></div>
 <div class="stay-back" id="giftBack" hidden><div class="stay" role="dialog" aria-modal="true" aria-labelledby="giftTitle">
   <p class="big-emoji" aria-hidden="true">🎁</p>
@@ -61,7 +61,7 @@
 </div></div>
 </main>
 <footer>© 2026 Plugins for Breakfast by Escaé Studios · <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms and conditions</a> · <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a></footer>
-<script src="../config.js"></script><script src="../assets/maitred.js" defer></script>
+<script src="../config.js"></script><script src="../sold.js"></script><script src="../assets/maitred.js" defer></script>
 <script src="https://assets.moonbase.sh/storefront/moonbase.js"></script>
 <script>
 const qs = new URLSearchParams(location.search), status = document.getElementById('status');
@@ -80,6 +80,10 @@ const gift = qs.get('redeem'); document.getElementById('redeem').addEventListene
 if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out of the oven.'); go('redeem_voucher', {code: gift}); }
 // Cancel membership: offer $7/month first (Sarthak 9 Nov); cancelling always stays one click away (Moonbase's memberships panel)
 { const back = document.getElementById('stayBack'), R = CONFIG.retention || {};
+  // stay price: CONFIG.retention.price vs the Monthly Pass's current price (simple prices: $5 instead of $7)
+  const usd = v => '$' + (Number.isInteger(v) ? v : v.toFixed(2)), mo = CONFIG.simplePricing && CONFIG.ladders ? CONFIG.ladders.monthly[Math.min(Math.floor((((window.SOLD || {}).items || {}).monthly || 0) / CONFIG.ladders.every), CONFIG.ladders.monthly.length - 1)] : 10;
+  const SN = usd(CONFIG.simplePricing ? (R.price || 5) : 7), SO = usd(mo);
+  document.querySelectorAll('.stay-new').forEach(e => e.textContent = SN); document.querySelectorAll('.stay-old').forEach(e => e.textContent = SO);
   const shut = () => { back.hidden = true; };
   document.getElementById('cancelBtn').addEventListener('click', () => { back.hidden = false; document.getElementById('stayKeep').focus(); });
   const toCancel = () => { gb.hidden = true; say('Cancel from the membership panel. Your plate stays full until the end of the time you paid for.'); go('view_subscriptions'); };
@@ -108,7 +112,7 @@ if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out
     setTimeout(() => go('view_subscriptions'), 800); });
   gb.addEventListener('click', e => { if (e.target === gb) gb.hidden = true; });
   // $7 stay: one STAY code per account from the Apps Script ('stay' action), then a Monthly Pass checkout with it ($3 off every renewal)
-  const stayMail = () => { say('Hooray, you are staying for seconds! Your email is ready to send, and the Chef will move you to $7 a month.'); location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('Keep me on the Monthly Pass for $7')}&body=${encodeURIComponent('Hello Chef, please move my Monthly Pass to $7 a month. My account email is: ')}`; };
+  const stayMail = () => { say('Hooray, you are staying for seconds! Your email is ready to send, and the Chef will move you to ' + SN + ' a month.'); location.href = `mailto:${CONFIG.supportEmail}?subject=${encodeURIComponent('Keep me on the Monthly Pass for ' + SN)}&body=${encodeURIComponent('Hello Chef, please move my Monthly Pass to ' + SN + ' a month. My account email is: ')}`; };
   document.getElementById('stayKeep').addEventListener('click', async () => { shut();
     if (!R.on) return stayMail();
     try { say('One moment, the Chef is finding you a seat...');
@@ -116,7 +120,7 @@ if (gift) { say('Sign in or grab a free seat, and your plugin comes straight out
       if (!token) { say('Sign in first, so we know whose table to keep warm.'); go('sign_in'); return; }
       const r = await fetch(R.endpoint || CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({action: 'stay', vid: (() => { try { return JSON.parse(localStorage.getItem('pfb-md') || '{}').vid || ''; } catch (e) { return ''; } })(), token})}).then(r => r.json());
       if (!r || !r.ok || !r.code) { say(r && r.error ? r.error : 'The Chef dropped the ladle. We have made you an email instead.'); return stayMail(); }
-      say(`Hooray, you are staying for seconds! Your code ${r.code} is already in the checkout. Start the $7 pass there, then cancel the $10 one in Memberships.`);
+      say(`Hooray, you are staying for seconds! Your code ${r.code} is already in the checkout. Start the ${SN} pass there, then cancel the ${SO} one in Memberships.`);
       go('purchase', [{bundle_id: CONFIG.bundle, variation_id: R.variation || 'monthly-pass', coupon_code: r.code}]);
     } catch (e) { stayMail(); } });
   back.addEventListener('click', e => { if (e.target === back) shut(); });
