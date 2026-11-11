@@ -8,8 +8,12 @@
   const MD = C.maitredDiscount || {}, mdKey = 'pfb-md';
   const mdGet = () => { try { return JSON.parse(localStorage.getItem(mdKey) || '{}'); } catch (e) { return {}; } };
   const mdPut = o => { try { localStorage.setItem(mdKey, JSON.stringify(Object.assign(mdGet(), o))); } catch (e) {} };
-  window.pfbMd = { get code(){ const s = mdGet(); return s.code && !s.used ? s.code : ''; }, used(){ mdPut({used: Date.now()}); } };
   const mdVid = () => { let v = mdGet().vid; if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); mdPut({vid: v}); } return v; };
+  window.pfbMd = { get code(){ const s = mdGet(); return s.code && !s.used ? s.code : ''; }, used(){ mdPut({used: Date.now()}); },
+    // one code per visitor, shared by the Maître D' chat and the follow-for-10% offer
+    async fetch(){ const s = mdGet(); if (s.code) return s.used ? '' : s.code; if (!MD.on) return '';
+      const r = await (await fetch(MD.endpoint || C.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({action: 'maitred', vid: mdVid()})})).json();
+      if (!r || !r.ok || !r.code) throw (r && r.error ? String(r.error) : 0); mdPut({code: r.code, at: Date.now()}); return r.code; } };
   const discount = () => {
     if (!MD.on) return `Ah, my apron pockets are empty just now. Join our emails, and treats and offers come straight to your inbox, still warm.`;
     const have = window.pfbMd.code; if (have) return `For you? Always. Your extra 10% code is <b>${have}</b>. If the checkout doesn't show it already, type it into the coupon box there.`;

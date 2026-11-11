@@ -68,6 +68,8 @@ window.CONFIG = {
   retention: { on: true, variation: 'monthly-pass', price: 5 },   // $5 stay offer on cancel: STAY codes from the Apps Script 'stay' action (live 10 Nov); off = email The Chef
   partingGift: { on: true },   // 6-month plugin gift when someone cancels anyway: GIFT codes via the Apps Script 'parting' action, always a one-plugin checkout (live 10 Nov)
   maitredDiscount: { on: true },   // Maître D' 10% code from the Apps Script 'maitred' action (live 10 Nov)
+  // Follow us, get 10% off (home page, above the footer). Honour system; hands out the visitor's one Maître D' code.
+  followOffer: { on: true, profiles: [['Instagram', 'https://www.instagram.com/pluginsforbreakfast'], ['TikTok', 'https://www.tiktok.com/@pluginsforbreakfast'], ['YouTube', 'https://www.youtube.com/@pluginsforbreakfast'], ['X', 'https://x.com/PFBAudio'], ['Threads', 'https://www.threads.com/@pluginsforbreakfast'], ['Pinterest', 'https://www.pinterest.com/pluginsforbreakfast']] },
   catchFruit: { on: true, everyDays: 7, passes: 3, gapSeconds: 30, label: 'Catch me for 50% off!' },
   // Free Butter Spread downloads: each zip holds the installer plus a READ ME FIRST for the security warning
   butterSpread: {
