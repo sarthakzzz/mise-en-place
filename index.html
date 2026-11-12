@@ -271,6 +271,7 @@ nav a:focus-visible,.basket:focus-visible{outline:2px solid currentColor}
 .store b{display:block;font-size:20px;font-family:var(--display)}
 .store span{opacity:.75;font-size:15px}
 .signup{display:grid;grid-template-columns:1fr 1.1fr;gap:6vw;align-items:center}
+.gw-banner{display:block;max-width:1100px;margin:0 auto 6vh;padding:0 16px;text-decoration:none;color:inherit;text-align:center}.gw-banner[hidden]{display:none}.gw-banner img{width:100%;height:auto;border-radius:22px;display:block;box-shadow:0 14px 40px -18px rgba(0,0,0,.6);transition:transform .2s}.gw-banner:hover img{transform:translateY(-3px)}.gw-banner span{display:inline-block;margin-top:12px;font-weight:800;font-size:18px}
 .follow{margin-top:8vh;display:grid;grid-template-columns:1fr 1.1fr;gap:12px 6vw;align-items:center;border-top:1px dashed currentColor;padding-top:5vh}
 .follow h3{font-family:Fraunces,Georgia,serif;font-size:clamp(26px,3vw,40px);line-height:1.1;margin:0 0 6px}
 .follow p{margin:0;opacity:.9}
@@ -676,6 +677,7 @@ body.waitlist .countdown{display:inline-flex}
 </section>
 
 <section class="scene" id="order" data-bg="#1f3b57" data-fg="#f6ead4">
+  <a class="gw-banner" id="gwBanner" href="giveaway/" hidden aria-label="Giveaway: win the whole fridge. Enter free"><picture><source srcset="assets/giveaway/live-banner.webp" type="image/webp"><img src="assets/giveaway/live-banner.jpg" alt="Giveaway: win the whole fridge, all 16 plugins. Enter free" width="1600" height="900" loading="lazy"></picture><span>Win the whole fridge · enter free →</span></a>
   <div class="stick pad">
     <div class="order-grid">
       <div class="stackbox" id="stackbox" title="Click to open the fridge">
@@ -1052,6 +1054,8 @@ const woo = {ready: false, off: 0, md: '', fruit: 0, count: 0};
   addEventListener('focus', () => setTimeout(give, 400));
   if (window.pfbMd && pfbMd.code) show(pfbMd.code);
 })();
+// Giveaway banner above the pricing: only from 20 Nov 00:00 to 30 Nov 23:59 UK time (?giveaway=preview shows it any time)
+{ const g = document.getElementById('gwBanner'), t = Date.now(); if (g && (new URLSearchParams(location.search).get('giveaway') === 'preview' || (t >= Date.parse('2026-11-20T00:00:00Z') && t <= Date.parse('2026-11-30T23:59:59Z')))) g.hidden = false; }
 function woohoo(text){
   document.querySelectorAll('.woohoo').forEach(e => e.remove());
   const d = document.createElement('div'); d.className = 'woohoo'; d.setAttribute('role', 'status');

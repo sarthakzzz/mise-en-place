@@ -15,14 +15,14 @@
   const css = document.createElement('style');
   css.textContent = `.lj{--lj-bg:#fffaf0;--lj-fg:#2b1d16;--lj-line:#e3d2b4;--lj-acc:#c4532f;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--lj-bg);color:var(--lj-fg);border:1px dashed var(--lj-acc);border-radius:18px;padding:12px 14px 12px 18px;margin:22px auto;max-width:760px;font:15px/1.45 Manrope,system-ui,sans-serif;text-align:left}
 .lj .lj-t{flex:1 1 220px;font-weight:800}.lj .lj-t small{display:block;font-weight:400;opacity:.75;font-size:13px}
-.lj form{display:flex;gap:8px;flex:1 1 300px}
+.lj,.lj *{box-sizing:border-box}.lj form{display:flex;gap:8px;flex:1 1 300px;min-width:0;max-width:100%}
 .lj input{flex:1;min-width:0;font:inherit;padding:11px 14px;border-radius:12px;border:2px solid var(--lj-line);background:#fff;color:#2b1d16}
 .lj input:focus{outline:none;border-color:var(--lj-acc)}
 .lj button{font:inherit;font-weight:800;border:0;border-radius:12px;padding:11px 16px;background:var(--lj-acc);color:#fff;cursor:pointer;white-space:nowrap}
 .lj button[disabled]{opacity:.6;cursor:wait}
 .lj .lj-code{display:inline-block;background:var(--lj-acc);color:#fff;border-radius:10px;padding:3px 10px;letter-spacing:.06em;margin:0 4px;cursor:pointer}
 .lj .lj-hp{position:absolute;left:-9999px}
-@media (max-width:520px){.lj{padding:14px}.lj form{flex-basis:100%}}`;
+@media (max-width:520px){.lj{padding:14px}.lj form{flex-basis:100%}.lj button{padding:11px 12px}}`;
   document.head.appendChild(css);
   const done = (box, code, email) => {
     box.innerHTML = `<div class="lj-t">Welcome to the table${email ? ', ' + esc(email.split('@')[0]) : ''}! 🧈 Your 10% code: <span class="lj-code" title="Click to copy">${esc(code)}</span><small>Type it in the coupon box at checkout. One use only, and Butter Spread is on its way to your inbox too.</small></div>`;
