@@ -48,6 +48,7 @@
 .cf-win{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:72;transform:translateX(-50%);width:min(380px,calc(100% - 32px));background:#f6ead4;color:#2b1d16;border-radius:22px;padding:20px 20px 18px;box-shadow:0 24px 60px -20px rgba(0,0,0,.6);text-align:center;font:500 15px/1.45 Manrope,system-ui,sans-serif;animation:cfup .5s cubic-bezier(.3,1.4,.5,1)}
 .cf-win h3{font:800 24px/1.1 Fraunces,Georgia,serif;margin:0 0 6px}.cf-win p{margin:0 0 12px}.cf-code{display:inline-block;font:800 20px/1 ui-monospace,Menlo,monospace;letter-spacing:.06em;background:#fff;border:2px dashed #c4532f;border-radius:12px;padding:10px 14px;margin:0 0 12px;user-select:all}
 .cf-win .cf-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.cf-win button{font:800 14px/1 Manrope,system-ui,sans-serif;border:0;border-radius:999px;padding:11px 16px;cursor:pointer;background:#2b1d16;color:#ffe08a}.cf-win button.cf-ghost{background:transparent;color:#2b1d16;box-shadow:inset 0 0 0 2px #2b1d16}
+.cf-win .cf-mail{display:grid;gap:10px;text-align:left}.cf-win .cf-mail input[type=email]{font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:2px solid #e3d2b4;background:#fff;color:#2b1d16}.cf-win .cf-ok{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.4;opacity:.9}.cf-win .cf-ok input{margin-top:2px;accent-color:#c4532f}.cf-win .cf-mail button{justify-self:center}
 .cf-win .cf-x{position:absolute;right:10px;top:8px;background:none;color:#2b1d16;padding:6px;font-size:20px;opacity:.6}
 .catch-note{margin:10px 0 0;padding:10px 12px;border-radius:14px;background:#fff6dc;font-size:14px;line-height:1.4}
 @keyframes cfup{from{transform:translate(-50%,40px);opacity:0}}`;
@@ -126,19 +127,34 @@
   function card(html){ const old = document.querySelector('.cf-win'); if (old) old.remove(); const w = document.createElement('div'); w.className = 'cf-win'; w.setAttribute('role', 'dialog'); w.setAttribute('aria-live', 'polite');
     w.innerHTML = `<button class="cf-x" type="button" aria-label="Close">×</button>${html}`; document.body.appendChild(w); w.querySelector('.cf-x').onclick = () => w.remove(); return w; }
   function vid(){ let v = get().vid; if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); put({vid: v}); } return v; }
-  async function claim(ms){
+  // The prize goes to an email (the Apps Script 'catch' action emails the code when given one). Joining our list is a
+  // separate, unticked opt-in box (autopilot list push, 12 Nov). The code is still shown here and saved for the basket.
+  function claim(ms){
+    const w = card(`<h3>You caught it!</h3><p>Nice reflexes, chef. Where shall we send your treat?</p>
+      <form class="cf-mail" novalidate><input type="email" name="email" placeholder="you@studio.com" autocomplete="email" required aria-label="Your email">
+      <label class="cf-ok"><input type="checkbox" name="list"> Also send me the morning menu: new plugins and treats, now and then. Unsubscribe any time.</label>
+      <button type="submit">Send my treat</button></form>`);
+    const f = w.querySelector('form'), inp = f.querySelector('input[type=email]');
+    setTimeout(() => { try { inp.focus({preventScroll: true}); } catch (e) {} }, 300);
+    f.addEventListener('submit', e => { e.preventDefault(); const email = inp.value.trim().replace(/^mailto:/i, '');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { inp.style.borderColor = '#c4532f'; inp.focus(); return; }
+      const list = f.list.checked;
+      if (list && CONFIG.signupEndpoint && !test) fetch(CONFIG.signupEndpoint, {method: 'POST', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({email, name: '', source: 'catch-the-fruit', consent: true, website: '', t: Date.now()})}).catch(() => {});
+      reveal(ms, email, list); });
+  }
+  async function reveal(ms, email, list){
     const w = card(`<h3>You caught it!</h3><p>Picking your treat...</p>`);
     let res;
     try {
       if (test) { const ks = Object.keys(REWARDS).filter(k => !(C.off || ['month50']).includes(k)); res = {ok: true, code: 'TEST-' + Math.random().toString(36).slice(2, 8).toUpperCase(), reward: ks[Math.floor(Math.random() * ks.length)]}; await new Promise(r => setTimeout(r, 600)); }
-      else { const r = await fetch(C.endpoint || CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({action: 'catch', vid: vid(), ms, website: ''})}); res = await r.json(); }
+      else { const r = await fetch(C.endpoint || CONFIG.signupEndpoint, {method: 'POST', headers: {'Content-Type': 'text/plain;charset=utf-8'}, body: JSON.stringify({action: 'catch', vid: vid(), ms, email, list, website: ''})}); res = await r.json(); }
     } catch (e) { res = {ok: false}; }
     if (!res || !res.ok || !res.code || !REWARDS[res.reward]) {
       w.innerHTML = `<button class="cf-x" type="button" aria-label="Close">×</button><h3>So close!</h3><p>${(res && res.error) || 'The kitchen is busy right now. Email chef@pluginsforbreakfast.com and mention the fruit, and we will sort you out.'}</p>`;
       w.querySelector('.cf-x').onclick = () => w.remove(); return; }
     put({code: res.code, reward: res.reward, caught: Date.now(), used: 0});
     const line = REWARDS[res.reward].line;
-    w.innerHTML = `<button class="cf-x" type="button" aria-label="Close">×</button><h3>You caught it!</h3><p>Your treat: <b>${line}</b>.</p><div class="cf-code">${res.code}</div><p style="font-size:13px;opacity:.8">One use only. We saved it in your basket, so it is applied at checkout on this browser.</p><div class="cf-row"><button type="button" data-copy>Copy code</button><button type="button" class="cf-ghost" data-menu>${res.reward === 'plugin50' ? 'Pick a plugin' : 'See the deal'}</button></div>`;
+    w.innerHTML = `<button class="cf-x" type="button" aria-label="Close">×</button><h3>You caught it!</h3><p>Your treat: <b>${line}</b>. We've sent the code to <b>${email.replace(/[<>&"]/g, '')}</b> too.</p><div class="cf-code">${res.code}</div><p style="font-size:13px;opacity:.8">One use only. We saved it in your basket, so it is applied at checkout on this browser.</p><div class="cf-row"><button type="button" data-copy>Copy code</button><button type="button" class="cf-ghost" data-menu>${res.reward === 'plugin50' ? 'Pick a plugin' : 'See the deal'}</button></div>`;
     w.querySelector('.cf-x').onclick = () => w.remove();
     w.querySelector('[data-copy]').onclick = e => { (navigator.clipboard ? navigator.clipboard.writeText(res.code) : Promise.reject()).then(() => e.target.textContent = 'Copied', () => e.target.textContent = res.code); };
     w.querySelector('[data-menu]').onclick = () => { w.remove(); const t = document.querySelector(res.reward === 'plugin50' ? '#oc' : '.tiers'); if (t) t.scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}); };

@@ -689,6 +689,7 @@ body.waitlist .countdown{display:inline-flex}
       </div>
     </div>
     <div class="passes"><span><b>Rather graze?</b> The Monthly Pass serves all 16 plugins plus every new one, for as long as you keep the plates coming. Cancel any time.</span><button class="btn btn-ghost" type="button" data-add="monthly" data-label="Monthly Pass · $7/month"><s>$10</s> Monthly Pass · $7/month</button></div>
+    <div data-listjoin></div>
     <div class="small-print">Every licence feeds 3 of your computers, Mac or Windows, with offline activation for kitchens without wifi.</div>
     <a class="tag-chef" id="tagChef" href="tag-the-chef/" hidden><b>Tag the Chef.</b> <span>Cook something with our plugins, post it, tag @pluginsforbreakfast, and pick one plugin on us. The free trial counts.</span> <u>How it works</u></a>
     <div class="dots" id="dots"><button type="button" aria-label="À la carte"></button><button type="button" aria-label="Full Fridge Bundle"></button><button type="button" aria-label="Breakfast Club"></button></div>
@@ -1550,6 +1551,7 @@ window.PFB = {FOOD, sfx, burst, refresh};   // shared with assets/catch.js
 <script>document.querySelectorAll('.plug .buy').forEach(b => { const id = b.closest('.plug').id, a = document.createElement('a'); a.className = 'daw-line'; a.href = '#daws';
   a.textContent = (id === 'bs' ? 'Mac: AU, VST3' : 'Mac: AU, VST3, AAX') + ' · Windows: VST3'; b.after(a); });</script>
 <script src="assets/maitred.js" defer></script>
+<script src="assets/listjoin.js" defer></script>
 <script src="assets/catch.js" defer></script>
 <script src="assets/fullscreen.js" defer></script>
 <!-- pfb-nobadge --><style>[id*="netlify" i],[class*="netlify" i],netlify-badge,netlify-drawer,iframe[src*="netlify" i],a[href*="netlify.com" i]{display:none!important}</style><script>(()=>{const k=n=>{try{const s=((n.tagName||"")+" "+(n.id||"")+" "+(typeof n.className=="string"?n.className:"")+" "+(n.src||"")+" "+(n.href||"")).toLowerCase();if(s.includes("netlify"))n.remove();}catch(e){}};const sweep=()=>document.querySelectorAll("body *").forEach(k);new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>{if(n.nodeType===1){k(n);n.querySelectorAll&&n.querySelectorAll("*").forEach(k)}}))).observe(document.documentElement,{childList:true,subtree:true});addEventListener("load",sweep);})()</script>
