@@ -83,3 +83,18 @@ window.CONFIG = {
 (() => { const c = window.CONFIG.goatcounter; if (!c || !/pluginsforbreakfast\.com$/.test(location.hostname)) return;
   const s = document.createElement('script'); s.async = true; s.src = 'https://gc.zgo.at/count.js'; s.dataset.goatcounter = `https://${c}.goatcounter.com/count`;
   (document.head || document.documentElement).appendChild(s); })();
+// Our own page-view counter (no cookies, no personal data): one tiny beacon per page view to our Apps Script ('visit' action),
+// counted per day in the Sheet's Visits tab; daily totals at <signupEndpoint>?a=visits. Sends: path, referrer domain, time zone
+// (a rough country), language, and whether this browser has visited before. Skips bots, local tests and our own ?notrack browsers.
+(() => { try {
+  if (window.__pfbVisit || !/pluginsforbreakfast\.com$/.test(location.hostname) || navigator.webdriver) return; window.__pfbVisit = 1;
+  const q = new URLSearchParams(location.search); if (q.has('notrack')) localStorage.setItem('pfb-notrack', '1');
+  if (localStorage.getItem('pfb-notrack') === '1') return;
+  let ref = ''; try { const r = new URL(document.referrer); ref = r.hostname === location.hostname ? '' : r.hostname.replace(/^www\./, ''); } catch (e) {}
+  const seen = localStorage.getItem('pfb-seen'); if (!seen) localStorage.setItem('pfb-seen', '1');
+  const body = JSON.stringify({action: 'visit', path: location.pathname.slice(0, 120), ref: ref.slice(0, 80), utm: (q.get('utm_source') || '').slice(0, 40),
+    tz: (Intl.DateTimeFormat().resolvedOptions().timeZone || '').slice(0, 40), lang: (navigator.language || '').slice(0, 12), new: !seen, mobile: matchMedia('(max-width: 820px)').matches});
+  const ep = window.CONFIG.signupEndpoint; if (!ep) return;
+  const blob = new Blob([body], {type: 'text/plain;charset=utf-8'});
+  if (!(navigator.sendBeacon && navigator.sendBeacon(ep, blob))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body});
+} catch (e) {} })();
