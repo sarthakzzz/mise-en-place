@@ -105,7 +105,7 @@ window.CONFIG = {
 // 72-hour Full Fridge launch deal (Sarthak OK 14 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
 // While on: Full Fridge shows $price (was $100) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.
 // Preview any time with ?flash=preview (shows a pretend 72h countdown).
-window.CONFIG.fridgeFlash = { price: 29, until: '' };
+window.CONFIG.fridgeFlash = { price: 29, until: '2026-11-17T12:52:00Z' };   // Moonbase promo started 2026-11-14T12:52Z
 window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = new URLSearchParams(location.search).get('flash') === 'preview';
   const end = pv ? (window.__pfbFlashPv = window.__pfbFlashPv || Date.now() + 72 * 3600e3) : Date.parse(f.until || '');
   return end && Date.now() < end && f.price ? {price: f.price, end} : null; } catch (e) { return null; } };
