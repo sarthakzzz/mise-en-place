@@ -46,8 +46,9 @@ window.CONFIG = {
   // The store charges the current step as its list price (no coupons); the site shows the final price struck through and 'X left at this price'.
   // simplePricing: true switches the site over (no STEP/FRIDGE coupons, Lifetime Pass on, Yearly Pass off). Flip together with the store.
   simplePricing: true,
-  // Black Friday page bonus line: false hides it; set to the exact sentence to show it (only once Sarthak says yes)
-  bfBonus: false,
+  // Full Fridge bonus line (black-friday page, home Full Fridge card, basket): false hides it
+  bfBonus: 'Bonus: grab the Full Fridge before 1 Dec and our 17th plugin, Jelly Wobble, lands in your account free on 15 Dec.',  // Sarthak said yes 14 Nov
+  bfBonusUntil: '2026-12-01T00:00:00Z',  // hidden everywhere from this moment
   ladders: { every: 100, plugin: [19, 21, 23, 25, 27, 29], monthly: [7, 7.5, 8, 8.5, 9, 10], fridge: [50, 60, 70, 80, 90, 100], club: [75, 90, 105, 120, 135, 150], lifetime: [150, 170, 190, 210, 230, 250] },
   clubPrice: 90,                              // Breakfast Club price (a promotion, renewals also $90; shown as $150 struck through)
   clubVariation: 'breakfast-club',            // Breakfast Club: the yearly ($150) price's variation ID on the full-fridge bundle

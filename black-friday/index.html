@@ -111,7 +111,7 @@ h1{margin-top:6px}
       const l = document.querySelector(`[data-left="${k}"]`); if (l && o.left) l.textContent = `${o.left} left at this price`; });
   }
   // bonus line: shown only when config.js sets bfBonus to a string
-  if (typeof C.bfBonus === 'string' && C.bfBonus) { const b = document.getElementById('bonus'); b.textContent = C.bfBonus; b.hidden = false; }
+  if (typeof C.bfBonus === 'string' && C.bfBonus && Date.now() < Date.parse(C.bfBonusUntil || '2100-01-01')) { const b = document.getElementById('bonus'); b.textContent = C.bfBonus; b.hidden = false; }
   const START = Date.parse('2026-11-24T00:00:00Z'), END = Date.parse('2026-12-01T23:59:59Z'), q = new URLSearchParams(location.search).get('preview');
   const $ = id => document.getElementById(id), pad = n => String(n).padStart(2, '0');
   const tick = () => { const now = q === 'open' ? START + 1 : q === 'closed' ? END + 1 : Date.now();

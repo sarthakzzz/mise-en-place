@@ -983,6 +983,7 @@ const PRODUCTS = {
   lifetime: {name:'Lifetime Pass', sub:'All 16 plugins + every future release · yours forever', price:250, food:'fridge', plan:true, pass:'forever'}
 };
 for (const [k, p] of Object.entries(PRODUCTS)) p.mb = (CONFIG.products || {})[k];
+const BF_BONUS = typeof CONFIG.bfBonus === 'string' && CONFIG.bfBonus && Date.now() < Date.parse(CONFIG.bfBonusUntil || '2100-01-01') ? CONFIG.bfBonus.replace(/[<>&]/g, '') : '';
 // Price steps: prices rise every 100 licences sold (counts in sold.js); ?sold=N previews a count
 const PRICE = (() => { const S = CONFIG.priceSteps, sold = Object.assign({plugins: 0, bundles: 0}, window.SOLD || {}), q = new URLSearchParams(location.search).get('sold');
   if (q !== null) sold.plugins = sold.bundles = +q || 0;
@@ -1026,6 +1027,7 @@ if (CONFIG.simplePricing) { const st = PRICE.step, usd = v => '$' + (Number.isIn
   if (tiers[1]) { tiers[1].querySelector('.eyebrow').textContent = 'The whole fridge'; tiers[1].querySelector('ul').innerHTML = '<li>All 16 plugins on the menu today</li><li>Yours to keep, forever</li><li>One payment, no refills needed</li>'; }
   if (tiers[2]) { tiers[2].querySelector('.amt small').textContent = 'a year'; tiers[2].querySelector('ul').innerHTML = '<li>All 16 plugins, all year</li><li>Every new monthly plugin, hot on day one</li><li>Keep every plugin that lands while you are a member, forever</li>'; }
   amt(tiers[3], was(S.lifetime), S.lifetime);
+  if (BF_BONUS && tiers[1] && !tiers[1].querySelector('.bf-bonus')) tiers[1].querySelector('ul').insertAdjacentHTML('afterend', `<p class="bf-bonus" style="margin:0;padding:10px 12px;border:2px dashed currentColor;border-radius:14px;font-weight:800;font-size:14px;line-height:1.4">🍮 ${BF_BONUS}</p>`);
   document.querySelector('#order .tiers')?.classList.add('four');
   const passes = document.querySelector('.passes'), m = S.monthly;
   if (passes) passes.innerHTML = `<span><b>Rather graze?</b> The Monthly Pass serves all 16 plugins plus every new one, for as long as you keep the plates coming. Cancel any time.${m.left ? ` <em class="deal-inline">${m.left} left at this price</em>` : ''}</span><button class="btn btn-ghost" type="button" data-add="monthly" data-label="Monthly Pass · ${usd(m.now)}/month">${m.now < m.later ? `<s>${usd(m.later)}</s> ` : ''}Monthly Pass · ${usd(m.now)}/month</button>`;
@@ -1080,6 +1082,7 @@ function refresh(){
     const t = n === 1 ? '🥞 Stack the plate! Add one more plugin and both get <b>10% off</b>.' : n === 2 ? '🥞 Two on the plate: <b>10% off</b> at checkout. Add a third for <b>15%</b>.' : n === 3 ? '🥞 Three on the plate: <b>15% off</b> at checkout. A fourth makes it <b>20%</b>.' : n >= 4 ? '🥞 A proper feast: <b>20% off</b> your plugins at checkout.' : '';
     if (t) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">${t}</div>`); }
   if (window.pfbCatch) hintEl.insertAdjacentHTML('beforeend', pfbCatch.note(cart));
+  if (BF_BONUS && (cart.includes('fridge') || (plugins.length && !plan))) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">🍮 ${BF_BONUS}</div>`);
   if (window.pfbMd && pfbMd.code && cart.length) hintEl.insertAdjacentHTML('beforeend', `<div class="catch-note">🛎️ Your extra 10% code <b>${pfbMd.code}</b>: if the checkout doesn't show it already, type it into the coupon box there.</div>`);
   { const sum = cart.reduce((s, id) => s + PRODUCTS[id].price, 0), cut = Math.round(plugins.reduce((s, id) => s + PRODUCTS[id].price, 0) * bdOff) / 100;
     const money = v => '$' + (Number.isInteger(v) ? v : v.toFixed(2));
@@ -1117,7 +1120,7 @@ function add(id, fromEl){
 }
 document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => add(b.dataset.add, b)));
 // ?add=<id> (links from /black-friday/ and other pages): put that item in the basket and open it
-{ const id = new URLSearchParams(location.search).get('add'); if (id && PRODUCTS[id]) addEventListener('load', () => { const b = document.querySelector(`[data-add="${id}"]`) || document.getElementById('basketBtn'); if (!cart.includes(id)) add(id, b); setTimeout(() => { try { openCart(); } catch (e) {} }, 900); history.replaceState(null, '', location.pathname + location.hash); }); }
+{ const id = new URLSearchParams(location.search).get('add'); if (id && PRODUCTS[id]) addEventListener('load', () => { try { storeUsed = true; } catch (e) {} const b = document.querySelector(`[data-add="${id}"]`) || document.getElementById('basketBtn'); if (!cart.includes(id)) add(id, b); setTimeout(() => { try { openCart(); } catch (e) {} }, 900); history.replaceState(null, '', location.pathname + location.hash); }); }
 document.querySelectorAll('[data-trial]').forEach(b => b.addEventListener('click', () => { const id = b.closest('.plug').id; if (!tryProduct(PRODUCTS[id].mb)) say(`${b.dataset.trial}: the store is warming up, try again in a moment.`); const r = b.getBoundingClientRect(); burst(r.left + r.width/2, r.top, ['#7fb342','#c6ea8a'], 10, 1, {size:5}); sfx.pop(500); }));
 let cartFocus = null;
 function openCart(){ cartFocus = document.activeElement; refresh(); shade.hidden = false; cartEl.hidden = false; document.getElementById('cartClose').focus(); sfx.pop(420); }
@@ -1167,6 +1170,7 @@ refresh();
 const back = document.getElementById('popBack'), pEmail = document.getElementById('popEmail'), pForm = document.getElementById('popForm'), pBread = document.getElementById('popBread'), pDone = document.getElementById('popDone');
 let lastFocus = null, shown = false;
 try { shown = sessionStorage.getItem('pfb-pop') === '1'; } catch(e) {}
+if (new URLSearchParams(location.search).has('add')) shown = true;   // arriving to buy: no Butter Spread popup
 function openPop(){ lastFocus = document.activeElement; back.hidden = false; shown = true; try { sessionStorage.setItem('pfb-pop','1'); } catch(e) {} setTimeout(() => pEmail.focus(), 60); sfx.pop(620); }
 function closePop(){ back.hidden = true; if (lastFocus) lastFocus.focus(); }
 document.querySelectorAll('[data-open-pop]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); openPop(); }));
