@@ -100,3 +100,15 @@ window.CONFIG = {
   const blob = new Blob([body], {type: 'text/plain;charset=utf-8'});
   if (!(navigator.sendBeacon && navigator.sendBeacon(ep, blob))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body});
 } catch (e) {} })();
+
+// Black Friday strip on every page (20 Nov to 1 Dec 2026), linking /black-friday/. Preview any time with ?bf=preview.
+(() => { try {
+  const t = Date.now(), pv = new URLSearchParams(location.search).get('bf') === 'preview';
+  if (!pv && (t < Date.parse('2026-11-20T00:00:00Z') || t > Date.parse('2026-12-01T23:59:59Z'))) return;
+  if (location.pathname.startsWith('/black-friday')) return;
+  const go = () => { if (document.getElementById('bfStrip')) return; const a = document.createElement('a'); a.id = 'bfStrip'; a.href = '/black-friday/';
+    a.textContent = (t < Date.parse('2026-11-24T00:00:00Z') && !pv ? 'Black Friday is coming: ' : 'Black Friday at the breakfast table: ') + 'all 16 plugins, the whole fridge from $50 →';
+    a.style.cssText = 'display:block;position:relative;z-index:60;background:#2b1d16;color:#f7c96b;text-align:center;font:800 14px/1.35 Manrope,system-ui,sans-serif;padding:9px 16px;text-decoration:none';
+    document.body.prepend(a); };
+  document.body ? go() : addEventListener('DOMContentLoaded', go);
+} catch (e) {} })();
