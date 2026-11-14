@@ -102,6 +102,10 @@ window.CONFIG = {
   if (!(navigator.sendBeacon && navigator.sendBeacon(ep, blob))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body});
 } catch (e) {} })();
 
+// Click events for A/B checks: logged as Visit rows with path /event/<name> (same Apps Script 'visit' action, live site only, respects ?notrack)
+window.pfbEvent = name => { try { if (!/pluginsforbreakfast\.com$/.test(location.hostname) || navigator.webdriver || localStorage.getItem('pfb-notrack') === '1') return;
+  const ep = window.CONFIG.signupEndpoint, body = JSON.stringify({action: 'visit', path: '/event/' + String(name).slice(0, 40), ref: location.pathname.slice(0, 80), utm: '', tz: '', lang: '', new: false, mobile: matchMedia('(max-width: 820px)').matches});
+  if (ep && !(navigator.sendBeacon && navigator.sendBeacon(ep, new Blob([body], {type: 'text/plain;charset=utf-8'})))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); } catch (e) {} };
 // 72-hour Full Fridge launch deal (Sarthak OK 14 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
 // While on: Full Fridge shows $price (was $100) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.
 // Preview any time with ?flash=preview (shows a pretend 72h countdown).
