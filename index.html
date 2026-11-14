@@ -1018,6 +1018,7 @@ document.querySelectorAll('.tier .amt').forEach(el => { const t0 = el.firstChild
 if (CONFIG.simplePricing) { const st = PRICE.step, usd = v => '$' + (Number.isInteger(v) ? v : v.toFixed(2)), was = o => o.now < o.later ? `<s>${usd(o.later)}</s>${usd(o.now)}` : usd(o.now);
   const left = o => o.left ? `<div class="deal">${o.left} left at this price</div>` : '';
   const S = {fridge: st('fridge'), monthly: st('monthly'), club: st('club'), lifetime: st('lifetime')};
+  { const F = window.pfbFlash && pfbFlash(); if (F) S.fridge = {now: F.price, later: S.fridge.later, left: 0}; }   // 72-hour Full Fridge deal
   for (const [k, p] of Object.entries(PRODUCTS)) { if (S[k]) p.price = S[k].now; else if (!p.plan && !p.free) p.price = st('plugin', k).now; }
   delete PRODUCTS.yearly; PRODUCTS.fridge.sub = 'All 16 plugins · yours forever';
   document.querySelectorAll('.buy').forEach(b => { const id = b.querySelector('[data-add]')?.dataset.add, pr = b.querySelector('.price'); if (pr && PRODUCTS[id] && !PRODUCTS[id].free && !PRODUCTS[id].plan) { const o = st('plugin', id); pr.innerHTML = was(o); pr.title = o.left ? `${o.left} left at this price` : ''; } });

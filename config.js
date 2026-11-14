@@ -102,14 +102,24 @@ window.CONFIG = {
   if (!(navigator.sendBeacon && navigator.sendBeacon(ep, blob))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body});
 } catch (e) {} })();
 
+// 72-hour Full Fridge launch deal (Sarthak OK 14 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
+// While on: Full Fridge shows $price (was $100) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.
+// Preview any time with ?flash=preview (shows a pretend 72h countdown).
+window.CONFIG.fridgeFlash = { price: 29, until: '' };
+window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = new URLSearchParams(location.search).get('flash') === 'preview';
+  const end = pv ? (window.__pfbFlashPv = window.__pfbFlashPv || Date.now() + 72 * 3600e3) : Date.parse(f.until || '');
+  return end && Date.now() < end && f.price ? {price: f.price, end} : null; } catch (e) { return null; } };
 // Black Friday strip on every page (offer live 14 Nov to 30 Nov 23:59 UK), linking /black-friday/. Preview any time with ?bf=preview.
 (() => { try {
   const t = Date.now(), pv = new URLSearchParams(location.search).get('bf') === 'preview';
-  if (!pv && (t < Date.parse('2026-11-14T00:00:00Z') || t > Date.parse('2026-11-30T23:59:59Z'))) return;
-  if (location.pathname.startsWith('/black-friday')) return;
-  const go = () => { if (document.getElementById('bfStrip')) return; const a = document.createElement('a'); a.id = 'bfStrip'; a.href = '/black-friday/';
-    a.textContent = 'Black Friday: all 16 plugins for $50, plugin #17 on us. Until 30 Nov →';
+  if (!pv && !window.pfbFlash() && (t < Date.parse('2026-11-14T00:00:00Z') || t > Date.parse('2026-11-30T23:59:59Z'))) return;
+  const go = () => { if (document.getElementById('bfStrip')) return; const a = document.createElement('a'); a.id = 'bfStrip'; const F = window.pfbFlash();
     a.style.cssText = 'display:block;position:relative;z-index:60;background:#2b1d16;color:#f7c96b;text-align:center;font:800 14px/1.35 Manrope,system-ui,sans-serif;padding:9px 16px;text-decoration:none';
+    if (F) { a.href = '/?add=fridge#order';
+      const tick = () => { let s = Math.max(0, Math.floor((F.end - Date.now()) / 1000)); if (!s) { a.hidden = true; return; } const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+        a.innerHTML = `72-hour deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$100</s> $${F.price}. Ends in <span style="font-variant-numeric:tabular-nums">${h}h ${String(m).padStart(2, '0')}m ${String(x).padStart(2, '0')}s</span> →`; };
+      tick(); setInterval(tick, 1000);
+    } else { if (location.pathname.startsWith('/black-friday')) return; a.href = '/black-friday/'; a.textContent = 'Black Friday: all 16 plugins for $50, plugin #17 on us. Until 30 Nov →'; }
     document.body.prepend(a); };
   document.body ? go() : addEventListener('DOMContentLoaded', go);
 } catch (e) {} })();
