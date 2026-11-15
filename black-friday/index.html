@@ -64,7 +64,7 @@ h1{margin-top:6px}
 <main>
 <p class="kicker" id="kick">Black Friday · now until 30 November, 23:59 UK time</p>
 <h1>Black Friday at the breakfast table</h1>
-<p class="lead">All 16 of our plugins for $50 with the Full Fridge, and plugin #17 on us. Every price steps up after 100 sales, so the early birds get the biggest helping.</p>
+<p class="lead">All 16 of our plugins for <span data-fp>$29</span> with the Full Fridge, and plugin #17 on us. Every price steps up after 100 sales, so the early birds get the biggest helping.</p>
 <picture class="hero-img"><source srcset="/assets/black-friday/banner.webp" type="image/webp"><img src="/assets/black-friday/banner.jpg" alt="Black Friday: all 16 plugins for $50, plugin #17 on us. Buy the Full Fridge before 1 December and Jelly Wobble is yours on 15 December." width="1600" height="900"></picture>
 <p class="cdl" id="cdl">Black Friday ends in</p>
 <div class="cd" id="cd" aria-live="off"><div><b id="cdD">-</b><span>days</span></div><div><b id="cdH">-</b><span>hours</span></div><div><b id="cdM">-</b><span>mins</span></div><div><b id="cdS">-</b><span>secs</span></div></div>
@@ -72,12 +72,12 @@ h1{margin-top:6px}
 <p class="bonus" id="bonus" hidden></p>
 
 <section class="bundles">
-  <div class="b star"><span class="eb">The whole fridge</span><h2>Full Fridge Bundle</h2><div class="amt" data-amt="fridge"><span class="v"><s>$100</s>$50</span><small>once, yours forever</small></div><ul><li>All 16 plugins</li><li>Yours to keep, forever</li><li>Mac (AU, VST3, AAX) and Windows (VST3)</li></ul><p class="left" data-left="fridge"></p><a class="btn" href="/?add=fridge#order">Add the whole fridge</a></div>
+  <div class="b star"><span class="eb">The whole fridge</span><h2>Full Fridge Bundle</h2><div class="amt" data-amt="fridge"><span class="v"><s>$100</s>$29</span><small>once, yours forever</small></div><ul><li>All 16 plugins</li><li>Yours to keep, forever</li><li>Mac (AU, VST3, AAX) and Windows (VST3)</li></ul><p class="left" data-left="fridge"></p><a class="btn" href="/?add=fridge#order">Add the whole fridge</a></div>
   <div class="b"><span class="eb">A new dish every month</span><h2>Breakfast Club</h2><div class="amt" data-amt="club"><span class="v"><s>$150</s>$75</span><small>a year</small></div><ul><li>All 16 plugins, all year</li><li>Every new monthly plugin on day one</li><li>Keep every plugin that lands while you're a member</li></ul><p class="left" data-left="club"></p><a class="btn" href="/?add=club#order">Join the Club</a></div>
   <div class="b"><span class="eb">The forever feast</span><h2>Lifetime Pass</h2><div class="amt" data-amt="lifetime"><span class="v"><s>$250</s>$150</span><small>once, forever</small></div><ul><li>All 16 plugins, forever</li><li>Every plugin we ever cook up</li><li>Pay once, eat for life</li></ul><p class="left" data-left="lifetime"></p><a class="btn" href="/?add=lifetime#order">Get the Lifetime Pass</a></div>
 </section>
 
-<section class="jw" id="jw" hidden><picture><source srcset="/assets/black-friday/jelly-wobble.webp" type="image/webp"><img src="/assets/black-friday/jelly-wobble.jpg" alt="Plugin #17, Jelly Wobble: lands 15 December, free for every Full Fridge bought before 1 December" width="720" height="900" loading="lazy"></picture><div><p class="kicker">Plugin #17</p><h2>Jelly Wobble</h2><p>What does it do? It wobbles. The rest we'd rather you find yourself.</p><p>It lands on 15 December, free for every Full Fridge bought until 30 November, 23:59 UK time. Breakfast Club and Lifetime members get it anyway.</p><a class="btn" href="/?add=fridge#order">Get the Full Fridge for $50</a></div></section>
+<section class="jw" id="jw" hidden><picture><source srcset="/assets/black-friday/jelly-wobble.webp" type="image/webp"><img src="/assets/black-friday/jelly-wobble.jpg" alt="Plugin #17, Jelly Wobble: lands 15 December, free for every Full Fridge bought before 1 December" width="720" height="900" loading="lazy"></picture><div><p class="kicker">Plugin #17</p><h2>Jelly Wobble</h2><p>What does it do? It wobbles. The rest we'd rather you find yourself.</p><p>It lands on 15 December, free for every Full Fridge bought until 30 November, 23:59 UK time. Breakfast Club and Lifetime members get it anyway.</p><a class="btn" href="/?add=fridge#order">Get the Full Fridge for <span data-fp>$29</span></a></div></section>
 
 <h2>The whole menu</h2>
 <p>Pick a plate or two. Every plugin has a free trial, full screen, and runs on Mac and Windows. Mac installers are notarised by Apple.</p>
@@ -104,7 +104,7 @@ h1{margin-top:6px}
 <div data-listjoin></div>
 </main>
 <footer>© 2026 Plugins for Breakfast by Escaé Studios · <a href="/plugins/">All plugins</a> · <a href="/giveaway/">Giveaway</a> · <a href="/install/">Installing safely</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms and conditions</a></footer>
-<script src="/config.js"></script><script src="/sold.js"></script>
+<script src="/config.js?v=20261115"></script><script src="/sold.js?v=20261115"></script>
 <script>
 (() => {
   const C = window.CONFIG || {}, L = C.ladders, SOLD = window.SOLD || {}, items = SOLD.items || {}, steps = SOLD.steps || {};
@@ -123,7 +123,7 @@ h1{margin-top:6px}
   // 72-hour Full Fridge deal: swap the fridge price everywhere on this page
   { const F = window.pfbFlash && pfbFlash(); if (F) { const v = document.querySelector('[data-amt="fridge"] .v'); if (v) v.innerHTML = `<s>$100</s>$${F.price}`;
     const l = document.querySelector('[data-left="fridge"]'); if (l) l.textContent = '72-hour deal, then back to $50';
-    document.querySelectorAll('.lead, .jw .btn').forEach(e => e.innerHTML = e.innerHTML.replace('$50', '$' + F.price)); } }
+  } document.querySelectorAll('[data-fp]').forEach(e => e.textContent = '$' + (F ? F.price : (L && C.simplePricing ? st('fridge').now : 50))); }
   // bonus line: shown only when config.js sets bfBonus to a string
   if (typeof C.bfBonus === 'string' && C.bfBonus && Date.now() < Date.parse(C.bfBonusUntil || '2100-01-01')) { const b = document.getElementById('bonus'); b.textContent = C.bfBonus; b.hidden = false; document.getElementById('jw').hidden = false; }
   const START = Date.parse('2026-11-14T00:00:00Z'), END = Date.parse('2026-11-30T23:59:59Z'), q = new URLSearchParams(location.search).get('preview');
