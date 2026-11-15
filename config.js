@@ -124,6 +124,6 @@ window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = 
         a.innerHTML = `72-hour deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$100</s> $${F.price}. Ends in <span style="font-variant-numeric:tabular-nums">${h}h ${String(m).padStart(2, '0')}m ${String(x).padStart(2, '0')}s</span> →`; };
       tick(); setInterval(tick, 1000);
     } else { if (location.pathname.startsWith('/black-friday')) return; a.href = '/black-friday/'; a.textContent = 'Black Friday: all 16 plugins for $50, plugin #17 on us. Until 30 Nov →'; }
-    document.body.prepend(a); };
+    const top = document.querySelector('header.top'); if (top) { a.style.position = 'relative'; a.style.zIndex = '1'; top.prepend(a); } else document.body.prepend(a); };
   document.body ? go() : addEventListener('DOMContentLoaded', go);
 } catch (e) {} })();

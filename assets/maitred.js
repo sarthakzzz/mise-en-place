@@ -88,3 +88,6 @@
   addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) close(); });
   panel.querySelector('form').onsubmit = e => { e.preventDefault(); const q = input.value.trim(); if (!q) return; input.value = ''; say(q, true); answer(q); };
 })();
+
+/* Plugin search panel (assets/search.js) rides along on every page that has the Maitre D' */
+(() => { if (document.querySelector('script[src*="search.js"]')) return; const s = document.createElement('script'); s.src = '/assets/search.js?v=20261115'; s.defer = true; document.head.appendChild(s); })();
