@@ -106,10 +106,10 @@ window.CONFIG = {
 window.pfbEvent = name => { try { if (!/pluginsforbreakfast\.com$/.test(location.hostname) || navigator.webdriver || localStorage.getItem('pfb-notrack') === '1') return;
   const ep = window.CONFIG.signupEndpoint, body = JSON.stringify({action: 'visit', path: '/event/' + String(name).slice(0, 40), ref: location.pathname.slice(0, 80), utm: '', tz: '', lang: '', new: false, mobile: matchMedia('(max-width: 820px)').matches});
   if (ep && !(navigator.sendBeacon && navigator.sendBeacon(ep, new Blob([body], {type: 'text/plain;charset=utf-8'})))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); } catch (e) {} };
-// 72-hour Full Fridge launch deal (Sarthak OK 14 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
+// Full Fridge launch deal, $29 (Sarthak OK 14 Nov, extended to 1 Dec on 16 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
 // While on: Full Fridge shows $price (was $100) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.
 // Preview any time with ?flash=preview (shows a pretend 72h countdown).
-window.CONFIG.fridgeFlash = { price: 29, until: '2026-11-17T12:52:00Z' };   // Moonbase promo started 2026-11-14T12:52Z
+window.CONFIG.fridgeFlash = { price: 29, until: '2026-12-01T23:59:00Z' };   // Moonbase promo started 2026-11-14T12:52Z; Sarthak extended it to 1 Dec (16 Nov 23:20Z)
 window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = new URLSearchParams(location.search).get('flash') === 'preview';
   const end = pv ? (window.__pfbFlashPv = window.__pfbFlashPv || Date.now() + 72 * 3600e3) : Date.parse(f.until || '');
   return end && Date.now() < end && f.price ? {price: f.price, end} : null; } catch (e) { return null; } };
@@ -120,8 +120,8 @@ window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = 
   const go = () => { if (document.getElementById('bfStrip')) return; const a = document.createElement('a'); a.id = 'bfStrip'; const F = window.pfbFlash();
     a.style.cssText = 'display:block;position:relative;z-index:60;background:#2b1d16;color:#f7c96b;text-align:center;font:800 14px/1.35 Manrope,system-ui,sans-serif;padding:9px 16px;text-decoration:none';
     if (F) { a.href = '/?add=fridge#order';
-      const tick = () => { let s = Math.max(0, Math.floor((F.end - Date.now()) / 1000)); if (!s) { a.hidden = true; return; } const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
-        a.innerHTML = `72-hour deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$100</s> $${F.price}. Ends in <span style="font-variant-numeric:tabular-nums">${h}h ${String(m).padStart(2, '0')}m ${String(x).padStart(2, '0')}s</span> →`; };
+      const tick = () => { let s = Math.max(0, Math.floor((F.end - Date.now()) / 1000)); if (!s) { a.hidden = true; return; } const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60, day = new Date(F.end).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', timeZone: 'UTC'});
+        a.innerHTML = `Launch deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$100</s> $${F.price} till ${day}. <span style="font-variant-numeric:tabular-nums;opacity:.85">${d ? d + 'd ' : ''}${h}h ${String(m).padStart(2, '0')}m${d ? '' : ' ' + String(x).padStart(2, '0') + 's'} left</span> →`; };
       tick(); setInterval(tick, 1000);
     } else { if (location.pathname.startsWith('/black-friday')) return; a.href = '/black-friday/'; a.textContent = 'Black Friday: all 16 plugins for $50, plugin #17 on us. Until 30 Nov →'; }
     const top = document.querySelector('header.top'); if (top) { a.style.position = 'relative'; a.style.zIndex = '1'; top.prepend(a); } else document.body.prepend(a); };
