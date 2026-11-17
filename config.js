@@ -47,8 +47,8 @@ window.CONFIG = {
   // simplePricing: true switches the site over (no STEP/FRIDGE coupons, Lifetime Pass on, Yearly Pass off). Flip together with the store.
   simplePricing: true,
   // Full Fridge bonus line (black-friday page, home Full Fridge card, basket): false hides it
-  bfBonus: 'Bonus: grab the Full Fridge before 1 Dec and our 17th plugin, Jelly Wobble, lands in your account free on 15 Dec.',  // Sarthak said yes 14 Nov
-  bfBonusUntil: '2026-12-01T00:00:00Z',  // hidden everywhere from this moment
+  bfBonus: 'Bonus: grab the Full Fridge by 1 Dec and our 17th plugin, Jelly Wobble, lands in your account free on 15 Dec.',  // Sarthak said yes 14 Nov
+  bfBonusUntil: '2026-12-01T23:59:00Z',  // hidden everywhere from this moment
   ladders: { every: 100, plugin: [19, 21, 23, 25, 27, 29], monthly: [7, 7.5, 8, 8.5, 9, 10], fridge: [50, 60, 70, 80, 90, 100], club: [75, 90, 105, 120, 135, 150], lifetime: [150, 170, 190, 210, 230, 250] },
   clubPrice: 90,                              // Breakfast Club price (a promotion, renewals also $90; shown as $150 struck through)
   clubVariation: 'breakfast-club',            // Breakfast Club: the yearly ($150) price's variation ID on the full-fridge bundle
@@ -109,21 +109,21 @@ window.pfbEvent = name => { try { if (!/pluginsforbreakfast\.com$/.test(location
 // Full Fridge launch deal, $29 (Sarthak OK 14 Nov, extended to 1 Dec on 16 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
 // While on: Full Fridge shows $price (was $100) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.
 // Preview any time with ?flash=preview (shows a pretend 72h countdown).
-window.CONFIG.fridgeFlash = { price: 29, until: '2026-11-17T12:52:00Z' };   // Moonbase promo started 2026-11-14T12:52Z; extension to 2026-12-01T23:59:00Z waits on Moonbase confirming the store promo
+window.CONFIG.fridgeFlash = { price: 29, until: '2026-12-01T23:59:00Z' };   // Moonbase promo started 2026-11-14T12:52Z; extended to 1 Dec 23:59 UTC (Sarthak 16 Nov, store confirmed)
 window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = new URLSearchParams(location.search).get('flash') === 'preview';
   const end = pv ? (window.__pfbFlashPv = window.__pfbFlashPv || Date.now() + 72 * 3600e3) : Date.parse(f.until || '');
   return end && Date.now() < end && f.price ? {price: f.price, end} : null; } catch (e) { return null; } };
-// Black Friday strip on every page (offer live 14 Nov to 30 Nov 23:59 UK), linking /black-friday/. Preview any time with ?bf=preview.
+// Black Friday strip on every page (offer live 14 Nov to 1 Dec 23:59 UTC), linking /black-friday/. Preview any time with ?bf=preview.
 (() => { try {
   const t = Date.now(), pv = new URLSearchParams(location.search).get('bf') === 'preview';
-  if (!pv && !window.pfbFlash() && (t < Date.parse('2026-11-14T00:00:00Z') || t > Date.parse('2026-11-30T23:59:59Z'))) return;
+  if (!pv && !window.pfbFlash() && (t < Date.parse('2026-11-14T00:00:00Z') || t > Date.parse('2026-12-01T23:59:00Z'))) return;
   const go = () => { if (document.getElementById('bfStrip')) return; const a = document.createElement('a'); a.id = 'bfStrip'; const F = window.pfbFlash();
     a.style.cssText = 'display:block;position:relative;z-index:60;background:#2b1d16;color:#f7c96b;text-align:center;font:800 14px/1.35 Manrope,system-ui,sans-serif;padding:9px 16px;text-decoration:none';
     if (F) { a.href = '/?add=fridge#order';
       const tick = () => { let s = Math.max(0, Math.floor((F.end - Date.now()) / 1000)); if (!s) { a.hidden = true; return; } const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60, day = new Date(F.end).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', timeZone: 'UTC'});
         a.innerHTML = `Launch deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$100</s> $${F.price} till ${day}. <span style="font-variant-numeric:tabular-nums;opacity:.85">${d ? d + 'd ' : ''}${h}h ${String(m).padStart(2, '0')}m${d ? '' : ' ' + String(x).padStart(2, '0') + 's'} left</span> →`; };
       tick(); setInterval(tick, 1000);
-    } else { if (location.pathname.startsWith('/black-friday')) return; a.href = '/black-friday/'; a.textContent = 'Black Friday: all 16 plugins for $50, plugin #17 on us. Until 30 Nov →'; }
+    } else { if (location.pathname.startsWith('/black-friday')) return; a.href = '/black-friday/'; a.textContent = 'Black Friday: all 16 plugins for $50, plugin #17 on us. Until 1 Dec →'; }
     const top = document.querySelector('header.top'); if (top) { a.style.position = 'relative'; a.style.zIndex = '1'; top.prepend(a); } else document.body.prepend(a); };
   document.body ? go() : addEventListener('DOMContentLoaded', go);
 } catch (e) {} })();
