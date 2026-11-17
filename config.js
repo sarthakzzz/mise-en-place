@@ -94,6 +94,7 @@ window.CONFIG = {
   const q = new URLSearchParams(location.search); if (q.has('notrack')) localStorage.setItem('pfb-notrack', '1');
   if (localStorage.getItem('pfb-notrack') === '1') return;
   let ref = ''; try { const r = new URL(document.referrer); ref = r.hostname === location.hostname ? '' : r.hostname.replace(/^www\./, ''); } catch (e) {}
+  try { const src = (q.get('utm_source') || q.get('src') || '').slice(0, 40); if (src) sessionStorage.setItem('pfb-src', src); else if (ref && !sessionStorage.getItem('pfb-src')) sessionStorage.setItem('pfb-src', 'ref:' + ref.slice(0, 34)); } catch (e) {}
   const seen = localStorage.getItem('pfb-seen'); if (!seen) localStorage.setItem('pfb-seen', '1');
   const body = JSON.stringify({action: 'visit', path: location.pathname.slice(0, 120), ref: ref.slice(0, 80), utm: (q.get('utm_source') || q.get('src') || '').slice(0, 40),
     tz: (Intl.DateTimeFormat().resolvedOptions().timeZone || '').slice(0, 40), lang: (navigator.language || '').slice(0, 12), new: !seen, mobile: matchMedia('(max-width: 820px)').matches});
@@ -104,7 +105,7 @@ window.CONFIG = {
 
 // Click events for A/B checks: logged as Visit rows with path /event/<name> (same Apps Script 'visit' action, live site only, respects ?notrack)
 window.pfbEvent = name => { try { if (!/pluginsforbreakfast\.com$/.test(location.hostname) || navigator.webdriver || localStorage.getItem('pfb-notrack') === '1') return;
-  const ep = window.CONFIG.signupEndpoint, body = JSON.stringify({action: 'visit', path: '/event/' + String(name).slice(0, 40), ref: location.pathname.slice(0, 80), utm: '', tz: '', lang: '', new: false, mobile: matchMedia('(max-width: 820px)').matches});
+  const ep = window.CONFIG.signupEndpoint, body = JSON.stringify({action: 'visit', path: '/event/' + String(name).slice(0, 40), ref: location.pathname.slice(0, 80), utm: (() => { try { return sessionStorage.getItem('pfb-src') || ''; } catch (e) { return ''; } })(), tz: '', lang: '', new: false, mobile: matchMedia('(max-width: 820px)').matches});
   if (ep && !(navigator.sendBeacon && navigator.sendBeacon(ep, new Blob([body], {type: 'text/plain;charset=utf-8'})))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); } catch (e) {} };
 // Full Fridge launch deal, $29 (Sarthak OK 14 Nov, extended to 1 Dec on 16 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
 // While on: Full Fridge shows $price (was $100) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.

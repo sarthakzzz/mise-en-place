@@ -93,6 +93,9 @@ nav a:focus-visible,.basket:focus-visible{outline:2px solid currentColor}
 #hero .stick{justify-content:flex-start;padding-top:max(96px,12vh)}
 .hero-title{text-align:center;font-size:clamp(48px,9vw,128px);font-weight:700;transform:translateY(calc(var(--p,0)*-60px));opacity:calc(1 - var(--p,0)*1.6)}
 .hero-title em{font-style:italic;color:#ffd79a}
+.hero-vs{text-align:center;font-size:15px;margin:16px auto 0;opacity:calc(.92 - var(--p,0)*2)}
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin:18px auto 0;font-size:14px;font-weight:700;opacity:.9}
+.trust span::before{content:"✓ ";color:#f7c96b}
 .hero-meta{text-align:center;font-size:13px;letter-spacing:.04em;margin:14px auto 0;opacity:calc(.8 - var(--p,0)*2)}
 .hero-sub{text-align:center;max-width:34em;font-size:clamp(17px,1.6vw,20px);margin:18px auto 0;opacity:calc(1 - var(--p,0)*2)}
 .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px;opacity:calc(1 - var(--p,0)*2.2)}
@@ -528,6 +531,7 @@ body.waitlist .countdown{display:inline-flex}
       <button class="btn btn-orange btn-toast" id="toastBtn" type="button"><span class="ico" data-food="toaster"></span>See the menu</button>
       <button class="btn btn-ghost" type="button" data-open-pop><span class="ico" data-food="butter"></span>Try a free licence</button>
     </div>
+    <p class="hero-vs" id="heroVs">One big-brand plugin: about $200. Our whole kitchen, 16 plugins: <b data-fp>$50</b>.</p>
     <p class="hero-meta">Mac + Windows · AU, VST3, AAX · new plugin every month</p>
     <div class="logo-float"><img class="hero-logo" id="logo" src="assets/logo.jpg" width="430" height="430" alt="Plugins for Breakfast logo: a felt character in headphones sipping coffee above puffy wool letters"></div>
     <div class="pile" id="pile" aria-hidden="true"></div>
@@ -692,6 +696,7 @@ body.waitlist .countdown{display:inline-flex}
         <div class="tier" id="lifetimeTier"><div class="eyebrow">The forever feast</div><h2>Lifetime Pass</h2><div class="amt"><span><s>$250</s>$150</span><small>once, forever</small></div><ul><li>All 16 plugins, forever</li><li>Every plugin we ever cook up, forever</li><li>Pay once, eat for life</li></ul><button class="btn btn-solid only-sale" type="button" data-add="lifetime"><span class="ico" data-food="cherry"></span>Add to basket</button></div>
       </div>
     </div>
+    <p class="trust" id="trust"><span>Mac installers notarised by Apple</span><span>AAX signed for Pro Tools on Mac</span><span>3-day free trial on every plugin</span></p>
     <div class="passes"><span><b>Rather graze?</b> The Monthly Pass serves all 16 plugins plus every new one, for as long as you keep the plates coming. Cancel any time.</span><button class="btn btn-ghost" type="button" data-add="monthly" data-label="Monthly Pass · $7/month"><s>$10</s> Monthly Pass · $7/month</button></div>
     <div data-listjoin></div>
     <div class="small-print">Every licence feeds 3 of your computers, Mac or Windows, with offline activation for kitchens without wifi. Mac installers are notarised by Apple, every plugin opens full screen, and Pro Tools fans get signed AAX on Mac.</div>
@@ -1030,6 +1035,7 @@ if (CONFIG.simplePricing) { const st = PRICE.step, usd = v => '$' + (Number.isIn
   if (tiers[1]) { tiers[1].querySelector('.eyebrow').textContent = 'The whole fridge'; tiers[1].querySelector('ul').innerHTML = '<li>All 16 plugins on the menu today</li><li>Yours to keep, forever</li><li>One payment, no refills needed</li>'; }
   if (tiers[2]) { tiers[2].querySelector('.amt small').textContent = 'a year'; tiers[2].querySelector('ul').innerHTML = '<li>All 16 plugins, all year</li><li>Every new monthly plugin, hot on day one</li><li>Keep every plugin that lands while you are a member, forever</li>'; }
   amt(tiers[3], was(S.lifetime), S.lifetime);
+  document.querySelectorAll('[data-fp]').forEach(e => e.textContent = usd(S.fridge.now));
   if (BF_BONUS && tiers[1] && !tiers[1].querySelector('.bf-bonus')) tiers[1].querySelector('ul').insertAdjacentHTML('afterend', `<p class="bf-bonus" style="margin:0;padding:10px 12px;border:2px dashed currentColor;border-radius:14px;font-weight:800;font-size:14px;line-height:1.4">🍮 ${BF_BONUS}</p>`);
   document.querySelector('#order .tiers')?.classList.add('four');
   const passes = document.querySelector('.passes'), m = S.monthly;
@@ -1125,7 +1131,7 @@ document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click',
 // Launch deal hero (advertising-books test 1): bold deal line + main button adds the Full Fridge; reverts by itself when the deal ends
 { const F = window.pfbFlash && pfbFlash(), d = document.getElementById('heroDeal'), tb = document.getElementById('toastBtn');
   if (F && d && tb) { const day = new Date(F.end).toLocaleDateString('en-GB', {weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'});
-    d.innerHTML = `<b>The whole fridge, all 16, is $${F.price} until ${day}.</b>`; tb.lastChild.textContent = `Get all 16 for $${F.price}`;
+    d.innerHTML = `<b>The whole fridge, all 16, is $${F.price} until ${day}.</b> ${BF_BONUS ? 'And plugin #17, Jelly Wobble, is on us.' : ''}`; tb.lastChild.textContent = `Get all 16 for $${F.price}`;
     tb.addEventListener('click', e => { e.stopImmediatePropagation(); e.preventDefault(); try { window.pfbEvent && pfbEvent('hero-deal'); } catch (x) {} if (!cart.includes('fridge')) add('fridge', tb); setTimeout(() => openCart(), 900); }, true); } }
 // click tracking for the hero test: basket adds and checkout go to the Visit log as /event/... rows
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-add],#checkout'); if (b && window.pfbEvent) pfbEvent(b.id === 'checkout' ? 'checkout' : 'add-' + b.dataset.add); }, true);
