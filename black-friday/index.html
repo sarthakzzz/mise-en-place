@@ -51,6 +51,20 @@ h1{margin-top:6px}
 .pl .pr{font:800 22px Fraunces,Georgia,serif}.pl .pr s{font-size:15px;color:var(--soft);margin-right:6px;font-weight:600}
 .pl .add{padding:9px 14px;font-size:14px;border-radius:12px}
 .small{font-size:14px;color:var(--soft)}
+.hear{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px 16px;margin:18px 0 6px;box-shadow:0 6px 0 var(--line)}
+.hear-top{display:flex;align-items:center;gap:14px}
+.hear-top b{display:block;font-family:Fraunces,Georgia,serif;font-size:19px}.hear-top small{color:var(--soft);font-size:13px}
+.hear-play{flex:none;width:52px;height:52px;border-radius:50%;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer}
+.hear-play svg{width:24px;height:24px}
+.hear-chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none}.hear-chips::-webkit-scrollbar{display:none}
+.hear-chips button{flex:none;border:2px solid var(--line);background:var(--bg);color:var(--fg);font:800 13px Manrope,sans-serif;border-radius:999px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.hear-chips button[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.bfbar{position:fixed;left:10px;right:10px;bottom:10px;z-index:120;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#2b1d16;color:#f7c96b;border-radius:16px;padding:10px 10px 10px 16px;box-shadow:0 10px 30px rgba(0,0,0,.3);font-family:Manrope,sans-serif}
+.bfbar b{display:block;font-size:16px}.bfbar small{display:block;font-size:12px;opacity:.85}
+.bfbar .btn{padding:11px 16px;border-radius:12px;white-space:nowrap}
+.bfbar[hidden]{display:none}
+@media (min-width:761px){.bfbar{display:none!important}}
+@media (max-width:760px){body.has-bfbar{padding-bottom:84px}}
 .why{margin:2px 0 8px;font-size:14px;line-height:1.45}
 .proof{margin:8px 0 0;font-size:12.5px;color:var(--soft);text-align:center}
 .hero-img img{width:100%;height:auto;display:block;border-radius:22px;margin:18px 0 6px;box-shadow:0 8px 0 var(--line)}
@@ -68,6 +82,7 @@ h1{margin-top:6px}
 <h1>Black Friday at the breakfast table</h1>
 <p class="lead">All 16 of our plugins for <span data-fp>$29</span> with the Full Fridge, and plugin #17 on us. Every price steps up after 100 sales, so the early birds get the biggest helping.</p>
 <picture class="hero-img"><source srcset="/assets/black-friday/banner-29.webp" type="image/webp"><img src="/assets/black-friday/banner-29.jpg" alt="Black Friday: all 16 plugins for $29, plugin #17 on us. Full Fridge until 1 December, 23:59 UTC, and Jelly Wobble is yours on 15 December." width="1600" height="900"></picture>
+<section class="hear" id="hear"><div class="hear-top"><button class="hear-play" id="hearPlay" type="button" aria-label="Play Orange Crusher"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button><div><b>Hear it in 15 seconds</b><small id="hearNow">Orange Crusher · every control swept from low to high</small></div></div><div class="hear-chips"><button type="button" data-hear="oc" data-name="Orange Crusher" aria-pressed="true">Orange Crusher</button><button type="button" data-hear="popcorn-sandwich" data-name="Popcorn Sandwich">Popcorn Sandwich</button><button type="button" data-hear="bread-oven" data-name="Bread Oven Reverb">Bread Oven Reverb</button><button type="button" data-hear="spaghetti-delay" data-name="Spaghetti Delay">Spaghetti Delay</button><button type="button" data-hear="burnt-toast" data-name="Burnt Toast Tape">Burnt Toast Tape</button><button type="button" data-hear="spice-shelf" data-name="Spice Shelf EQ">Spice Shelf EQ</button><button type="button" data-hear="ghost-pepper-clipper" data-name="Ghost Pepper">Ghost Pepper</button><button type="button" data-hear="milkshake-chorus" data-name="Milkshake Chorus">Milkshake Chorus</button><button type="button" data-hear="noodle-filter" data-name="Noodle Filter">Noodle Filter</button><button type="button" data-hear="popping-candy" data-name="Popping Candy">Popping Candy</button><button type="button" data-hear="food-fight" data-name="Food Fight">Food Fight</button><button type="button" data-hear="muesli-granular" data-name="Muesli Granular">Muesli Granular</button><button type="button" data-hear="gummy-gate" data-name="Gummy Gate">Gummy Gate</button><button type="button" data-hear="hot-o-pan" data-name="Hot-o-Pan">Hot-o-Pan</button><button type="button" data-hear="chefs-kiss" data-name="Cherry on the Top">Cherry on the Top</button><button type="button" data-hear="butter-spread" data-name="Butter Spread">Butter Spread</button></div><audio id="hearAudio" preload="none"></audio></section>
 <p class="cdl" id="cdl">Black Friday ends in</p>
 <div class="cd" id="cd" aria-live="off"><div><b id="cdD">-</b><span>days</span></div><div><b id="cdH">-</b><span>hours</span></div><div><b id="cdM">-</b><span>mins</span></div><div><b id="cdS">-</b><span>secs</span></div></div>
 
@@ -105,6 +120,7 @@ h1{margin-top:6px}
 <p class="small">Black Friday runs until 1 December, 23:59 UK time. Prices in US dollars. Each price steps up after 100 sales of that item, and the line under it shows how many are left before it does. One basket, one checkout. Questions? Write to <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a>.</p>
 <div data-listjoin></div>
 </main>
+<div class="bfbar" id="bfBar" hidden><span><b>All 16 for <span data-fp>$29</span></b><small id="bfBarEnd">ends Tue 1 Dec</small></span><a class="btn" href="/?add=fridge#order" data-ev="bf-bar">Get all 16</a></div>
 <footer>© 2026 Plugins for Breakfast by Escaé Studios · <a href="/plugins/">All plugins</a> · <a href="/giveaway/">Giveaway</a> · <a href="/install/">Installing safely</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms and conditions</a></footer>
 <script src="/config.js?v=20261115"></script><script src="/sold.js?v=20261115"></script>
 <script>
@@ -126,6 +142,19 @@ h1{margin-top:6px}
   { const F = window.pfbFlash && pfbFlash(); if (F) { const v = document.querySelector('[data-amt="fridge"] .v'); if (v) v.innerHTML = `<s>$100</s>$${F.price}`;
     const l = document.querySelector('[data-left="fridge"]'); if (l) l.textContent = 'Launch deal, till ' + new Date(F.end).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', timeZone: 'UTC'});
   } document.querySelectorAll('[data-fp]').forEach(e => e.textContent = '$' + (F ? F.price : (L && C.simplePricing ? st('fridge').now : 50))); }
+  // Mobile sticky deal bar (follows the live deal; hidden when it ends) + tap-to-hear clips + click events with the visit's ?src=
+  { const F = window.pfbFlash && pfbFlash(), bar = document.getElementById('bfBar');
+    if (F && bar) { document.getElementById('bfBarEnd').textContent = 'ends ' + new Date(F.end).toLocaleDateString('en-GB', {weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC'}); bar.hidden = false; document.body.classList.add('has-bfbar');
+      setInterval(() => { if (Date.now() > F.end) { bar.hidden = true; document.body.classList.remove('has-bfbar'); } }, 30000); } }
+  document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href^="/?add="]'); if (a && window.pfbEvent) pfbEvent(a.dataset.ev || ('bf-' + (a.getAttribute('href').match(/add=([a-z]+)/) || [])[1])); }, true);
+  { const au = document.getElementById('hearAudio'), play = document.getElementById('hearPlay'), now = document.getElementById('hearNow');
+    let cur = document.querySelector('[data-hear][aria-pressed=true]');
+    const icon = on => play.innerHTML = on ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+    const start = b => { cur = b; document.querySelectorAll('[data-hear]').forEach(x => x.setAttribute('aria-pressed', x === b)); now.textContent = b.dataset.name + ' · every control swept from low to high';
+      play.setAttribute('aria-label', 'Play ' + b.dataset.name); au.src = '/assets/hear/' + b.dataset.hear + '.m4a'; au.play().catch(() => {}); try { window.pfbEvent && pfbEvent('hear-' + b.dataset.hear); } catch (x) {} };
+    document.querySelectorAll('[data-hear]').forEach(b => b.addEventListener('click', () => start(b)));
+    play.addEventListener('click', () => { if (!au.src) return start(cur); au.paused ? au.play().catch(() => {}) : au.pause(); });
+    au.addEventListener('play', () => icon(true)); au.addEventListener('pause', () => icon(false)); au.addEventListener('ended', () => icon(false)); }
   // bonus line: shown only when config.js sets bfBonus to a string
   if (typeof C.bfBonus === 'string' && C.bfBonus && Date.now() < Date.parse(C.bfBonusUntil || '2100-01-01')) { const b = document.getElementById('bonus'); b.textContent = C.bfBonus; b.hidden = false; document.getElementById('jw').hidden = false; }
   const START = Date.parse('2026-11-14T00:00:00Z'), END = Date.parse('2026-12-01T23:59:00Z'), q = new URLSearchParams(location.search).get('preview');
