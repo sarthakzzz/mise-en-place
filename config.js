@@ -107,6 +107,9 @@ window.CONFIG = {
 window.pfbEvent = name => { try { if (!/pluginsforbreakfast\.com$/.test(location.hostname) || navigator.webdriver || localStorage.getItem('pfb-notrack') === '1') return;
   const ep = window.CONFIG.signupEndpoint, body = JSON.stringify({action: 'visit', path: '/event/' + String(name).slice(0, 40), ref: location.pathname.slice(0, 80), utm: (() => { try { return sessionStorage.getItem('pfb-src') || ''; } catch (e) { return ''; } })(), tz: '', lang: '', new: false, mobile: matchMedia('(max-width: 820px)').matches});
   if (ep && !(navigator.sendBeacon && navigator.sendBeacon(ep, new Blob([body], {type: 'text/plain;charset=utf-8'})))) fetch(ep, {method: 'POST', mode: 'no-cors', keepalive: true, headers: {'Content-Type': 'text/plain;charset=utf-8'}, body}); } catch (e) {} };
+// Every link that adds something (/?add=...) logs /event/cta-<where>-<id> with the visit's source (data-ev names the spot, else the page)
+document.addEventListener('click', e => { try { const l = e.target.closest && e.target.closest('a[href*="?add="]'); if (!l || !window.pfbEvent) return; const id = (l.getAttribute('href').match(/add=([a-z]+)/) || [])[1] || '';
+  pfbEvent('cta-' + (l.dataset.ev || (location.pathname.split('/').filter(Boolean)[0] || 'home')) + '-' + id); } catch (x) {} }, true);
 // Full Fridge launch deal, $29 (Sarthak OK 14 Nov, extended to 1 Dec on 16 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
 // While on: Full Fridge shows $price (was $100) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.
 // Preview any time with ?flash=preview (shows a pretend 72h countdown).
@@ -120,7 +123,7 @@ window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = 
   if (!pv && !window.pfbFlash() && (t < Date.parse('2026-11-14T00:00:00Z') || t > Date.parse('2026-12-01T23:59:00Z'))) return;
   const go = () => { if (document.getElementById('bfStrip')) return; const a = document.createElement('a'); a.id = 'bfStrip'; const F = window.pfbFlash();
     a.style.cssText = 'display:block;position:relative;z-index:60;background:#2b1d16;color:#f7c96b;text-align:center;font:800 14px/1.35 Manrope,system-ui,sans-serif;padding:9px 16px;text-decoration:none';
-    if (F) { a.href = '/?add=fridge#order';
+    if (F) { a.href = '/?add=fridge&go=1#order'; a.dataset.ev = 'strip';
       const tick = () => { let s = Math.max(0, Math.floor((F.end - Date.now()) / 1000)); if (!s) { a.hidden = true; return; } const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60, day = new Date(F.end).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', timeZone: 'UTC'});
         a.innerHTML = `Launch deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$100</s> $${F.price} till ${day}. <span style="font-variant-numeric:tabular-nums;opacity:.85">${d ? d + 'd ' : ''}${h}h ${String(m).padStart(2, '0')}m${d ? '' : ' ' + String(x).padStart(2, '0') + 's'} left</span> →`; };
       tick(); setInterval(tick, 1000);

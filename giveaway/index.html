@@ -42,6 +42,8 @@ form.gw input[type=email]:focus{outline:none;border-color:var(--accent)}
 .hp{position:absolute;left:-9999px}
 ol.rules{padding-left:22px}ol.rules li{margin:8px 0}
 .small{font-size:14px;color:var(--soft)}
+.gwbuy{display:grid;gap:8px;background:#2b1d16;color:#f7c96b;border-radius:20px;padding:16px 18px;margin:14px 0}
+.gwbuy b{font-family:Fraunces,Georgia,serif;font-size:19px}.gwbuy>span{color:#f6ead4;font-size:15px}.gwbuy .btn{justify-self:start;text-decoration:none;color:#fff}.gwbuy[hidden]{display:none}
 @media (max-width:820px){.hero{grid-template-columns:1fr;gap:10px}.hero picture{order:2}}
 </style>
 </head>
@@ -65,6 +67,7 @@ ol.rules{padding-left:22px}ol.rules li{margin:8px 0}
         <p class="msg" id="gwMsg" role="status" aria-live="polite"></p>
       </form>
     </div>
+<div class="gwbuy" id="gwBuy" hidden><b>Can't wait for the draw?</b><span>All 16 plugins are <span data-fpg>$29</span> right now, and plugin #17 is free with it. Your giveaway entry stays in the draw either way.</span><a class="btn" href="/?add=fridge&go=1#order" data-ev="giveaway">Get all 16 for <span data-fpg>$29</span></a></div>
     <div class="facts">
       <div><b>3 winners</b><span>Each gets the Full Fridge: all 16 plugins (Mac and Windows)</span></div>
       <div><b>Opens</b><span>Fri 20 Nov 2026, 00:00 UK time</span></div>
@@ -127,5 +130,6 @@ ol.rules{padding-left:22px}ol.rules li{margin:8px 0}
 })();
 </script>
 <script src="/assets/maitred.js" defer></script>
+<script>{ const F = window.pfbFlash && pfbFlash(), g = document.getElementById('gwBuy'); if (F && g) { document.querySelectorAll('[data-fpg]').forEach(e => e.textContent = '$' + F.price); g.hidden = false; } }</script>
 </body>
 </html>
