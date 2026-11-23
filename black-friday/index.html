@@ -52,6 +52,7 @@ h1{margin-top:6px}
 .pl .add{padding:9px 14px;font-size:14px;border-radius:12px}
 .small{font-size:14px;color:var(--soft)}
 .bigbuy{margin:18px 0 8px;text-align:center}
+.credits{margin:10px auto 0;display:inline-block;background:var(--card);border:2px dashed var(--accent);border-radius:16px;padding:6px 14px;font-weight:800;font-size:14px}.credits[hidden]{display:none}
 .mega{display:block;text-align:center;width:100%;min-height:68px;font:800 clamp(22px,4.6vw,30px)/1.1 Fraunces,Georgia,serif;background:var(--accent);color:#fff;text-decoration:none;border-radius:20px;padding:16px 20px;box-shadow:0 8px 0 #8f3a20}
 .mega:active{transform:translateY(3px);box-shadow:0 5px 0 #8f3a20}
 .value{margin:14px 0 4px;font-size:16px}
@@ -91,7 +92,7 @@ h1{margin-top:6px}
 <div class="bigbuy"><a class="mega" href="/?add=fridge&go=1#order" data-ev="bf-top">Get all 16 for <span data-fp>$29</span></a><p class="value"><b>16 plugins</b> · <b><span data-fp>$29</span></b> · just <b data-each>$1.81</b> each · <b>plugin #17, Jelly Wobble, free</b></p>
 <p class="cdl" id="cdl">Black Friday ends in</p>
 <div class="cd" id="cd" aria-live="off"><div><b id="cdD">-</b><span>days</span></div><div><b id="cdH">-</b><span>hours</span></div><div><b id="cdM">-</b><span>mins</span></div><div><b id="cdS">-</b><span>secs</span></div></div>
-<p class="small">One click puts the Full Fridge in your basket and opens the secure checkout.</p></div>
+<p class="credits" data-credits hidden></p><p class="small">One click puts the Full Fridge in your basket and opens the secure checkout.</p></div>
 <picture class="hero-img"><source srcset="/assets/black-friday/banner-29.webp" type="image/webp"><img src="/assets/black-friday/banner-29.jpg" alt="Black Friday: all 16 plugins for $29, plugin #17 on us. Full Fridge until 1 December, 23:59 UTC, and Jelly Wobble is yours on 15 December." width="1600" height="900"></picture>
 <section class="hear" id="hear"><div class="hear-top"><button class="hear-play" id="hearPlay" type="button" aria-label="Play Orange Crusher"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button><div><b>Hear it in 15 seconds</b><small id="hearNow">Orange Crusher · every control swept from low to high</small></div></div><div class="hear-chips"><button type="button" data-hear="oc" data-name="Orange Crusher" aria-pressed="true">Orange Crusher</button><button type="button" data-hear="popcorn-sandwich" data-name="Popcorn Sandwich">Popcorn Sandwich</button><button type="button" data-hear="bread-oven" data-name="Bread Oven Reverb">Bread Oven Reverb</button><button type="button" data-hear="spaghetti-delay" data-name="Spaghetti Delay">Spaghetti Delay</button><button type="button" data-hear="burnt-toast" data-name="Burnt Toast Tape">Burnt Toast Tape</button><button type="button" data-hear="spice-shelf" data-name="Spice Shelf EQ">Spice Shelf EQ</button><button type="button" data-hear="ghost-pepper-clipper" data-name="Ghost Pepper">Ghost Pepper</button><button type="button" data-hear="milkshake-chorus" data-name="Milkshake Chorus">Milkshake Chorus</button><button type="button" data-hear="noodle-filter" data-name="Noodle Filter">Noodle Filter</button><button type="button" data-hear="popping-candy" data-name="Popping Candy">Popping Candy</button><button type="button" data-hear="food-fight" data-name="Food Fight">Food Fight</button><button type="button" data-hear="muesli-granular" data-name="Muesli Granular">Muesli Granular</button><button type="button" data-hear="gummy-gate" data-name="Gummy Gate">Gummy Gate</button><button type="button" data-hear="hot-o-pan" data-name="Hot-o-Pan">Hot-o-Pan</button><button type="button" data-hear="chefs-kiss" data-name="Cherry on the Top">Cherry on the Top</button><button type="button" data-hear="butter-spread" data-name="Butter Spread">Butter Spread</button></div><audio id="hearAudio" preload="none"></audio></section>
 
@@ -167,6 +168,7 @@ h1{margin-top:6px}
     document.querySelectorAll('[data-hear]').forEach(b => b.addEventListener('click', () => start(b)));
     play.addEventListener('click', () => { if (!au.src) return start(cur); au.paused ? au.play().catch(() => {}) : au.pause(); });
     au.addEventListener('play', () => icon(true)); au.addEventListener('pause', () => icon(false)); au.addEventListener('ended', () => icon(false)); }
+  try { pfbCreditsFill(); } catch (e) {}
   // bonus line: shown only when config.js sets bfBonus to a string
   if (typeof C.bfBonus === 'string' && C.bfBonus && Date.now() < Date.parse(C.bfBonusUntil || '2100-01-01')) { const b = document.getElementById('bonus'); b.textContent = C.bfBonus; b.hidden = false; document.getElementById('jw').hidden = false; }
   const START = Date.parse('2026-11-14T00:00:00Z'), END = Date.parse('2026-12-01T23:59:00Z'), q = new URLSearchParams(location.search).get('preview');

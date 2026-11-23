@@ -67,7 +67,7 @@ ol.rules{padding-left:22px}ol.rules li{margin:8px 0}
         <p class="msg" id="gwMsg" role="status" aria-live="polite"></p>
       </form>
     </div>
-<div class="gwbuy" id="gwBuy" hidden><b>Can't wait for the draw?</b><span>All 16 plugins are <span data-fpg>$29</span> right now, and plugin #17 is free with it. Your giveaway entry stays in the draw either way.</span><a class="btn" href="/?add=fridge&go=1#order" data-ev="giveaway">Get all 16 for <span data-fpg>$29</span></a></div>
+<div class="gwbuy" id="gwBuy" hidden><b>Can't wait for the draw?</b><span>All 16 plugins are <span data-fpg>$29</span> right now, and plugin #17 is free with it. Your giveaway entry stays in the draw either way.</span><small data-credits hidden style="color:#f7c96b;font-weight:800"></small><a class="btn" href="/?add=fridge&go=1#order" data-ev="giveaway">Get all 16 for <span data-fpg>$29</span></a></div>
     <div class="facts">
       <div><b>3 winners</b><span>Each gets the Full Fridge: all 16 plugins (Mac and Windows)</span></div>
       <div><b>Opens</b><span>Fri 20 Nov 2026, 00:00 UK time</span></div>
@@ -95,7 +95,7 @@ ol.rules{padding-left:22px}ol.rules li{margin:8px 0}
 <p>Can't wait for the draw? <a href="/butter-spread/">Butter Spread</a> is free right now, and every plugin has a 3-day free trial.</p>
 </main>
 <footer>© 2026 Plugins for Breakfast by Escaé Studios · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms and conditions</a> · <a href="mailto:chef@pluginsforbreakfast.com">chef@pluginsforbreakfast.com</a></footer>
-<script src="/config.js"></script>
+<script src="/config.js"></script><script src="/sold.js"></script>
 <script>
 // Giveaway entry (spec: /mnt/project-files/marketing/giveaway/giveaway.md). Posts {action:'giveaway', ...} to our Apps Script,
 // which writes the Giveaway tab, sends the confirmation and adds to the list only when the newsletter box is ticked.
@@ -130,6 +130,6 @@ ol.rules{padding-left:22px}ol.rules li{margin:8px 0}
 })();
 </script>
 <script src="/assets/maitred.js" defer></script>
-<script>{ const F = window.pfbFlash && pfbFlash(), g = document.getElementById('gwBuy'); if (F && g) { document.querySelectorAll('[data-fpg]').forEach(e => e.textContent = '$' + F.price); g.hidden = false; } }</script>
+<script>{ const F = window.pfbFlash && pfbFlash(), g = document.getElementById('gwBuy'); if (F && g) { document.querySelectorAll('[data-fpg]').forEach(e => e.textContent = '$' + F.price); g.hidden = false; try { pfbCreditsFill(); } catch (e) {} } }</script>
 </body>
 </html>
