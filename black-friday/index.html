@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Black Friday Plugin Deals 2026: Plugin Bundle $29, All 16 Plugins (71% Off) · Plugins for Breakfast</title>
-<meta name="description" content="Black Friday plugin deals 2026: the Full Fridge plugin bundle, all 16 Plugins for Breakfast audio plugins for $29 (was $100), plus plugin #17 free. Single plugins from $19. VST3, AU and AAX, works in all the famous DAWs. Ends 1 December, 23:59 UK time.">
+<title>Black Friday Plugin Deals 2026: Plugin Bundle $29, All 16 Plugins (42% Off) · Plugins for Breakfast</title>
+<meta name="description" content="Black Friday plugin deals 2026: the Full Fridge plugin bundle, all 16 Plugins for Breakfast audio plugins for $29 (was $50), plus plugin #17 free. Single plugins from $19. VST3, AU and AAX, works in all the famous DAWs. Ends 1 December, 23:59 UK time.">
 <meta name="keywords" content="black friday plugin deals, black friday plugin deals 2026, plugin bundle $29, cheap plugin bundle, black friday VST deals, black friday plugin bundle, audio plugin sale, mixing plugin bundle, VST3, AU, AAX">
 <link rel="canonical" href="https://pluginsforbreakfast.com/black-friday/">
 <meta property="og:title" content="Black Friday at Plugins for Breakfast">
@@ -100,7 +100,7 @@ h1{margin-top:6px}
 <p class="bonus" id="bonus" hidden></p>
 
 <section class="bundles">
-  <div class="b star"><span class="eb">The whole fridge</span><h2>Full Fridge Bundle</h2><div class="amt" data-amt="fridge"><span class="v"><s>$100</s>$29</span><small>once, yours forever</small></div><ul><li>All 16 plugins</li><li>Yours to keep, forever</li><li>Mac (AU, VST3, AAX) and Windows (VST3)</li></ul><p class="left" data-left="fridge"></p><p class="why"><b>Why so cheap?</b> We're new, and we'd rather you use them than scroll past them. That's the whole plan.</p><a class="btn" href="/?add=fridge&go=1#order" data-ev="bf-card">Add the whole fridge</a><p class="proof">3-day free trial · works in Logic, Ableton, FL Studio, Pro Tools and more, plus <a href="https://www.veena.studio/" target="_blank" rel="noopener">veena</a> in your browser via its bridge app · Apple-notarised installers</p></div>
+  <div class="b star"><span class="eb">The whole fridge</span><h2>Full Fridge Bundle</h2><div class="amt" data-amt="fridge"><span class="v"><s>$50</s>$29</span><small>once, yours forever</small></div><ul><li>All 16 plugins</li><li>Yours to keep, forever</li><li>Mac (AU, VST3, AAX) and Windows (VST3)</li></ul><p class="left" data-left="fridge"></p><p class="why"><b>Why so cheap?</b> We're new, and we'd rather you use them than scroll past them. That's the whole plan.</p><a class="btn" href="/?add=fridge&go=1#order" data-ev="bf-card">Add the whole fridge</a><p class="proof">3-day free trial · works in Logic, Ableton, FL Studio, Pro Tools and more, plus <a href="https://www.veena.studio/" target="_blank" rel="noopener">veena</a> in your browser via its bridge app · Apple-notarised installers</p></div>
   <div class="b"><span class="eb">A new dish every month</span><h2>Breakfast Club</h2><div class="amt" data-amt="club"><span class="v"><s>$150</s>$75</span><small>a year</small></div><ul><li>All 16 plugins, all year</li><li>Every new monthly plugin on day one</li><li>Keep every plugin that lands while you're a member</li></ul><p class="left" data-left="club"></p><a class="btn" href="/?add=club#order">Join the Club</a></div>
   <div class="b"><span class="eb">The forever feast</span><h2>Lifetime Pass</h2><div class="amt" data-amt="lifetime"><span class="v"><s>$250</s>$150</span><small>once, forever</small></div><ul><li>All 16 plugins, forever</li><li>Every plugin we ever cook up</li><li>Pay once, eat for life</li></ul><p class="left" data-left="lifetime"></p><a class="btn" href="/?add=lifetime#order">Get the Lifetime Pass</a></div>
 </section>
@@ -153,7 +153,7 @@ h1{margin-top:6px}
       const l = document.querySelector(`[data-left="${k}"]`); if (l && o.left) l.textContent = `${o.left} left at this price`; });
   }
   // Full Fridge launch deal: swap the fridge price everywhere on this page
-  { const F = window.pfbFlash && pfbFlash(); if (F) { const v = document.querySelector('[data-amt="fridge"] .v'); if (v) v.innerHTML = `<s>$100</s>$${F.price}`;
+  { const F = window.pfbFlash && pfbFlash(); if (F) { const v = document.querySelector('[data-amt="fridge"] .v'); if (v) v.innerHTML = `<s>$50</s>$${F.price}`;
     const l = document.querySelector('[data-left="fridge"]'); if (l) l.textContent = 'Launch deal, till ' + new Date(F.end).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', timeZone: 'UTC'});
   } document.querySelectorAll('[data-fp]').forEach(e => e.textContent = '$' + (F ? F.price : (L && C.simplePricing ? st('fridge').now : 50)));
     { const fp = F ? F.price : (L && C.simplePricing ? st('fridge').now : 50); document.querySelectorAll('[data-each]').forEach(e => e.textContent = '$' + (fp / 16).toFixed(2)); } }
