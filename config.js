@@ -1,10 +1,11 @@
 // Everything the site needs to know about the store and the launch. Change values here, not in index.html.
 window.CONFIG = {
   store: 'https://escae-studios.moonbase.sh',
-  // How the store panels look and behave on our pages (no store branding, checkout stays on our site)
+  // How the store panels look and behave on our pages (no store branding). Checkout: overlay on desktop and tablet, full-page secure checkout on phones
+  // ('auto', the store's own default since 24 Nov: the overlay can't show Apple Pay / Google Pay and is cramped inside in-app browsers like Facebook's).
   storeOptions: {
     toolbar: { enabled: false, show: { cart: false, account: false, moonbase: false } },
-    checkout: { redirect: 'never' },
+    checkout: { redirect: 'auto' },
     activation: { websiteLink: { enabled: false } },
     theme: {
       dark: false,

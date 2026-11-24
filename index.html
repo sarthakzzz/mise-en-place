@@ -338,7 +338,7 @@ footer a:hover{text-decoration:underline;text-underline-offset:4px}
 .total{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:14px;border-top:1px dashed #d8c29d;font-weight:800}
 .total span:last-child{font-family:var(--display);font-size:30px}
 .cart .checkout{margin-top:14px;width:100%}
-.cart .fine{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:10px}
+.cart .fine{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:10px}.cart .sure{font-weight:700;margin-top:6px}
 
 /* sign-up pop-up */
 .pop-back{position:fixed;inset:0;z-index:50;background:rgba(43,29,22,.55);display:grid;place-items:center;padding:16px;animation:fade .25s ease}
@@ -762,6 +762,7 @@ body.waitlist .countdown{display:inline-flex}
   <div class="total"><span>Total</span><span id="total">$0</span></div>
   <button class="btn btn-orange checkout" id="checkout" type="button"><span class="ico" data-food="cookie"></span>Checkout</button>
   <div class="fine" id="fine">Secure checkout, freshly laid. Prices in USD, tax added at checkout.</div>
+  <div class="fine sure">&#128274; Secure card payment · instant download · every plugin has a 3-day free trial</div>
 </aside>
 
 <div class="pop-back" id="popBack" hidden>
@@ -1138,7 +1139,12 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // ?add=<id> (links from /black-friday/ and other pages): put that item in the basket and open it
 { const id = new URLSearchParams(location.search).get('add'); if (id && PRODUCTS[id]) addEventListener('load', () => { try { storeUsed = true; window.pfbEvent && pfbEvent('url-add-' + id); } catch (e) {} const b = document.querySelector(`[data-add="${id}"]`) || document.getElementById('basketBtn'); if (!cart.includes(id)) add(id, b); const go = new URLSearchParams(location.search).has('go'); setTimeout(() => { try { go ? pfbGoCheckout() : openCart(); } catch (e) {} }, 900); history.replaceState(null, '', location.pathname + location.hash); }); }
 // one click to pay: open the basket, then press Checkout as soon as the Moonbase checkout is ready (up to ~12 s; otherwise the basket stays open)
-function pfbGoCheckout(){ openCart(); let n = 0; const t = setInterval(() => { n++; if (window.Moonbase && mbReady) { clearInterval(t); document.getElementById('checkout').click(); } else if (n > 48) clearInterval(t); }, 250); }
+let pfbGo = false, coStarted = 0;
+function pfbGoCheckout(){ openCart(); let n = 0; const t = setInterval(() => { n++; if (window.Moonbase && mbReady) { clearInterval(t); pfbGo = true; document.getElementById('checkout').click(); } else if (n > 48) { clearInterval(t); document.getElementById('fine').textContent = 'The checkout is taking its time. Tap Checkout to try again.'; try { pfbEvent('checkout-notready'); } catch (e) {} } }, 250); }
+// checkout rescue (24 Nov): remember that a checkout was started, so coming back without paying shows the saved basket again
+const coMark = on => { try { on ? sessionStorage.setItem('pfb-co', '1') : sessionStorage.removeItem('pfb-co'); } catch (e) {} };
+function stillHungry(){ coMark(false); if (!cart.length) return; openCart(); document.getElementById('fine').textContent = cart.includes('fridge') ? 'Still hungry? Your Full Fridge is saved right here.' : 'Still hungry? Your basket is saved right here.'; try { pfbEvent('checkout-back'); } catch (e) {} }
+addEventListener('pageshow', () => { let m = null; try { m = sessionStorage.getItem('pfb-co'); } catch (e) {} if (m) setTimeout(() => { let k = null; try { k = sessionStorage.getItem('pfb-co'); } catch (e) {} if (k && cart.length && cartEl.hidden) stillHungry(); }, 3500); });
 document.querySelectorAll('[data-trial]').forEach(b => b.addEventListener('click', () => { const id = b.closest('.plug').id; if (!tryProduct(PRODUCTS[id].mb)) say(`${b.dataset.trial}: the store is warming up, try again in a moment.`); const r = b.getBoundingClientRect(); burst(r.left + r.width/2, r.top, ['#7fb342','#c6ea8a'], 10, 1, {size:5}); sfx.pop(500); }));
 let cartFocus = null;
 function openCart(){ cartFocus = document.activeElement; refresh(); shade.hidden = false; cartEl.hidden = false; document.getElementById('cartClose').focus(); sfx.pop(420); }
@@ -1173,10 +1179,12 @@ document.getElementById('checkout').addEventListener('click', async () => {
     // A caught-fruit code rides on a direct purchase so it applies by itself (Moonbase takes one code per order there).
     // A Maitre D' code is typed in the checkout's coupon box (the basket note shows it), so its order keeps the cart panel and basket offers.
     const fruit = cc >= 0 && window.pfbCatch ? pfbCatch.code : '';
-    if (fruit) { lastOrder = merged.map(x => { const {coupon_code, ...i} = x.i; return i; }); lastOrder[0] = {...lastOrder[0], coupon_code: fruit}; retries = 0; closeCart(); sfx.ding(); await Moonbase.purchase(lastOrder); fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.'; btn.disabled = false; return; }
+    if (fruit) { lastOrder = merged.map(x => { const {coupon_code, ...i} = x.i; return i; }); lastOrder[0] = {...lastOrder[0], coupon_code: fruit}; retries = 0; closeCart(); sfx.ding(); coMark(true); await Moonbase.purchase(lastOrder); fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.'; btn.disabled = false; return; }
     mbFreshCart();
     for (const x of merged) { const {coupon_code, ...i} = x.i; await Moonbase.add_to_cart({...i, show_cart: false}); }
-    lastOrder = null; closeCart(); sfx.ding(); mbSync = true; Moonbase.view_cart();
+    lastOrder = null; closeCart(); sfx.ding(); mbSync = true; coMark(true);
+    if (pfbGo) { pfbGo = false; const t0 = coStarted; try { Moonbase.checkout(); } catch (e) { Moonbase.view_cart(); } setTimeout(() => { if (coStarted === t0) { try { Moonbase.view_cart(); } catch (e) {} } }, 2500); }
+    else Moonbase.view_cart();
     fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.';
   } catch (e) { if (e.message === 'club') { fine.textContent = 'The Breakfast Club is still setting the table. Take it out of the basket for now, or email us.'; btn.disabled = false; return; }
     fine.innerHTML = `Oops, we dropped the tray. Please email <b>${CONFIG.supportEmail}</b> and the Chef will plate it up by hand.`; }
@@ -1487,8 +1495,9 @@ function mbFreshCart(){ try { localStorage.removeItem('moonbase_session'); } cat
   try { window.dispatchEvent(new StorageEvent('storage', {key: 'moonbase_session', oldValue: '{}', newValue: null})); } catch (e) {} }
 function startMoonbase(){ if (mbReady || !window.Moonbase) return; Moonbase.setup(CONFIG.store, CONFIG.storeOptions || {}); mbReady = true;
   // the basket empties only once the order is paid; a closed checkout leaves it as it was
-  try { Moonbase.on('checkout-completed', () => { cart = []; save(); refresh(); lastOrder = null; mbFreshCart(); orderUp(); }); } catch (e) {}
-  try { Moonbase.on('checkout-closed', e => { if (e && e.completed) { cart = []; save(); refresh(); lastOrder = null; } else if (cart.length) say('Your basket is just as you left it. Change anything you like.'); }); } catch (e) {}
+  try { Moonbase.on('checkout-initiated', () => { coStarted++; coMark(true); }); } catch (e) {}
+  try { Moonbase.on('checkout-completed', () => { coMark(false); try { pfbEvent('checkout-done'); } catch (e) {} cart = []; save(); refresh(); lastOrder = null; mbFreshCart(); orderUp(); }); } catch (e) {}
+  try { Moonbase.on('checkout-closed', e => { if (e && e.completed) { cart = []; save(); refresh(); lastOrder = null; } else if (cart.length) stillHungry(); if (e && e.completed) coMark(false); }); } catch (e) {}
   try { Moonbase.on('coupon-rejected', (e, ...rest) => { const code = typeof e === 'string' ? e : (e && (e.code || (e.detail && e.detail.code))) || '';
     const next = nextCoupon(code); if (!lastOrder || next === null || retries++ > 8) return;
     lastOrder = lastOrder.map(i => { if (i.coupon_code !== code) return i; const o = {...i}; if (next) o.coupon_code = next; else delete o.coupon_code; return o; });
