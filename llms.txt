@@ -1,0 +1,52 @@
+# Plugins for Breakfast
+
+> Plugins for Breakfast makes 16 audio effect plugins for music production (VST3, AU and AAX) with playful, food-themed interfaces: each one is a needle-felt miniature kitchen with one main control. Made by Escaé Studios. We make delicious plugins.
+
+- Formats: AU, VST3 and AAX on Mac (macOS 11 or later, Apple silicon and Intel, Apple-notarised installers); VST3 on Windows 10 and 11 (64-bit).
+- DAWs: Logic Pro, Ableton Live, FL Studio, Pro Tools, Cubase, Studio One, Reaper, Bitwig and others that load AU, VST3 or AAX.
+- Trial: every plugin has a 3-day free trial. Butter Spread (stereo widener) comes with a free licence and is open source.
+- Buying: single plugins, or all 16 together in the Full Fridge Bundle (pay once, keep forever). Current prices are on the site.
+- A new plugin is released every month.
+- Contact: chef@pluginsforbreakfast.com
+
+## Plugins
+
+- [Orange Crusher](https://pluginsforbreakfast.com/plugins/orange-crusher/): Distortion. Squeeze juice out of drums, bass and anything else.
+- [Popping Candy](https://pluginsforbreakfast.com/plugins/popping-candy/): Glitch and stutter. Nine jars of effects that pop on random steps, in time with your track.
+- [Spice Shelf EQ](https://pluginsforbreakfast.com/plugins/spice-shelf-eq/): Equalizer. Five spice jars that season your sound: an EQ you can play by taste.
+- [Popcorn Sandwich Compressor](https://pluginsforbreakfast.com/plugins/popcorn-sandwich-compressor/): Compressor. Squeeze it flat or pop it open, all from one dial.
+- [Cherry on the Top Mastering](https://pluginsforbreakfast.com/plugins/cherry-on-the-top-mastering/): Mastering. Finish a track with one dial: the cherry lands on top at 100%.
+- [Spaghetti Delay](https://pluginsforbreakfast.com/plugins/spaghetti-delay/): Delay. Echoes rolled out of a pasta machine, one cherry tomato per repeat.
+- [Bread Oven Reverb](https://pluginsforbreakfast.com/plugins/bread-oven-reverb/): Reverb. A warm bakery reverb: rooms, chambers, halls and plates, baked to taste.
+- [Food Fight](https://pluginsforbreakfast.com/plugins/food-fight/): Performance multi-effect. Eight foods, eight effects, and a catapult that throws them in time with your track.
+- [Ghost Pepper Clipper](https://pluginsforbreakfast.com/plugins/ghost-pepper-clipper/): Clipper. Hot, clean loudness. The ghost rises as you clip.
+- [Hot-o-Pan](https://pluginsforbreakfast.com/plugins/hot-o-pan/): Auto-pan. A diner auto-panner: the pancake flips between left and right.
+- [Gummy Gate](https://pluginsforbreakfast.com/plugins/gummy-gate/): Gate. A sweet-shop gate: the jar fills with your signal and the gate swings open.
+- [Milkshake Chorus](https://pluginsforbreakfast.com/plugins/milkshake-chorus/): Chorus. Thick, creamy chorus: from vintage synth to a full ensemble.
+- [Burnt Toast Tape Machine](https://pluginsforbreakfast.com/plugins/burnt-toast-tape-machine/): Tape saturation. A toaster that thinks it is a tape machine. The toast browns as you push it.
+- [Noodle Filter](https://pluginsforbreakfast.com/plugins/noodle-filter/): Filter. Lift the noodles to open the filter, curl them for resonance.
+- [Muesli Granular](https://pluginsforbreakfast.com/plugins/muesli-granular/): Granular. Your audio, cut into grains and scattered over a breakfast bowl.
+- [Butter Spread](https://pluginsforbreakfast.com/plugins/butter-spread/): Stereo widener (free licence). Spread your mix wider, smooth as butter, and keep it safe in mono.
+
+## Plugins by job, style and DAW
+
+- [Lo-fi plugins, toasted to taste](https://pluginsforbreakfast.com/plugins/for/lofi/): Lo-fi plugins for warm tape, wow and flutter, crunchy drums and dusty echoes: Burnt Toast Tape Machine, Orange Crusher, Spaghetti Delay and more. VST3, AU and AAX, 3-day free trial.
+- [A vocal chain you can cook in five minutes](https://pluginsforbreakfast.com/plugins/for/vocals/): Vocal chain plugins for singers and rappers: gate, EQ, compressor, reverb, delay and a stereo widener for doubles. Simple controls, VST3, AU and AAX, 3-day free trial.
+- [Plugins for drums that hit](https://pluginsforbreakfast.com/plugins/for/drums/): Drum mixing plugins for punchy, loud drums: clipper, compressor and expander, saturation, gate and glitch fills. For trap, hip hop, techno and rock. VST3, AU and AAX.
+- [Mastering plugins that keep it simple](https://pluginsforbreakfast.com/plugins/for/mastering/): Mastering plugins for home producers: one-dial mastering with streaming loudness targets, a clean clipper, a tone EQ and tape glue. VST3, AU and AAX, 3-day free trial.
+- [Mixing plugins for beginners](https://pluginsforbreakfast.com/plugins/for/beginners/): Easy mixing plugins for beginners: an EQ you play by taste, a one-dial compressor, a simple reverb, a clipper and one-dial mastering. VST3, AU and AAX, 3-day free trial.
+- [Creative effects you play like toys](https://pluginsforbreakfast.com/plugins/for/creative-effects/): Creative effect plugins for producers: tempo-synced glitch and stutter, granular textures, performance multi-effects, filters and auto-pan. VST3, AU and AAX, 3-day free trial.
+- [Plugins for hip hop and trap](https://pluginsforbreakfast.com/plugins/for/hip-hop-and-trap/): Plugins for hip hop and trap producers: saturation for 808s, a clipper for hard drums, a rap vocal chain, glitch fills and one-dial mastering. Works in FL Studio, Ableton Live and Logic Pro.
+- [Plugins for FL Studio](https://pluginsforbreakfast.com/plugins/for/fl-studio/): VST3 plugins for FL Studio on Windows and Mac: EQ, compressor, reverb, delay, saturation, clipper, glitch and one-dial mastering. How to install and find them in FL Studio. 3-day free trial.
+- [Plugins for Logic Pro](https://pluginsforbreakfast.com/plugins/for/logic-pro/): Audio Unit plugins for Logic Pro on Mac: EQ, compressor, reverb, delay, tape saturation, clipper, glitch and one-dial mastering. Apple-notarised installers, 3-day free trial.
+- [Plugins for Ableton Live](https://pluginsforbreakfast.com/plugins/for/ableton-live/): VST3 and AU plugins for Ableton Live on Mac and Windows: glitch, granular, filter, delay, reverb, saturation, clipper and one-dial mastering. Tested in Ableton Live, 3-day free trial.
+- [Plugins for Pro Tools](https://pluginsforbreakfast.com/plugins/for/pro-tools/): AAX plugins for Pro Tools on Mac: EQ, compressor, gate, clipper, reverb, delay, tape saturation and one-dial mastering. PACE-signed, Apple-notarised installers, 3-day free trial.
+
+## Key pages
+
+- [All plugins](https://pluginsforbreakfast.com/plugins/)
+- [Full Fridge Bundle: all 16 plugins](https://pluginsforbreakfast.com/plugins/full-fridge-bundle/)
+- [Free plugins and free trials](https://pluginsforbreakfast.com/free-plugins/)
+- [Guides and tutorials](https://pluginsforbreakfast.com/guides/)
+- [Installing safely on Mac and Windows](https://pluginsforbreakfast.com/install/)
+- [Help and FAQ](https://pluginsforbreakfast.com/support.html)
