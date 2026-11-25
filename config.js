@@ -119,10 +119,18 @@ document.addEventListener('click', e => { try { const l = e.target.closest && e.
 // Full Fridge launch deal, $29 (Sarthak OK 14 Nov, extended to 1 Dec on 16 Nov): set until to the exact UTC end time the store uses; '' keeps it off.
 // While on: Full Fridge shows $price (was $50, the real one-off store price) on home, basket and /black-friday/, and the strip becomes a countdown to /?add=fridge#order.
 // Preview any time with ?flash=preview (shows a pretend 72h countdown).
+// One-time BF reminder box (assets/remind.js, tactic 16): true once Newsletter's Remind.gs is deployed (action 'remind').
+window.CONFIG.bfRemind = false;
 window.CONFIG.fridgeFlash = { price: 29, until: '2026-12-01T23:59:00Z' };   // Moonbase promo started 2026-11-14T12:52Z; extended to 1 Dec 23:59 UTC (Sarthak 16 Nov, store confirmed)
 window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = new URLSearchParams(location.search).get('flash') === 'preview';
   const end = pv ? (window.__pfbFlashPv = window.__pfbFlashPv || Date.now() + 72 * 3600e3) : Date.parse(f.until || '');
   return end && Date.now() < end && f.price ? {price: f.price, end} : null; } catch (e) { return null; } };
+// Creator codes (tactic 17, 25 Nov): ?code=NAME29 or ?src=NAME29 is kept in localStorage (14 days) and rides on the checkout as the coupon,
+// so the creator gets credit without the buyer typing it. Only codes matching CREATOR_CODE pass; other src tags (fb-deal-a etc.) never do.
+window.CONFIG.creatorCode = /^[A-Z][A-Z0-9]{1,19}29$/;
+window.pfbCode = () => { try { const o = JSON.parse(localStorage.getItem('pfb-code') || 'null'); return o && o.c && Date.now() - o.t < 14 * 864e5 && window.CONFIG.creatorCode.test(o.c) ? o.c : ''; } catch (e) { return ''; } };
+(() => { try { const q = new URLSearchParams(location.search), c = String(q.get('code') || q.get('src') || '').trim().toUpperCase();
+  if (c && window.CONFIG.creatorCode.test(c)) { localStorage.setItem('pfb-code', JSON.stringify({c, t: Date.now()})); window.pfbEvent && setTimeout(() => pfbEvent('code-' + c), 1500); } } catch (e) {} })();
 // Black Friday strip on every page (offer live 14 Nov to 1 Dec 23:59 UTC), linking /black-friday/. Preview any time with ?bf=preview.
 (() => { try {
   const t = Date.now(), pv = new URLSearchParams(location.search).get('bf') === 'preview';
@@ -131,7 +139,7 @@ window.pfbFlash = () => { try { const f = window.CONFIG.fridgeFlash || {}, pv = 
     a.style.cssText = 'display:block;position:relative;z-index:60;background:#2b1d16;color:#f7c96b;text-align:center;font:800 14px/1.35 Manrope,system-ui,sans-serif;padding:9px 16px;text-decoration:none';
     if (F) { a.href = '/?add=fridge&go=1#order'; a.dataset.ev = 'strip';
       const tick = () => { let s = Math.max(0, Math.floor((F.end - Date.now()) / 1000)); if (!s) { a.hidden = true; return; } const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), x = s % 60, day = new Date(F.end).toLocaleDateString('en-GB', {day: 'numeric', month: 'short', timeZone: 'UTC'});
-        a.innerHTML = `Launch deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$50</s> $${F.price} till ${day}. <span style="font-variant-numeric:tabular-nums;opacity:.85">${d ? d + 'd ' : ''}${h}h ${String(m).padStart(2, '0')}m${d ? '' : ' ' + String(x).padStart(2, '0') + 's'} left</span> →${window.pfbCredits && pfbCredits() ? `<small style="display:block;font-weight:600;opacity:.8;font-size:12px">First 25 buyers get their name in Jelly Wobble's credits · ${pfbCredits()} left</small>` : ''}`; };
+        a.innerHTML = `Launch deal: the whole fridge, all 16 plugins, <s style="opacity:.6">$50</s> $${F.price} till ${day}. <span style="font-variant-numeric:tabular-nums;opacity:.85">${d ? d + 'd ' : ''}${h}h ${String(m).padStart(2, '0')}m${d ? '' : ' ' + String(x).padStart(2, '0') + 's'} left</span> →${window.pfbCode && pfbCode() ? `<small style="display:block;font-weight:800;font-size:12px;color:#fff">Code ${pfbCode()} applied ✓</small>` : ''}${window.pfbCredits && pfbCredits() ? `<small style="display:block;font-weight:600;opacity:.8;font-size:12px">First 25 buyers get their name in Jelly Wobble's credits · ${pfbCredits()} left</small>` : ''}`; };
       tick(); setInterval(tick, 1000);
     } else { if (location.pathname.startsWith('/black-friday')) return; a.href = '/black-friday/'; a.textContent = 'Black Friday: all 16 plugins for $50, plugin #17 on us. Until 1 Dec →'; }
     const top = document.querySelector('header.top'); if (top) { a.style.position = 'relative'; a.style.zIndex = '1'; top.prepend(a); } else document.body.prepend(a); };

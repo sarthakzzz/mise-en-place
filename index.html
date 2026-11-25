@@ -762,6 +762,7 @@ body.waitlist .countdown{display:inline-flex}
   <div class="total"><span>Total</span><span id="total">$0</span></div>
   <button class="btn btn-orange checkout" id="checkout" type="button"><span class="ico" data-food="cookie"></span>Checkout</button>
   <div class="fine" id="fine">Secure checkout, freshly laid. Prices in USD, tax added at checkout.</div>
+  <div class="fine" id="codeLine" hidden></div>
   <div class="fine sure">&#128274; Secure card payment · instant download · every plugin has a 3-day free trial</div>
 </aside>
 
@@ -1148,7 +1149,7 @@ function stillHungry(){ coMark(false); if (!cart.length) return; openCart(); doc
 addEventListener('pageshow', () => { let m = null; try { m = sessionStorage.getItem('pfb-co'); } catch (e) {} if (m) setTimeout(() => { let k = null; try { k = sessionStorage.getItem('pfb-co'); } catch (e) {} if (k && cart.length && cartEl.hidden) stillHungry(); }, 3500); });
 document.querySelectorAll('[data-trial]').forEach(b => b.addEventListener('click', () => { const id = b.closest('.plug').id; if (!tryProduct(PRODUCTS[id].mb)) say(`${b.dataset.trial}: the store is warming up, try again in a moment.`); const r = b.getBoundingClientRect(); burst(r.left + r.width/2, r.top, ['#7fb342','#c6ea8a'], 10, 1, {size:5}); sfx.pop(500); }));
 let cartFocus = null;
-function openCart(){ cartFocus = document.activeElement; refresh(); shade.hidden = false; cartEl.hidden = false; document.getElementById('cartClose').focus(); sfx.pop(420); }
+function openCart(){ try { const c = window.pfbCode && pfbCode(), l = document.getElementById('codeLine'); if (l) { l.hidden = !c; l.innerHTML = c ? `Code <b>${c}</b> applied at checkout ✓` : ''; } } catch (e) {} cartFocus = document.activeElement; refresh(); shade.hidden = false; cartEl.hidden = false; document.getElementById('cartClose').focus(); sfx.pop(420); }
 function closeCart(){ shade.hidden = true; cartEl.hidden = true; if (cartFocus) cartFocus.focus(); }
 basketBtn.addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
@@ -1180,7 +1181,9 @@ document.getElementById('checkout').addEventListener('click', async () => {
     // A caught-fruit code rides on a direct purchase so it applies by itself (Moonbase takes one code per order there).
     // A Maitre D' code is typed in the checkout's coupon box (the basket note shows it), so its order keeps the cart panel and basket offers.
     const fruit = cc >= 0 && window.pfbCatch ? pfbCatch.code : '';
-    if (fruit) { lastOrder = merged.map(x => { const {coupon_code, ...i} = x.i; return i; }); lastOrder[0] = {...lastOrder[0], coupon_code: fruit}; retries = 0; closeCart(); sfx.ding(); coMark(true); await Moonbase.purchase(lastOrder); fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.'; btn.disabled = false; return; }
+    // creator code (?code=NAME29, config.js pfbCode): goes on the Full Fridge line (else the first line) as a direct purchase, like a caught fruit
+    const creator = !fruit && window.pfbCode ? pfbCode() : '', cIdx = Math.max(0, merged.findIndex(x => x.i.bundle_id && !x.i.variation_id || x.i.variation_id === (CONFIG.variations || {}).fridge));
+    if (fruit || creator) { lastOrder = merged.map(x => { const {coupon_code, ...i} = x.i; return i; }); const k = fruit ? 0 : cIdx; lastOrder[k] = {...lastOrder[k], coupon_code: fruit || creator}; retries = 0; closeCart(); sfx.ding(); coMark(true); await Moonbase.purchase(lastOrder); fine.textContent = 'Secure checkout, freshly laid. Prices in USD, tax added at checkout.'; btn.disabled = false; return; }
     mbFreshCart();
     for (const x of merged) { const {coupon_code, ...i} = x.i; await Moonbase.add_to_cart({...i, show_cart: false}); }
     lastOrder = null; closeCart(); sfx.ding(); mbSync = true; coMark(true);
@@ -1477,6 +1480,7 @@ async function subscribe(form, holder, onDone){
 let lastOrder = null, retries = 0, catchFallback = '';
 function nextCoupon(code){ const S = CONFIG.priceSteps || {};
   if (window.pfbCatch && code && code === pfbCatch.code) { pfbCatch.used(); return catchFallback; }
+  if (window.pfbCode && code && code === pfbCode()) { try { localStorage.removeItem('pfb-code'); } catch (e) {} return ''; }   // creator code not accepted: today's price
   if (window.pfbMd && code && code === pfbMd.code) { pfbMd.used(); return ''; }   // Maître D' code already used: today's price   // caught code already used: back to today's price
   for (const st of [S.plugin, S.bundle]) { if (!st) continue; const m = new RegExp('^' + st.coupon + '(\\d+)$').exec(code || ''); if (m) { const n = +m[1] + st.step; return n < st.max ? st.coupon + n : ''; } }
   return null; }
