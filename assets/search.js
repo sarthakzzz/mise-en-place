@@ -23,6 +23,11 @@
     ['mg', 'Muesli Granular', 'Granular', 'muesli-granular', 'muesli-granular', ['fx'], 'Your audio, cut into grains and scattered over a breakfast bowl.', 'granular grains texture ambient sound design pad'],
     ['ct', 'Cherry on the Top Mastering', 'Mastering', 'cherry-on-the-top-mastering', 'chefs-kiss', ['mst'], 'Finish a track with one dial: the cherry lands on top at 100%.', 'mastering master limiter loudness finish one knob']
   ];
+  // New launches (assets/new.js, made by make_launch_pages.py) join the list; loads new.js itself on pages that don't have it
+  const CATK = {'Dynamics': 'dyn', 'EQ & Filter': 'eq', 'Saturation': 'sat', 'Reverb & Delay': 'space', 'Modulation & Stereo': 'mod', 'Creative FX': 'fx', 'Mastering': 'mst'};
+  const addNew = () => { ((window.PFB_NEW || {}).slots || []).forEach(x => { if (x.stage === 'launch' && x.id && !P.some(p => p[0] === x.id))
+    P.push([x.id, x.name, x.kind, x.slug, x.thumb || x.slug, [CATK[x.cat] || 'fx'], x.line, (x.kind + ' ' + x.name + ' new').toLowerCase()]); }); CATS[0][1] = 'All ' + P.length; document.querySelectorAll('.sx-cats [data-k="all"]').forEach(b => b.textContent = CATS[0][1]); };
+  if (window.PFB_NEW) addNew(); else { const sc = document.createElement('script'); sc.src = '/assets/new.js'; sc.onload = addNew; document.head.appendChild(sc); }
   const home = !!document.querySelector('section.plug[data-id="oc"]');
   const price = id => { if (id === 'bs') return 'Free'; try { const L = (window.CONFIG || {}).ladders, S = window.SOLD || {}; if (L) { const k = (CONFIG.products || {})[id] || id, i = Math.max(0, Math.min(+((S.steps || {})[k]) || 0, L.plugin.length - 1)); return '$' + L.plugin[i]; } } catch (e) {} return '$19'; };
   const css = document.createElement('style');
